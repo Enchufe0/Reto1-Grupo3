@@ -1,11 +1,14 @@
 <?php
+
+    use enumCategoria\CategoriaEquipamiento;
+
     class Equipamientos {
         private int $id_equipamiento;
         private string $nombre;
         private string $descripcion;
         private string $marca;
         private string $modelo;
-        private string $categoria; //enum
+        private CategoriaEquipamiento $categoria; //enum
         private int $id_ubicacion_actual;
 
         public function __construct(
@@ -14,7 +17,7 @@
             string $descripcion,
             string $marca,
             string $modelo,
-            string $categoria,
+            CategoriaEquipamiento $categoria,
             int $id_ubicacion_actual
         ){
             $this -> id_equipamiento = $id_equipamiento;
@@ -50,7 +53,7 @@
             return $this->modelo;
         }
 
-        public function getCategoria(): string {
+        public function getCategoria(): CategoriaEquipamiento {
             return $this->categoria;
         }
 
@@ -80,7 +83,7 @@
             $this->modelo = $modelo;
         }
 
-        public function setCategoria(string $categoria): void {
+        public function setCategoria(CategoriaEquipamiento $categoria): void {
             $this->categoria = $categoria;
         }
 
@@ -88,4 +91,5 @@
             $this->id_ubicacion_actual = $id_ubicacion_actual;
         }
     }
+
 ?>
