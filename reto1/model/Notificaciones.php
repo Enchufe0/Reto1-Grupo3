@@ -1,10 +1,13 @@
 <?php
+    use enumNotificaciones\EstadoNotificaciones;
+
     class Notificaciones {
+
         private int $id_notificacion;
         private string $titulo;
         private string $descripcion;
         private string $fecha_creacion;
-        private string $estado; // Puede ser un enum en la base de datos (ej: 'leída', 'no leída') enumNotificaciones
+        private EstadoNotificaciones $estado; //enum
         private int $id_usuario;
 
         public function __construct(
@@ -12,7 +15,7 @@
             string $titulo,
             string $descripcion,
             string $fecha_creacion,
-            string $estado,
+            EstadoNotificaciones $estado,
             int $id_usuario
         ){
             $this->id_notificacion = $id_notificacion;
@@ -41,7 +44,7 @@
             return $this->fecha_creacion;
         }
 
-        public function getEstado(): string {
+        public function getEstado(): EstadoNotificaciones {
             return $this->estado;
         }
 
@@ -67,7 +70,7 @@
             $this->fecha_creacion = $fecha_creacion;
         }
 
-        public function setEstado(string $estado): void {
+        public function setEstado(EstadoNotificaciones $estado): void {
             $this->estado = $estado;
         }
 
