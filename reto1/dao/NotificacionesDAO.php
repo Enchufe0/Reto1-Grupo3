@@ -1,5 +1,8 @@
 <?php       
     //1. preparar el carretillero
+
+use enumNotificaciones\EstadoNotificaciones;
+
     require_once 'Notificaciones.php';
 
     // si tienes el enum aparte tambien tienes que traertelo
@@ -19,7 +22,7 @@
         public function crear ( Notificaciones $notificacion):bool {
 
             //ponemos todas las columnas de la tabla menos el id_autoincrement
-            $sql = "INSERT INTO Notificaciones (titulo, descripcion, fecha_creacion, estado, id_usuario)
+            $sql = "INSERT INTO notificaciones (titulo, descripcion, fecha_creacion, estado, id_usuario)
                     VALUES (:titulo, :descripcion, :fecha_creacion, :estado, :id_usuario)";
 
             //avisa al almacen
@@ -43,7 +46,7 @@
         //READ TODAS
         public function obtenerTodas(): array{
             
-            $sql = "SELECT * FROM Notificaciones";
+            $sql = "SELECT * FROM notificaciones";
 
             $stmt = $this->conexion->query($sql);
 
@@ -56,7 +59,7 @@
                     $fila['titulo'],
                     $fila['descripcion'],
                     $fila['fecha_creacion'],
-                    enumNotificacion::from($fila['estado']), //aqui se transforma en el enum el dato
+                    EstadoNotificaciones::from($fila['estado']), //aqui se transforma en el enum el dato
                     $fila['id_usuario']
                 );
 
@@ -68,7 +71,7 @@
         //READ POR ID importante el ?
         public function obtenerPorId(int $id): ?Notificaciones{
 
-            $sql = "SELECT * FROM Notificaciones WHERE id_notificacion = :id";
+            $sql = "SELECT * FROM notificaciones WHERE id_notificacion = :id";
 
             $stmt = $this->conexion->prepare($sql);
 
@@ -84,7 +87,7 @@
                     $fila['titulo'],
                     $fila['descripcion'],
                     $fila['fecha_creacion'],
-                    enumNotificacion::from($fila['estado']),
+                    EstadoNotificaciones::from($fila['estado']),
                     $fila['id_usuario']
                 );
                 return $notificacion;
@@ -96,7 +99,7 @@
         //UPDATE
         public function actualizar (Notificaciones $notificacion): bool{
 
-            $sql = "UPDATE Notificaciones
+            $sql = "UPDATE notificaciones
                     SET titulo = :titulo, descripcion = :descripcion, 
                         fecha_creacion = :fecha_creacion, estado = :estado,
                         id_usuario = :id_usuario
@@ -117,7 +120,7 @@
         //DELETE
         public function borrar(int $id): bool {
 
-            $sql = "DELETE FROM Notificaciones WHERE id_notificacion = :id";
+            $sql = "DELETE FROM notificaciones WHERE id_notificacion = :id";
 
             $stmt = $this->conexion->prepare($sql);
 
