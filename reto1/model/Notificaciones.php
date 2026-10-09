@@ -4,7 +4,7 @@
         private string $titulo;
         private string $descripcion;
         private string $fecha_creacion;
-        private string $estado; // Puede ser un enum en la base de datos (ej: 'leída', 'no leída')
+        private string $estado; // Puede ser un enum en la base de datos (ej: 'leída', 'no leída') enumNotificaciones
         private int $id_usuario;
 
         public function __construct(
