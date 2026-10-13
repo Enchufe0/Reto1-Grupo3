@@ -1,38 +1,46 @@
 <?php
-class ControllerEquipamiento
+require_once __DIR__ . '/../model/Equipamientos.php';
+require_once __DIR__ . '/../model/Ubicaciones.php';
+
+require_once __DIR__ . '/../dao/equipamientoDAO.php';
+require_once __DIR__ . '/../dao/UbicacionesDAO.php';
+
+require_once __DIR__ . '/UsuariosController.php';
+
+class equipamientoController
 {
     private const CATEGORIAS = ['PORTATIL', 'SOBREMESA', 'PERIFERICO', 'AUDIOVISUAL', 'OTROS'];
 
-    private EquipamientoDAO $equipamientoDAO; 
-    private ubicacionDAO $ubicacionDAO;      
+    private equipamientoDAO $equipamientoDAO; 
+    private UbicacionesDAO $ubicacionDAO;      
 
     public function __construct()
     {
         $db = Database::getConnection();                 
-        $this->equipamientoDAO = new EquipamientoDAO($db); 
-        $this->ubicacionDAO = new ubicacionDAO($db);       
+        $this->equipamientoDAO = new equipamientoDAO($db); 
+        $this->ubicacionDAO = new UbicacionesDAO($db);       
     }
 
     public function handle(): void
     {
-        UsuarioController::requireLogin();                 
+        UsuariosController::requireLogin();                 
 
         $accion = $_GET['action'] ?? 'list';              
         $id = (int) ($_GET['id'] ?? 0);                    
         $esPost = $_SERVER['REQUEST_METHOD'] === 'POST';   
 
         switch ($accion) {
-            case 'create':                                 
-                UsuarioController::requireRole('ADMIN');   
+            case 'create':
+                UsuariosController::requireRole('ADMIN');
                 if ($esPost) {
-                    $this->guardar();                      
+                    $this->guardar();
                 } else {
-                    $this->mostrarFormulario($this->equipamientoVacio()); 
-                break;
-                } 
+                    $this->mostrarFormulario($this->equipamientoVacio());
+                }
+                break;      
 
             case 'edit':                                  
-                UsuarioController::requireRole('ADMIN');   
+                UsuariosController::requireRole('ADMIN');   
                 if ($esPost) {
                     $this->actualizar($id);                
                 } else {
@@ -41,25 +49,26 @@ class ControllerEquipamiento
                 break;
 
             case 'delete':                                 
-                UsuarioController::requireRole('ADMIN');  
+                UsuariosController::requireRole('ADMIN');  
                 if ($esPost) {
                     $this->eliminar();                     
                 } else {
-                    redirect($this->urlListado());         
+                    $this->redirigir($this->urlListado());         
                 }
                 break;
 
             case 'move':                                   
-                UsuarioController::requireRole('USER');    
+                UsuariosController::requireRole('USER');    
                 if ($esPost) {
                     $this->mover();                        
                 } else {
-                    redirect($this->urlListado());        
+                    $this->redirigir($this->urlListado());        
                 }
                 break;
 
             default:                                       
                 $this->listar();
+                break;
         }
     }
 
@@ -67,6 +76,7 @@ class ControllerEquipamiento
     {
         $categoria = $this->categoriaValida($_GET['categoria'] ?? ''); 
         $filas = $this->equipamientoDAO->listarTodos();    
+
         if ($categoria !== '') {                           
             $filtradas = [];                               
             foreach ($filas as $fila) {                   
@@ -104,8 +114,8 @@ class ControllerEquipamiento
         }
 
         $this->equipamientoDAO->crear($this->crearObjeto(0, $datos, 0)); 
-        flash('success', 'Equipamiento creado en la ubicación Almacén.'); 
-        redirect($this->urlListado());                    
+        $this->setMensaje('success', 'Equipamiento creado en la ubicación Almacén.'); 
+        $this->redirigir($this->urlListado());                    
     }
 
     private function actualizar(int $id): void
@@ -127,24 +137,24 @@ class ControllerEquipamiento
         $equipamiento->setCategoria($datos['categoria']);
 
         $this->equipamientoDAO->actualizar($equipamiento); 
-        flash('success', 'Equipamiento actualizado.');     
-        redirect($this->urlListado());                     
+        $this->setMensaje('success', 'Equipamiento actualizado.');     
+        $this->redirigir($this->urlListado());                     
     }
 
-   
     private function eliminar(): void
     {
         $id = (int) ($_POST['id_equipamiento'] ?? 0);      
 
         if ($this->equipamientoDAO->buscarPorId($id) === null) { 
-            flash('error', 'Equipamiento no encontrado.'); 
+            $this->setMensaje('error', 'Equipamiento no encontrado.'); 
         } else {
             $this->equipamientoDAO->eliminar($id);         
-            flash('success', 'Equipamiento eliminado.');   
+            $this->setMensaje('success', 'Equipamiento eliminado.');   
         }
 
-        redirect($this->urlListado());                    
+        $this->redirigir($this->urlListado());                    
     }
+
     private function mover(): void
     {
         $id = (int) ($_POST['id_equipamiento'] ?? 0);      
@@ -154,26 +164,25 @@ class ControllerEquipamiento
         $ubicaciones = $this->nombresUbicaciones();        
 
         if ($equipamiento === null || !isset($ubicaciones[$idUbicacion])) { 
-            flash('error', 'Equipamiento o ubicación no encontrados.');
+            $this->setMensaje('error', 'Equipamiento o ubicación no encontrados.');
         } elseif ($equipamiento->getIdUbicacionActual() === $idUbicacion) { 
-            flash('info', 'El equipamiento ya está en esa ubicación.');
+            $this->setMensaje('info', 'El equipamiento ya está en esa ubicación.');
         } else {
             $equipamiento->setIdUbicacionActual($idUbicacion); 
             $this->equipamientoDAO->actualizar($equipamiento); 
-            flash('success', 'Equipamiento movido a ' . $ubicaciones[$idUbicacion] . '.');
+            $this->setMensaje('success', 'Equipamiento movido a ' . $ubicaciones[$idUbicacion] . '.');
         }
 
-        redirect($this->urlListado($categoria));           
+        $this->redirigir($this->urlListado($categoria));           
     }
-
 
     private function buscarOSalir(int $id): Equipamientos
     {
         $equipamiento = $this->equipamientoDAO->buscarPorId($id); 
 
         if ($equipamiento === null) {                      
-            flash('error', 'Equipamiento no encontrado.'); 
-            redirect($this->urlListado());                 
+            $this->setMensaje('error', 'Equipamiento no encontrado.'); 
+            $this->redirigir($this->urlListado());                 
         }
 
         return $equipamiento;                             
@@ -182,13 +191,17 @@ class ControllerEquipamiento
     private function nombresUbicaciones(): array
     {
         $nombres = [];                                    
-        foreach ($this->ubicacionDAO->findAll() as $ubicacion) { 
-            $nombres[$ubicacion->getIdUbicacion()] = $ubicacion->getNombre(); // ej.: $nombres[2] = 'Aula 101'
+      
+        $lista = method_exists($this->ubicacionDAO, 'findAll') 
+            ? $this->ubicacionDAO->findAll() 
+            : (method_exists($this->ubicacionDAO, 'listarTodas') ? $this->ubicacionDAO->listarTodas() : $this->ubicacionDAO->listar());
+
+        foreach ($lista as $ubicacion) { 
+            $nombres[$ubicacion->getIdUbicacion()] = $ubicacion->getNombre();
         }
         return $nombres;                                 
     }
 
-    
     private function categoriaValida(string $valor): string
     {
         return in_array($valor, self::CATEGORIAS, true) ? $valor : ''; 
@@ -203,7 +216,6 @@ class ControllerEquipamiento
         return $url;
     }
 
-
     private function leerFormulario(): array
     {
         return [
@@ -215,7 +227,7 @@ class ControllerEquipamiento
         ];
     }
 
-      private function validar(array $d): array
+    private function validar(array $d): array
     {
         $errores = [];                                    
 
@@ -238,7 +250,6 @@ class ControllerEquipamiento
         return $errores;
     }
 
-   
     private function crearObjeto(int $id, array $d, int $idUbicacion): Equipamientos
     {
         return new Equipamientos(                         
@@ -255,5 +266,27 @@ class ControllerEquipamiento
     private function equipamientoVacio(): Equipamientos
     {
         return new Equipamientos(0, '', '', '', '', self::CATEGORIAS[0], 0);
+    }
+
+    private function redirigir(string $url): void
+    {
+        if (function_exists('redirect')) {
+            redirect($url);
+        } else {
+            header("Location: $url");
+            exit;
+        }
+    }
+
+    private function setMensaje(string $tipo, string $texto): void
+    {
+        if (function_exists('flash')) {
+            flash($tipo, $texto);
+        } else {
+            if (session_status() === PHP_SESSION_NONE) {
+                session_start();
+            }
+            $_SESSION['flash'][$tipo] = $texto;
+        }
     }
 }
