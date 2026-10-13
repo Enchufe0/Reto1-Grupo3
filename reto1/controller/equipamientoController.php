@@ -22,14 +22,14 @@ class ControllerEquipamiento
         $esPost = $_SERVER['REQUEST_METHOD'] === 'POST';   
 
         switch ($accion) {
-            case 'create':                                 
-                UsuarioController::requireRole('ADMIN');   
-                if ($esPost) {
-                    $this->guardar();                      
-                } else {
-                    $this->mostrarFormulario($this->equipamientoVacio()); 
-                break;
-                } 
+            case 'create':
+                    UsuarioController::requireRole('ADMIN');
+                    if ($esPost) {
+                        $this->guardar();
+                    } else {
+                        $this->mostrarFormulario($this->equipamientoVacio());
+                    }
+                    break;      
 
             case 'edit':                                  
                 UsuarioController::requireRole('ADMIN');   
