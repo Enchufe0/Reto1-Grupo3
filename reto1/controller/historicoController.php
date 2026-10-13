@@ -2,7 +2,6 @@
 require_once __DIR__ . '/../model/Equipamientos.php';
 require_once __DIR__ . '/../dao/equipamientoDAO.php';
 require_once __DIR__ . '/../dao/historicoDAO.php';
-require_once __DIR__ . '/UsuariosController.php';
 
 class historicoController
 {
@@ -18,7 +17,13 @@ class historicoController
 
     public function handle(): void
     {
-        UsuariosController::requireLogin();                
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        if (!isset($_SESSION['usuario_id']) && !isset($_SESSION['usuario'])) {
+            $this->redirigir('index.php?page=login');
+            return;
+        }
 
         $id = (int) ($_GET['id'] ?? 0);                   
         $equipamiento = $this->equipamientoDAO->buscarPorId($id); 

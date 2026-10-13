@@ -1,6 +1,5 @@
 <?php
-require_once __DIR__ . '/../models/Historico_ubicaciones.php';
-
+require_once __DIR__ . '/../model/Historico_ubicaciones.php';
 class HistoricoDAO {
     private PDO $db;
 

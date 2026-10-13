@@ -1,11 +1,8 @@
 <?php
 require_once __DIR__ . '/../model/Equipamientos.php';
 require_once __DIR__ . '/../model/Ubicaciones.php';
-
 require_once __DIR__ . '/../dao/equipamientoDAO.php';
 require_once __DIR__ . '/../dao/UbicacionesDAO.php';
-
-require_once __DIR__ . '/UsuariosController.php';
 
 class equipamientoController
 {
@@ -23,7 +20,7 @@ class equipamientoController
 
     public function handle(): void
     {
-        UsuariosController::requireLogin();                 
+        $this->requireLogin();
 
         $accion = $_GET['action'] ?? 'list';              
         $id = (int) ($_GET['id'] ?? 0);                    
@@ -31,7 +28,7 @@ class equipamientoController
 
         switch ($accion) {
             case 'create':
-                UsuariosController::requireRole('ADMIN');
+                $this->requireRole('ADMIN');
                 if ($esPost) {
                     $this->guardar();
                 } else {
@@ -40,7 +37,7 @@ class equipamientoController
                 break;      
 
             case 'edit':                                  
-                UsuariosController::requireRole('ADMIN');   
+                $this->requireRole('ADMIN');   
                 if ($esPost) {
                     $this->actualizar($id);                
                 } else {
@@ -49,7 +46,7 @@ class equipamientoController
                 break;
 
             case 'delete':                                 
-                UsuariosController::requireRole('ADMIN');  
+                $this->requireRole('ADMIN');  
                 if ($esPost) {
                     $this->eliminar();                     
                 } else {
@@ -58,7 +55,7 @@ class equipamientoController
                 break;
 
             case 'move':                                   
-                UsuariosController::requireRole('USER');    
+                $this->requireRole('USER');    
                 if ($esPost) {
                     $this->mover();                        
                 } else {
@@ -74,198 +71,177 @@ class equipamientoController
 
     private function listar(): void
     {
-        $categoria = $this->categoriaValida($_GET['categoria'] ?? ''); 
-        $filas = $this->equipamientoDAO->listarTodos();    
+        $equipamientos = $this->equipamientoDAO->listarTodos();
+        $ubicaciones = $this->ubicacionDAO->listarTodas();
 
-        if ($categoria !== '') {                           
-            $filtradas = [];                               
-            foreach ($filas as $fila) {                   
-                if ($fila['categoria'] === $categoria) {   
-                    $filtradas[] = $fila;                 
-                }
-            }
-            $filas = $filtradas;                           
-        }
-
-        $modo = 'list';                                    
-        $equipamientos = $filas;                           
-        $categorias = self::CATEGORIAS;                   
-        $ubicaciones = $this->nombresUbicaciones();        
-        require __DIR__ . '/../view/equipamientos.php';   
+        $modo = 'list';
+        $categorias = self::CATEGORIAS;
+        require __DIR__ . '/../view/equipamientos.php';
     }
 
-    private function mostrarFormulario(Equipamientos $equipamiento, array $errores = []): void
+    private function mostrarFormulario(Equipamientos $equipamiento): void
     {
-        $ubicaciones = $this->nombresUbicaciones();        
-        $nombreUbicacion = $ubicaciones[$equipamiento->getIdUbicacionActual()] ?? 'Almacén'; 
-
-        $modo = 'form';                                    
-        $categorias = self::CATEGORIAS;                   
-        require __DIR__ . '/../view/equipamientos.php';    
+        $ubicaciones = $this->ubicacionDAO->listarTodas();
+        $modo = 'form';
+        $categorias = self::CATEGORIAS;
+        require __DIR__ . '/../view/equipamientos.php';
     }
 
     private function guardar(): void
     {
-        $datos = $this->leerFormulario();                  
-        $errores = $this->validar($datos);                 
-        if ($errores) {                                    
-            $this->mostrarFormulario($this->crearObjeto(0, $datos, 0), $errores); 
-            return;                                       
+        $nombre = trim($_POST['nombre'] ?? '');
+        $descripcion = trim($_POST['descripcion'] ?? '');
+        $marca = trim($_POST['marca'] ?? '');
+        $modelo = trim($_POST['modelo'] ?? '');
+        $categoria = $_POST['categoria'] ?? 'OTROS';
+
+        if ($nombre === '') {
+            $this->setMensaje('error', 'El nombre del equipamiento es obligatorio.');
+            $this->mostrarFormulario(new Equipamientos(0, $nombre, $descripcion, $marca, $modelo, $categoria, 1));
+            return;
         }
 
-        $this->equipamientoDAO->crear($this->crearObjeto(0, $datos, 0)); 
-        $this->setMensaje('success', 'Equipamiento creado en la ubicación Almacén.'); 
-        $this->redirigir($this->urlListado());                    
+        $nuevo = new Equipamientos(0, $nombre, $descripcion, $marca, $modelo, $categoria, 1);
+        $id = $this->equipamientoDAO->crear($nuevo);
+
+        if ($id > 0) {
+            $this->setMensaje('success', 'Equipamiento creado correctamente en Almacén.');
+        } else {
+            $this->setMensaje('error', 'No se pudo crear el equipamiento.');
+        }
+
+        $this->redirigir($this->urlListado());
     }
 
     private function actualizar(int $id): void
     {
-        $equipamiento = $this->buscarOSalir($id);         
-        $datos = $this->leerFormulario();                 
-        $errores = $this->validar($datos);                 
+        $actual = $this->buscarOSalir($id);
 
-        if ($errores) {                                    
-            $idUbicacion = $equipamiento->getIdUbicacionActual(); 
-            $this->mostrarFormulario($this->crearObjeto($id, $datos, $idUbicacion), $errores); 
-            return;                                        
+        $nombre = trim($_POST['nombre'] ?? '');
+        $descripcion = trim($_POST['descripcion'] ?? '');
+        $marca = trim($_POST['marca'] ?? '');
+        $modelo = trim($_POST['modelo'] ?? '');
+        $categoria = $_POST['categoria'] ?? 'OTROS';
+
+        if ($nombre === '') {
+            $this->setMensaje('error', 'El nombre del equipamiento es obligatorio.');
+            $actual->setDescripcion($descripcion);
+            $actual->setMarca($marca);
+            $actual->setModelo($modelo);
+            $actual->setCategoria($categoria);
+            $this->mostrarFormulario($actual);
+            return;
         }
 
-        $equipamiento->setNombre($datos['nombre']);       
-        $equipamiento->setDescripcion($datos['descripcion']);
-        $equipamiento->setMarca($datos['marca']);
-        $equipamiento->setModelo($datos['modelo']);
-        $equipamiento->setCategoria($datos['categoria']);
+        $actual->setNombre($nombre);
+        $actual->setDescripcion($descripcion);
+        $actual->setMarca($marca);
+        $actual->setModelo($modelo);
+        $actual->setCategoria($categoria);
 
-        $this->equipamientoDAO->actualizar($equipamiento); 
-        $this->setMensaje('success', 'Equipamiento actualizado.');     
-        $this->redirigir($this->urlListado());                     
+        $ok = $this->equipamientoDAO->actualizar($actual);
+        if ($ok) {
+            $this->setMensaje('success', 'Equipamiento actualizado correctamente.');
+        } else {
+            $this->setMensaje('error', 'Error al actualizar el equipamiento.');
+        }
+
+        $this->redirigir($this->urlListado());
     }
 
     private function eliminar(): void
     {
-        $id = (int) ($_POST['id_equipamiento'] ?? 0);      
-
-        if ($this->equipamientoDAO->buscarPorId($id) === null) { 
-            $this->setMensaje('error', 'Equipamiento no encontrado.'); 
-        } else {
-            $this->equipamientoDAO->eliminar($id);         
-            $this->setMensaje('success', 'Equipamiento eliminado.');   
+        $id = (int) ($_POST['id'] ?? 0);
+        if ($id <= 0) {
+            $this->setMensaje('error', 'Identificador de equipamiento no válido.');
+            $this->redirigir($this->urlListado());
+            return;
         }
 
-        $this->redirigir($this->urlListado());                    
+        $ok = $this->equipamientoDAO->eliminar($id);
+        if ($ok) {
+            $this->setMensaje('success', 'Equipamiento eliminado correctamente.');
+        } else {
+            $this->setMensaje('error', 'No se pudo eliminar el equipamiento.');
+        }
+
+        $this->redirigir($this->urlListado());
     }
 
     private function mover(): void
     {
-        $id = (int) ($_POST['id_equipamiento'] ?? 0);      
-        $idUbicacion = (int) ($_POST['id_ubicacion'] ?? 0); 
-        $categoria = $this->categoriaValida($_POST['categoria'] ?? ''); 
-        $equipamiento = $this->equipamientoDAO->buscarPorId($id); 
-        $ubicaciones = $this->nombresUbicaciones();        
+        $idEquipamiento = (int) ($_POST['id_equipamiento'] ?? 0);
+        $nuevaUbicacion = (int) ($_POST['id_ubicacion'] ?? 0);
 
-        if ($equipamiento === null || !isset($ubicaciones[$idUbicacion])) { 
-            $this->setMensaje('error', 'Equipamiento o ubicación no encontrados.');
-        } elseif ($equipamiento->getIdUbicacionActual() === $idUbicacion) { 
-            $this->setMensaje('info', 'El equipamiento ya está en esa ubicación.');
-        } else {
-            $equipamiento->setIdUbicacionActual($idUbicacion); 
-            $this->equipamientoDAO->actualizar($equipamiento); 
-            $this->setMensaje('success', 'Equipamiento movido a ' . $ubicaciones[$idUbicacion] . '.');
+        if ($idEquipamiento <= 0 || $nuevaUbicacion <= 0) {
+            $this->setMensaje('error', 'Datos de traslado incompletos.');
+            $this->redirigir($this->urlListado());
+            return;
         }
 
-        $this->redirigir($this->urlListado($categoria));           
+        $equipamiento = $this->equipamientoDAO->buscarPorId($idEquipamiento);
+        if ($equipamiento === null) {
+            $this->setMensaje('error', 'Equipamiento no encontrado.');
+            $this->redirigir($this->urlListado());
+            return;
+        }
+
+        if ($equipamiento->getIdUbicacionActual() === $nuevaUbicacion) {
+            $this->setMensaje('info', 'El equipamiento ya está en esa ubicación.');
+            $this->redirigir($this->urlListado());
+            return;
+        }
+
+        $equipamiento->setIdUbicacionActual($nuevaUbicacion);
+        $ok = $this->equipamientoDAO->actualizar($equipamiento);
+
+        if ($ok) {
+            $this->setMensaje('success', 'Traslado registrado con éxito.');
+        } else {
+            $this->setMensaje('error', 'Error al registrar el traslado.');
+        }
+
+        $this->redirigir($this->urlListado());
     }
 
     private function buscarOSalir(int $id): Equipamientos
     {
-        $equipamiento = $this->equipamientoDAO->buscarPorId($id); 
-
-        if ($equipamiento === null) {                      
-            $this->setMensaje('error', 'Equipamiento no encontrado.'); 
-            $this->redirigir($this->urlListado());                 
+        $eq = $this->equipamientoDAO->buscarPorId($id);
+        if ($eq === null) {
+            $this->setMensaje('error', 'Equipamiento no encontrado.');
+            $this->redirigir($this->urlListado());
         }
-
-        return $equipamiento;                             
-    }
-
-    private function nombresUbicaciones(): array
-    {
-        $nombres = [];                                    
-      
-        $lista = method_exists($this->ubicacionDAO, 'findAll') 
-            ? $this->ubicacionDAO->findAll() 
-            : (method_exists($this->ubicacionDAO, 'listarTodas') ? $this->ubicacionDAO->listarTodas() : $this->ubicacionDAO->listar());
-
-        foreach ($lista as $ubicacion) { 
-            $nombres[$ubicacion->getIdUbicacion()] = $ubicacion->getNombre();
-        }
-        return $nombres;                                 
-    }
-
-    private function categoriaValida(string $valor): string
-    {
-        return in_array($valor, self::CATEGORIAS, true) ? $valor : ''; 
-    }
-
-    private function urlListado(string $categoria = ''): string
-    {
-        $url = 'index.php?page=equipamientos';            
-        if ($categoria !== '') {                           
-            $url .= '&categoria=' . urlencode($categoria); 
-        }
-        return $url;
-    }
-
-    private function leerFormulario(): array
-    {
-        return [
-            'nombre'      => trim($_POST['nombre'] ?? ''),
-            'descripcion' => trim($_POST['descripcion'] ?? ''),
-            'marca'       => trim($_POST['marca'] ?? ''),
-            'modelo'      => trim($_POST['modelo'] ?? ''),
-            'categoria'   => (string) ($_POST['categoria'] ?? ''),
-        ];
-    }
-
-    private function validar(array $d): array
-    {
-        $errores = [];                                    
-
-        if ($d['nombre'] === '' || mb_strlen($d['nombre']) > 120) {
-            $errores[] = 'El nombre es obligatorio (máximo 120 caracteres).';
-        }
-        if ($d['descripcion'] === '' || mb_strlen($d['descripcion']) > 255) {
-            $errores[] = 'La descripción es obligatoria (máximo 255 caracteres).';
-        }
-        if ($d['marca'] === '' || mb_strlen($d['marca']) > 100) {
-            $errores[] = 'La marca es obligatoria (máximo 100 caracteres).';
-        }
-        if ($d['modelo'] === '' || mb_strlen($d['modelo']) > 100) {
-            $errores[] = 'El modelo es obligatorio (máximo 100 caracteres).';
-        }
-        if (!in_array($d['categoria'], self::CATEGORIAS, true)) { 
-            $errores[] = 'La categoría no es válida.';
-        }
-
-        return $errores;
-    }
-
-    private function crearObjeto(int $id, array $d, int $idUbicacion): Equipamientos
-    {
-        return new Equipamientos(                         
-            $id,
-            $d['nombre'],
-            $d['descripcion'],
-            $d['marca'],
-            $d['modelo'],
-            $d['categoria'],
-            $idUbicacion
-        );
+        return $eq;
     }
 
     private function equipamientoVacio(): Equipamientos
     {
-        return new Equipamientos(0, '', '', '', '', self::CATEGORIAS[0], 0);
+        return new Equipamientos(0, '', '', '', '', 'OTROS', 1);
+    }
+
+    private function urlListado(): string
+    {
+        return 'index.php?page=equipamientos';
+    }
+
+    private function requireLogin(): void
+    {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        if (!isset($_SESSION['usuario_id']) && !isset($_SESSION['usuario'])) {
+            $this->redirigir('index.php?page=login');
+        }
+    }
+
+    private function requireRole(string $rolEsperado): void
+    {
+        $this->requireLogin();
+        $rolActual = $_SESSION['rol'] ?? $_SESSION['usuario']['rol'] ?? '';
+        if ($rolActual !== $rolEsperado) {
+            $this->setMensaje('error', 'No tienes permisos para realizar esta acción.');
+            $this->redirigir($this->urlListado());
+        }
     }
 
     private function redirigir(string $url): void
