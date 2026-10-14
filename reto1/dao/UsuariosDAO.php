@@ -9,6 +9,18 @@ class UsuariosDAO
             $this->conexion = $conexion;
     }
 
+    public function login(string $nombre_usuario, string $password): bool
+    {
+        $sql = "SELECT password_hash FROM usuarios WHERE nombre_usuario = ?";
+
+        $stmt = $this->conexion->prepare($sql);
+        $stmt->execute([$nombre_usuario]);
+
+        $password_hash = $stmt->fetchColumn();
+
+        return $password_hash !== false && password_verify($password, $password_hash);
+    }
+
     public function buscarPorId(int $id){
         $sql = "SELECT * FROM usuarios WHERE id_usuario = ?";
 
@@ -74,6 +86,19 @@ class UsuariosDAO
             $usuario->getApellidos(),
             $usuario->getNombreUsuario(),
             $usuario->getPasswordHash(),
+            $usuario->getIdUsuario()
+        ]);
+    }
+
+    public function actualizar_password(Usuarios $usuario, string $nuevaPassword): bool
+    {
+        $hashed_password = password_hash($nuevaPassword, PASSWORD_DEFAULT);
+        $sql = "UPDATE usuarios SET password_hash = ? WHERE id_usuario = ?";
+
+        $stmt = $this->conexion->prepare($sql);
+
+        return $stmt->execute([
+            $hashed_password,
             $usuario->getIdUsuario()
         ]);
     }
