@@ -14,6 +14,15 @@ use enumNotificaciones\EstadoNotificaciones;
             $this->notificacionesDAO = new NotificacionesDAO($conexion);
         }
 
+        //READ TODAS
+        public function obtenerTodas() {
+            //pedimos el pale completo al DAO
+            $listaNotificaciones = $this->notificacionesDAO->obtenerTodas();
+
+            //lo mostramos en el escaparate
+            require 'POR DEFINIR';
+        }
+
         //CREAR
         public function guardarNuevo () {
             //leemos la carta que trae el cliente
@@ -38,15 +47,6 @@ use enumNotificaciones\EstadoNotificaciones;
             } else {
                 echo "Error al crear la notificacion";
             }
-        }
-
-        //READ TODAS
-        public function obtenerTodas() {
-            //pedimos el pale completo al DAO
-            $listaNotificaciones = $this->notificacionesDAO->obtenerTodas();
-
-            //lo mostramos en el escaparate
-            require 'POR DEFINIR';
         }
 
         //READ POR ID
