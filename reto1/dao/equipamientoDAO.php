@@ -14,18 +14,52 @@ class EquipamientoDAO {
         $sql = "INSERT INTO equipamientos
                     (nombre, descripcion, marca, modelo, categoria, id_ubicacion_actual)
                 VALUES
-                    (:nombre, :descripcion, :marca, :modelo, :categoria, 1)";
+                    (:nombre, :descripcion, :marca, :modelo, :categoria, :ubicacion_actual)";
 
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute([
-            ':nombre'      => $e->getNombre(),
-            ':descripcion' => $e->getDescripcion(),
-            ':marca'       => $e->getMarca(),
-            ':modelo'      => $e->getModelo(),
-            ':categoria'   => $e->getCategoria(),
-        ]);
+        try {
+            $this->db->beginTransaction();
 
-        return (int) $this->db->lastInsertId();
+            $stmt = $this->db->prepare($sql);
+            $ok = $stmt->execute([
+                ':nombre'          => $e->getNombre(),
+                ':descripcion'     => $e->getDescripcion(),
+                ':marca'           => $e->getMarca(),
+                ':modelo'          => $e->getModelo(),
+                ':categoria'       => $e->getCategoria(),
+                ':ubicacion_actual'=> $e->getIdUbicacionActual(),
+            ]);
+
+            if (!$ok) {
+                $this->db->rollBack();
+                return 0;
+            }
+
+            $id = (int) $this->db->lastInsertId();
+
+            $stmtHistorico = $this->db->prepare(
+                "INSERT INTO historico_ubicaciones (id_equipamiento, id_ubicacion, fecha_inicio, fecha_fin)
+                 VALUES (:id_equipamiento, :id_ubicacion, :fecha_inicio, NULL)"
+            );
+
+            $okHistorico = $stmtHistorico->execute([
+                ':id_equipamiento' => $id,
+                ':id_ubicacion' => $e->getIdUbicacionActual(),
+                ':fecha_inicio' => date('Y-m-d H:i:s'),
+            ]);
+
+            if (!$okHistorico) {
+                $this->db->rollBack();
+                return 0;
+            }
+
+            $this->db->commit();
+            return $id;
+        } catch (Throwable $e) {
+            if ($this->db->inTransaction()) {
+                $this->db->rollBack();
+            }
+            return 0;
+        }
     }
 
     // READ

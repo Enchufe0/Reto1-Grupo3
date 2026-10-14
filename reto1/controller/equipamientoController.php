@@ -3,19 +3,22 @@ require_once __DIR__ . '/../model/Equipamientos.php';
 require_once __DIR__ . '/../model/Ubicaciones.php';
 require_once __DIR__ . '/../dao/EquipamientoDAO.php';
 require_once __DIR__ . '/../dao/UbicacionesDAO.php';
+require_once __DIR__ . '/../dao/HistoricoDAO.php';
 
 class EquipamientoController
 {
     private const CATEGORIAS = ['PORTATIL', 'SOBREMESA', 'PERIFERICO', 'AUDIOVISUAL', 'OTROS'];
 
     private EquipamientoDAO $equipamientoDAO; 
-    private UbicacionesDAO $ubicacionDAO;      
+    private UbicacionesDAO $ubicacionDAO;
+    private HistoricoDAO $historicoDAO;      
 
     public function __construct()
     {
-        $db = Database::getConnection();                 
-        $this->equipamientoDAO = new EquipamientoDAO($db); 
-        $this->ubicacionDAO = new UbicacionesDAO($db);       
+        $db = Database::getConnection();
+        $this->equipamientoDAO = new EquipamientoDAO($db);
+        $this->ubicacionDAO = new UbicacionesDAO($db);
+        $this->historicoDAO = new HistoricoDAO($db);
     }
 
     public function handle(): void
@@ -195,7 +198,7 @@ class EquipamientoController
         $equipamiento->setIdUbicacionActual($nuevaUbicacion);
         $ok = $this->equipamientoDAO->actualizar($equipamiento);
 
-        if ($ok) {
+        if ($ok && $this->historicoDAO->registrarTraslado($idEquipamiento, $nuevaUbicacion)) {
             $this->setMensaje('success', 'Traslado registrado con éxito.');
         } else {
             $this->setMensaje('error', 'Error al registrar el traslado.');
