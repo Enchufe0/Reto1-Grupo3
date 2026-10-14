@@ -1,8 +1,8 @@
 <?php
 
     //necesitas tener a mano al carretillero
-    require_once 'Ubicaciones.php';
-    require_once 'UbicacionesDAO.php';
+    require_once 'model/Ubicaciones.php';
+    require_once 'dao/UbicacionesDAO.php';
 
     class UbicacionesController {
 
