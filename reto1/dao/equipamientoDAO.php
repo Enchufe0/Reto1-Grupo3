@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../models/Equipamientos.php';
+require_once __DIR__ . '/../model/Equipamientos.php';
 
 class EquipamientoDAO {
 
