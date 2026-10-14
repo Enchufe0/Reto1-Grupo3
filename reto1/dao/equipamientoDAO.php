@@ -39,11 +39,6 @@ class EquipamientoDAO {
         return $this->db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    /**
-     * Busca UN equipamiento por su id.
-     *
-     * @return Equipamientos|null El objeto modelo, o null si no existe.
-     */
     public function buscarPorId(int $id): ?Equipamientos {
         $sql = "SELECT * FROM equipamientos WHERE id_equipamiento = :id";
 
@@ -56,11 +51,6 @@ class EquipamientoDAO {
 
     // UPDATE
 
-    /**
-     * Si cambia id_ubicacion_actual, el trigger
-     * `trg_equipamiento_traslado` cierra el histórico anterior
-     * y abre uno nuevo. solo hacemos el UPDATE.
-     */
     public function actualizar(Equipamientos $e): bool {
         $sql = "UPDATE equipamientos
                    SET nombre = :nombre,
@@ -84,10 +74,7 @@ class EquipamientoDAO {
     }
 
     // DELETE
-    /**
-     * Borra un equipamiento por id.
-     * (ON DELETE CASCADE).
-     */
+
     public function eliminar(int $id): bool {
         $stmt = $this->db->prepare(
             "DELETE FROM equipamientos WHERE id_equipamiento = :id"

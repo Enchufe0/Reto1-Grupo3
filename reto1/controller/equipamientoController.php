@@ -1,20 +1,20 @@
 <?php
 require_once __DIR__ . '/../model/Equipamientos.php';
 require_once __DIR__ . '/../model/Ubicaciones.php';
-require_once __DIR__ . '/../dao/equipamientoDAO.php';
+require_once __DIR__ . '/../dao/EquipamientoDAO.php';
 require_once __DIR__ . '/../dao/UbicacionesDAO.php';
 
-class equipamientoController
+class EquipamientoController
 {
     private const CATEGORIAS = ['PORTATIL', 'SOBREMESA', 'PERIFERICO', 'AUDIOVISUAL', 'OTROS'];
 
-    private equipamientoDAO $equipamientoDAO; 
+    private EquipamientoDAO $equipamientoDAO; 
     private UbicacionesDAO $ubicacionDAO;      
 
     public function __construct()
     {
         $db = Database::getConnection();                 
-        $this->equipamientoDAO = new equipamientoDAO($db); 
+        $this->equipamientoDAO = new EquipamientoDAO($db); 
         $this->ubicacionDAO = new UbicacionesDAO($db);       
     }
 
