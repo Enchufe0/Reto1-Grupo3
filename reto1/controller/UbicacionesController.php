@@ -14,17 +14,17 @@
             $this->ubicacionesDAO = new UbicacionesDAO($conexion);
         }
 
-        //ACCION 1 MOSTRAR EL INVENTARIO
-        public function listar(){
+        //READ TODAS
+        public function obtenerTodas(){
             //llamar al DAO y pedirle todas las ubicaciones
             $listaUbicaciones = $this->ubicacionesDAO->obtenerTodas();
 
             //mostrar el resultado al cliente
-            require 'vistas/lista_ubicaciones.php';
+            require 'por definir';
         }
 
 
-        //ACION 2 RECIBIR Y CREAR NUEVO FORMULARIO
+        //CREAR
         public function guardarNuevo() {
             //1.leeemos el formulario que ha rellenado el cliente en la web ($_post)
             $nombre_cliente = $_POST['nombre'];
@@ -45,6 +45,49 @@
             }
         }
 
+        //READ POR ID
+        public function obtenerPorId() {
+            //1 leemos el id que nos piden
+            $id_buscado = (int) $_GET['id'];
+
+            //2 le pediomos esa caja exacta al DAO
+            $ubicaciones = $this->ubicacionesDAO->obtenerPorId($id_buscado);
+
+            //3 mandamos la caja a al vista
+            if ($ubicaciones) {
+                require 'POR DEFINIR';
+            } else {
+                echo "la ubicacion no existe";
+            }
+        }
+
+        //ACTUALIZAR
+        public function actualizar() {
+            //leemos la carta con los datos modificados
+
+            $id_ubicacion = (int) $_POST['id_ubicacion'];
+            $nombre_cliente = $_POST['nombre'];
+            $descripcion_cliente = $_POST['descripcion'];
+
+
+            //armamos la caja, esta vez si ponemos el id reald, para la caja
+            $ubicacionModificada = new Ubicaciones(
+                $id_ubicacion, 
+                $nombre_cliente, 
+                $descripcion_cliente
+            );
+
+            //mandamos a actualizar el DAO
+            $exito = $this->ubicacionesDAO->actualizar($ubicacionModificada);
+
+            //redirigimos y comprobamos
+            if ($exito) {
+               // header (Location: "POR DEFINIR");
+            } else {
+                echo "Error al actualizar la notificaciones";
+            }
+        }
+
         //ACCION 3 ELIMINAR
         public function eliminar() {
             //1. leemos el id que quiere borrar el cliente
@@ -54,7 +97,7 @@
             $this->ubicacionesDAO->borrar($id_borrar);
 
             //3. recargamos la vista
-            header ("location POR DEFINIR");
+            header ("Location: POR DEFINIR");
         }
     }
 ?>
