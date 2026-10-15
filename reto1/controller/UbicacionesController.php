@@ -20,7 +20,9 @@
             $listaUbicaciones = $this->ubicacionesDAO->obtenerTodas();
 
             //mostrar el resultado al cliente
-            require 'por definir';
+            echo "<pre>";
+            print_r($listaUbicaciones);
+            echo "</pre>";
         }
 
 
