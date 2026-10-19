@@ -1,18 +1,18 @@
 <?php
 require_once __DIR__ . '/../model/Equipamientos.php';
-require_once __DIR__ . '/../dao/equipamientoDAO.php';
-require_once __DIR__ . '/../dao/historicoDAO.php';
+require_once __DIR__ . '/../dao/EquipamientoDAO.php';
+require_once __DIR__ . '/../dao/HistoricoDAO.php';
 
-class historicoController
+class HistoricoController
 {
-    private equipamientoDAO $equipamientoDAO; 
-    private historicoDAO $historicoDAO;       
+    private EquipamientoDAO $equipamientoDAO; 
+    private HistoricoDAO $historicoDAO;       
 
     public function __construct()
     {
         $db = Database::getConnection();                  
-        $this->equipamientoDAO = new equipamientoDAO($db); 
-        $this->historicoDAO = new historicoDAO($db);
+        $this->equipamientoDAO = new EquipamientoDAO($db); 
+        $this->historicoDAO = new HistoricoDAO($db);
     }
 
     public function handle(): void

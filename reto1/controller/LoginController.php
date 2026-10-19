@@ -1,15 +1,15 @@
 <?php
-require_once __DIR__ . '/../dao/UsuariosDAO.php';
+require_once __DIR__ . '/../dao/LoginDAO.php';
 
-class loginController
+class LoginController
 {
     private PDO $db;
-    private UsuariosDAO $usuarioDAO;
+    private LoginDAO $loginDAO;
 
     public function __construct()
     {
         $this->db = Database::getConnection();
-        $this->usuarioDAO = new UsuariosDAO($this->db);
+        $this->loginDAO = new LoginDAO($this->db);
     }
 
     public function handle(): void
@@ -39,6 +39,7 @@ class loginController
                 break;
         }
     }
+
     private function mostrarLogin(string $error = '', string $usuarioPrevio = ''): void
     {
         if (isset($_SESSION['usuario_id']) || isset($_SESSION['usuario'])) {
@@ -46,8 +47,8 @@ class loginController
             return;
         }
 
-        if (file_exists(__DIR__ . '/../view/loginView.php')) {
-            require __DIR__ . '/../view/loginView.php';
+        if (file_exists(__DIR__ . '/../view/LoginView.php')) {
+            require __DIR__ . '/../view/LoginView.php';
         } else {
             require __DIR__ . '/../view/login.php';
         }
@@ -55,7 +56,7 @@ class loginController
 
     private function procesarLogin(): void
     {
-        $usuarioInput = trim($_POST['username'] ?? $_POST['nombre_usuario'] ?? '');
+        $usuarioInput  = trim($_POST['username'] ?? $_POST['nombre_usuario'] ?? '');
         $passwordInput = $_POST['password'] ?? $_POST['contrasena'] ?? '';
 
         if ($usuarioInput === '' || $passwordInput === '') {
@@ -63,27 +64,23 @@ class loginController
             return;
         }
 
-        $usuario = $this->obtenerUsuario($usuarioInput);
+        $usuario = $this->loginDAO->buscarPorNombreUsuario($usuarioInput);
 
-      
         if ($usuario === null || !password_verify($passwordInput, $usuario['password_hash'])) {
             $this->mostrarLogin('Usuario o contraseña incorrectos.', $usuarioInput);
             return;
         }
 
-        
         session_regenerate_id(true);
 
         $idUsuario = (int) ($usuario['id_usuario'] ?? $usuario['id'] ?? 0);
-        $nombre = $usuario['nombre'] ?? '';
-        $rol = $usuario['rol'] ?? 'USER';
+        $nombre    = $usuario['nombre'] ?? '';
+        $rol       = $usuario['rol'] ?? 'USER';
 
-       
         $_SESSION['usuario_id'] = $idUsuario;
-        $_SESSION['nombre'] = $nombre;
-        $_SESSION['rol'] = $rol;
+        $_SESSION['nombre']     = $nombre;
+        $_SESSION['rol']        = $rol;
 
-        
         $_SESSION['usuario'] = [
             'id'     => $idUsuario,
             'nombre' => $nombre,
@@ -129,36 +126,6 @@ class loginController
             $this->redirigir('index.php?page=equipamientos');
         }
     }
-
-    private function obtenerUsuario(string $identificador): ?array
-    {
-        if (method_exists($this->usuarioDAO, 'buscarParaLogin')) {
-            $res = $this->usuarioDAO->buscarParaLogin($identificador);
-            if ($res) return (array) $res;
-        }
-
-        if (method_exists($this->usuarioDAO, 'buscarPorUsername')) {
-            $res = $this->usuarioDAO->buscarPorUsername($identificador);
-            if ($res) return (array) $res;
-        }
-
-        if (method_exists($this->usuarioDAO, 'buscarPorNombreUsuario')) {
-            $res = $this->usuarioDAO->buscarPorNombreUsuario($identificador);
-            if ($res) return (array) $res;
-        }
-
-        $stmt = $this->db->prepare('
-            SELECT id_usuario, nombre, apellidos, password_hash, rol 
-            FROM usuarios 
-            WHERE nombre_usuario = :identificador 
-            LIMIT 1
-        ');
-        $stmt->execute(['identificador' => $identificador]);
-        $fila = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        return $fila ?: null;
-    }
-
     private function redirigir(string $url): void
     {
         if (function_exists('redirect')) {
