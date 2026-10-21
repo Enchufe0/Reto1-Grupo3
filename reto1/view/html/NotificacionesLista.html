@@ -4,32 +4,47 @@
         <meta charset="UTF-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Lista de notificaciones</title>
-        <link rel="stylesheet" href="">
+        <link rel="stylesheet" href="../css/Main.css">
+        <link rel="stylesheet" href="../css/Notificaciones.css">
         <script src=""></script>
     </head>
     <body>
         <header id="header">
-            Flecha Inicio Salir
+            <div id="inicio"><- Inicio</div> <div id="salir">Salir</div>
         </header>
         <nav id="nav">
-            Equipamientos Usuarios Ubicaciones Notificaciones
+            <div>Equipamientos</div><div>Usuarios</div><div>Ubicaciones</div><div>Notificaciones</div>
         </nav>
         <main id="main">
-            Enviadas  Search Filtros
-            <table border="solid black 1px">
-                <tr>
-                    <th>Fecha</th>
-                    <th>Usuario</th>
-                    <th>Mensaje</th>
-                    <th>Estado</th>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-            </table>
+            <section class="notificaciones-lista">
+                <div class="notificaciones-lista__controles">
+                    <h1>Enviadas</h1>
+                    <div class="notificaciones-lista__acciones">
+                        <button type="button">Search</button>
+                        <button type="button">Filtros</button>
+                    </div>
+                </div>
+                <div class="notificaciones-lista__tabla">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Usuario</th>
+                                <th>Mensaje</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
         </main>
         <footer id="footer"></footer>
     </body>
