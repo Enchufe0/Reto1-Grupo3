@@ -63,7 +63,7 @@
 
             //aqui llamamos al DAO: $ubicacionesDAO->crear
             http_response_code(201); //crado con exiti
-            echo json_encode(["mesane"]);
+            echo json_encode(["mesanje"]);
             break;
 
         //CASO 3. PUT - ACTUALIZAR
@@ -93,11 +93,7 @@
                 echo json_encode(["error"]);
             }
             break;
-
-            
-
-
-                
-
     }   
+
+    exit;
 ?>
