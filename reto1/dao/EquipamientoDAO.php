@@ -23,8 +23,7 @@ class EquipamientoDAO {
             $this->db->beginTransaction();
 
             $stmt = $this->db->prepare($sql);
-            
-            // Obtenemos el valor string del enum de forma segura
+        
             $cat = $e->getCategoria();
             $categoriaValor = ($cat instanceof CategoriaEquipamiento) ? $cat->value : (string) $cat;
 

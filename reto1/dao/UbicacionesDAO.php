@@ -1,8 +1,7 @@
 
 <?php
-    //1.llamamos a la caja ubicaciones y preparamos el carretillero
-    require_once 'Ubicaciones.php';
-
+    // 1. llamamos a la caja ubicaciones
+    require_once __DIR__ . '/../model/Ubicaciones.php';
 
     class UbicacionesDAO {
         private PDO $conexion; //la llave del almacen
