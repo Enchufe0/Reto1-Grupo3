@@ -1,0 +1,281 @@
+/*COLOR DE FUENTES */
+:root {
+    --color-fondo: #f5f0dc;       /* Beis claro del fondo */
+    --color-principal: #3f4a9b;   /* Azul añil oscuro (color principal) */
+    --color-acento: #e63946;      /* Rojo (color accent) */
+    --color-exito: #2a9d8f;       /* Verde (color secundario) */
+    --color-blanco: #ffffff;
+    --fuente-principal: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* RESETEO BASICO */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--color-fondo);
+    font-family: var(--fuente-principal);
+    color: var(--color-principal);
+}
+
+/* CABECERA */
+#top-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 40px;
+}
+
+.logo img {
+    height: 50px;
+}
+
+#perfil {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#avatar {
+    background-color: var(--color-fondo);
+    color: var(--color-principal);
+    border: 2px solid var(--color-principal);
+    border-radius: 50%; /* Círculo perfecto */
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+/* MENU PRINCIPAL */
+#main-nav {
+    margin: 10px 40px 30px 40px;
+}
+
+#main-nav ul {
+    list-style: none; 
+    display: flex;
+    gap: 15px;
+}
+
+#main-nav a {
+    text-decoration: none; 
+    color: var(--color-principal);
+    border: 2px solid var(--color-principal);
+    padding: 10px 25px;
+    border-radius: 20px; 
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+/* Clase para la página activa (la pones en el HTML) o al pasar el ratón */
+#main-nav a.active, 
+#main-nav a:hover {
+    background-color: var(--color-principal);
+    color: var(--color-blanco);
+}
+
+/* CONTENIDO Y BARRA DE ACCION */
+.contenido-pagina {
+    padding: 0 40px;
+}
+
+section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+#barra-busqueda {
+    display: flex;
+    border: 2px solid var(--color-principal);
+    border-radius: 20px;
+    overflow: hidden; /* Evita que el input se salga del borde curvo */
+    background-color: var(--color-blanco);
+}
+
+#buscarUsuario {
+    border: none;
+    padding: 10px 15px;
+    outline: none;
+    color: var(--color-principal);
+    width: 250px;
+}
+
+#btnBuscar {
+    background: none;
+    border: none;
+    padding: 0 15px;
+    cursor: pointer;
+    font-size: 1.2rem;
+}
+
+#btnAñadir {
+    background-color: var(--color-acento);
+    color: var(--color-blanco);
+    border: none;
+    padding: 12px 30px;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* TARJETA DE USUARIOS */
+.tarjetaUsuario {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Cuadrícula adaptable */
+    gap: 20px;
+    align-items: start;
+}
+
+article {
+    background-color: var(--color-principal);
+    color: var(--color-blanco);
+    border-radius: 20px;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.tarjetaInfo p {
+    margin-bottom: 5px;
+}
+
+.tarjetaAccion {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.btnEditar {
+    background-color: var(--color-blanco);
+    color: var(--color-principal);
+    border: none;
+    padding: 8px 15px;
+    border-radius: 15px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btnEliminar {
+    background-color: var(--color-acento);
+    border: none;
+    width: 35px;
+    height: 30px;
+    border-radius: 5px; /* Cuadrado con bordes suaves */
+    cursor: pointer;
+    align-self: flex-end;
+}
+
+/* ESTILOS PARA LA TARJETA 2 (Secundaria con fondo blanco) */
+article.secondary-card {
+    background-color: var(--color-fondo);
+    color: var(--color-principal);
+    border: 3px solid var(--color-principal);
+}
+
+article.secondary-card .btn-edit {
+    background-color: var(--color-principal);
+    color: var(--color-blanco);
+    border: none;
+    padding: 8px 15px;
+    border-radius: 15px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+article.secondary-card .btn-delete {
+    background-color: var(--color-acento);
+    border: none;
+    width: 35px;
+    height: 30px;
+    border-radius: 5px;
+    cursor: pointer;
+    align-self: flex-end;
+}
+
+/* POP UP */
+.popup {
+    margin: auto; /* Lo centra en la pantalla automaticamente */
+    border: none;
+    border-radius: 20px;
+    background-color: var(--color-fondo);
+    padding: 30px;
+    width: 400px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    color: var(--color-principal);
+}
+
+/* El fondo oscuro translucido detrás del Pop-Up */
+.popup::backdrop {
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+#popupTitulo {
+    color: var(--color-acento);
+    text-align: right;
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+}
+
+.tarjetaEditarPopUp {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    background-color: var(--color-blanco);
+    border: 2px solid var(--color-fondo);
+    border-radius: 15px;
+    padding: 5px 15px;
+}
+
+.tarjetaEditarPopUp label {
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.tarjetaEditarPopUp input {
+    border: none;
+    background: transparent;
+    padding: 10px;
+    outline: none;
+    color: var(--color-principal);
+    text-align: right;
+    width: 60%;
+}
+
+.btnPopUp {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 25px;
+}
+
+.btnConfirm {
+    background-color: var(--color-exito); /* VERDE ACEPTAR */
+    color: var(--color-blanco);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 15px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.btnCancel {
+    background-color: var(--color-principal); /* AZUL CANCELAR */
+    color: var(--color-blanco);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 15px;
+    font-weight: bold;
+    cursor: pointer;
+}

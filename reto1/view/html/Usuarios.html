@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestion - Usuarios</title>
-    <link rel="" href="Usuarios.css">
+    <link rel="stylesheet" href="../css/Usuarios.css">
 
 </head>
 <body>
@@ -35,8 +35,74 @@
             <input type="text" id="buscarUsuario" placeholder="Buscar usuario">
             <button id="btnBuscar" aria-label="Buscar" >🔍</button>
         </div>
+        <button id="btnAñadir">Añadir</button>
+    </section>
+
+    <!--contenedor tarjetas usuarios-->
+    <section class="tarjetaUsuario" >
+
+        <!--ejemplo tarjeta 1-->
+        <article>
+            <div class="tarjetaInfo">
+                <p><strong>Nombre:</strong> Juan</p>
+                <p><strong>Apellido:</strong> Pérez</p>
+                <p><strong>Usuario:</strong> jperez</p>
+            </div>
+            <div class="tarjetaAccion">
+                <button class="btnEditar">Editar</button>
+                <button class="btnEliminar" aria-label="Borrar"></button>
+            </div>
+        </article>
+
+        <!-- Ejemplo de Tarjeta 2 (Borde azul) -->
+        <article class="user-card secondary-card">
+            <div class="card-info">
+                <p><strong>Nombre:</strong> María</p>
+                <p><strong>Apellido:</strong> Gómez</p>
+                <p><strong>Usuario:</strong> mgomez</p>
+            </div>
+            <div class="card-actions">
+                <button class="btn-edit">editar</button>
+                <button class="btn-delete" aria-label="Borrar"></button>
+            </div>
+        </article>
     </section>
 </main>
+
+<!--POP UP-->
+<dialog id="popupUsuario" class="popup">
+    <div class="popupContenido">
+        <h2 id="popupTitulo">POP UP!</h2>
+        <form id="formularioUsuario">
+            <input type="hidden" id="userId">
+            
+            <div class="tarjetaEditarPopUp">
+                    <label for="nombre">NOMBRE</label>
+                    <input type="text" id="nombre" required>
+                </div>
+                
+                <div class="tarjetaEditarPopUp">
+                    <label for="apellido">APELLIDO</label>
+                    <input type="text" id="apellido" required>
+                </div>
+
+                <div class="tarjetaEditarPopUp">
+                    <label for="username">USER NAME</label>
+                    <input type="text" id="username" required>
+                </div>
+
+                <div class="tarjetaEditarPopUp">
+                    <label for="password">CONTRASEÑA</label>
+                    <input type="password" id="password" required>
+                </div>
+
+                <div class="btnPopUp">
+                    <button type="submit" class="btnConfirm">ACEPTAR</button>
+                    <button type="button" class="btnCancel" id="btnCerrarPopUp">CANCELAR</button>
+                </div>
+        </form>
+    </div>
+</dialog>
 
 
 
