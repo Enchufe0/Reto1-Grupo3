@@ -28,7 +28,7 @@ class EquipamientoController {
     public function listar(): void {
         $equipos = $this->equipamientoDAO->listarTodos();
         $ubicaciones = $this->ubicacionesDAO ? $this->ubicacionesDAO->listarTodas() : [];
-        require __DIR__ . '/../view/equipamientos.php';
+        require __DIR__ . '/../view/Equipamientos.php';
     }
 
     // 2. CREAR UN NUEVO EQUIPO

@@ -93,11 +93,5 @@
                 echo json_encode(["error"]);
             }
             break;
-
-            
-
-
-                
-
     }   
 ?>
