@@ -112,7 +112,7 @@ use enumNotificaciones\EstadoNotificaciones;
             $stmt->bindValue(':descripcion', $notificacion->getDescripcion());
             $stmt->bindValue(':fecha_creacion', $notificacion->getFechaCreacion());
             $stmt->bindValue(':estado', $notificacion->getEstado()->value);
-            $stmt->bindValue(':id_usuario', $notificacion->getIdUsuario());
+            $stmt->bindValue(':id', $notificacion->getIdUsuario());
 
             return $stmt->execute();
         }
