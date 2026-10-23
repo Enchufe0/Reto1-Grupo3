@@ -5,94 +5,94 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-require_once __DIR__ . '/../config/conexion.php';
-require_once __DIR__ . '/../dao/LoginDAO.php';
+require_once __DIR__ . '/../Conexion/conexion.php';
+require_once __DIR__ . '/../controller/LoginController.php';
 
-ob_start();
-$db = (new Database())->getConnection();
-ob_end_clean();
-
-if (!$db instanceof PDO) {
-    http_response_code(500);
-    echo json_encode(['error' => 'Error de conexión con la base de datos'], JSON_UNESCAPED_UNICODE);
+function responderLogin($respuesta, int $estado = 200): void
+{
+    http_response_code($estado);
+    echo json_encode($respuesta, JSON_UNESCAPED_UNICODE);
     exit;
 }
 
-$loginDAO = new LoginDAO($db);
-$metodo = $_SERVER['REQUEST_METHOD'];
+$bufferIniciado = false;
 
-switch ($metodo) {
+try {
+    $metodo = $_SERVER['REQUEST_METHOD'] ?? '';
 
-    case 'POST':
-        $cuerpo = file_get_contents('php://input');
-        $datos = json_decode($cuerpo, true);
-        if (empty($datos)) {
-            $datos = $_POST;
-        }
+    switch ($metodo) {
+        case 'POST':
+            $cuerpo = file_get_contents('php://input');
+            $json = json_decode($cuerpo, true);
+            $datos = is_array($json) ? $json : $_POST;
+            $usuario = $datos['nombre_usuario'] ?? $datos['usuario'] ?? '';
+            $password = $datos['password'] ?? $datos['contrasena'] ?? '';
 
-        $usuario  = trim($datos['nombre_usuario'] ?? $datos['usuario'] ?? '');
-        $password = (string) ($datos['password'] ?? $datos['contrasena'] ?? '');
+            if (!is_string($usuario) || !is_string($password)) {
+                throw new Exception('Usuario y contraseña deben ser texto', 400);
+            }
 
-        if ($usuario === '' || $password === '') {
-            http_response_code(400);
-            echo json_encode(['error' => 'Debes indicar usuario y contraseña'], JSON_UNESCAPED_UNICODE);
-            break;
-        }
+            $database = new Database();
+            ob_start();
+            $bufferIniciado = true;
+            $db = $database->getConnection();
+            ob_end_clean();
+            $bufferIniciado = false;
 
-        $fila = $loginDAO->buscarPorNombreUsuario($usuario);
+            if (!$db instanceof PDO) {
+                throw new RuntimeException('No se pudo conectar con la base de datos');
+            }
 
-        if ($fila === null || !password_verify($password, $fila['password_hash'])) {
-            http_response_code(401);
-            echo json_encode(['error' => 'Usuario o contraseña incorrectos'], JSON_UNESCAPED_UNICODE);
-            break;
-        }
+            $controller = new LoginController($db);
+            $userData = $controller->login(trim($usuario), $password);
+            responderLogin([
+                'mensaje' => 'Login correcto',
+                'usuario' => $userData,
+            ]);
 
-        $_SESSION['usuario_id'] = (int) $fila['id_usuario'];
-        $_SESSION['nombre']     = $fila['nombre'];
-        $_SESSION['apellidos']  = $fila['apellidos'];
-        $_SESSION['rol']        = strtoupper($fila['rol']);
+        case 'GET':
+            if (isset($_SESSION['usuario_id'])) {
+                responderLogin([
+                    'autenticado' => true,
+                    'usuario' => [
+                        'id_usuario' => $_SESSION['usuario_id'],
+                        'nombre' => $_SESSION['nombre'] ?? '',
+                        'rol' => $_SESSION['rol'] ?? 'USER',
+                    ],
+                ]);
+            }
 
-        http_response_code(200);
-        echo json_encode([
-            'mensaje' => 'Login correcto',
-            'usuario' => [
-                'id_usuario' => (int) $fila['id_usuario'],
-                'nombre'     => $fila['nombre'],
-                'apellidos'  => $fila['apellidos'],
-                'rol'        => strtoupper($fila['rol'])
-            ]
-        ], JSON_UNESCAPED_UNICODE);
-        break;
+            responderLogin(['autenticado' => false]);
 
-    case 'GET':
-        if (isset($_SESSION['usuario_id'])) {
-            http_response_code(200);
-            echo json_encode([
-                'autenticado' => true,
-                'usuario' => [
-                    'id_usuario' => $_SESSION['usuario_id'],
-                    'nombre'     => $_SESSION['nombre'] ?? '',
-                    'apellidos'  => $_SESSION['apellidos'] ?? '',
-                    'rol'        => $_SESSION['rol'] ?? 'USER'
-                ]
-            ], JSON_UNESCAPED_UNICODE);
-        } else {
-            http_response_code(200);
-            echo json_encode(['autenticado' => false], JSON_UNESCAPED_UNICODE);
-        }
-        break;
-
-    case 'DELETE':
-        $_SESSION = [];
-        if (session_id()) {
+        case 'DELETE':
+            $_SESSION = [];
+            if (ini_get('session.use_cookies')) {
+                $params = session_get_cookie_params();
+                setcookie(
+                    session_name(),
+                    '',
+                    time() - 42000,
+                    $params['path'],
+                    $params['domain'],
+                    $params['secure'],
+                    $params['httponly']
+                );
+            }
             session_destroy();
-        }
-        http_response_code(200);
-        echo json_encode(['mensaje' => 'Sesión cerrada correctamente'], JSON_UNESCAPED_UNICODE);
-        break;
+            responderLogin(['mensaje' => 'Sesión cerrada correctamente']);
 
-    default:
-        http_response_code(405);
-        echo json_encode(['error' => 'Método no permitido'], JSON_UNESCAPED_UNICODE);
-        break;
+        default:
+            throw new Exception('Método no permitido', 405);
+    }
+} catch (Throwable $error) {
+    if ($bufferIniciado) {
+        ob_end_clean();
+    }
+
+    $estado = $error->getCode();
+    if ($estado < 400 || $estado > 599) {
+        $estado = 500;
+    }
+
+    responderLogin(['error' => $error->getMessage()], $estado);
 }

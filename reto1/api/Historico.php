@@ -1,55 +1,56 @@
 <?php
-declare(strict_types=1);
+header('Content-Type: application/json; charset=utf-8');
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-header('Content-Type: application/json; charset=utf-8');
+require_once __DIR__ . '/../Conexion/conexion.php';
+require_once __DIR__ . '/../controller/HistoricoController.php';
 
-require_once __DIR__ . '/../config/conexion.php';
-require_once __DIR__ . '/../dao/HistoricoDAO.php';
-
-if (!isset($_SESSION['usuario_id']) && !isset($_SESSION['usuario'])) {
-    http_response_code(401);
-    echo json_encode(['error' => 'No autorizado. Inicie sesión.'], JSON_UNESCAPED_UNICODE);
+function responderHistorico($respuesta, int $estado = 200): void
+{
+    http_response_code($estado);
+    echo json_encode($respuesta, JSON_UNESCAPED_UNICODE);
     exit;
 }
 
-ob_start();
-$db = (new Database())->getConnection();
-ob_end_clean();
-
-if (!$db instanceof PDO) {
-    http_response_code(500);
-    echo json_encode(['error' => 'Error de conexión con la base de datos'], JSON_UNESCAPED_UNICODE);
-    exit;
+function requerirLoginHistorico(): void
+{
+    if (!isset($_SESSION['usuario_id'])) {
+        throw new Exception('Debes iniciar sesión', 401);
+    }
 }
 
 try {
-    $dao = new HistoricoDAO($db);
+    requerirLoginHistorico();
 
-    if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
-        http_response_code(405);
-        echo json_encode(['error' => 'Método no permitido'], JSON_UNESCAPED_UNICODE);
-        exit;
+    $metodo = $_SERVER['REQUEST_METHOD'] ?? '';
+    if ($metodo !== 'GET') {
+        throw new Exception('Método no permitido', 405);
     }
 
-    $idEquipo = (int) ($_GET['id_equipamiento'] ?? 0);
-    if ($idEquipo <= 0) {
-        http_response_code(422);
-        echo json_encode(['error' => 'El parámetro id_equipamiento es obligatorio y debe ser numérico'], JSON_UNESCAPED_UNICODE);
-        exit;
+    $idEquipo = filter_var(
+        $_GET['id_equipamiento'] ?? null,
+        FILTER_VALIDATE_INT
+    );
+    if ($idEquipo === false || $idEquipo === null || $idEquipo <= 0) {
+        throw new Exception('Debes indicar un id_equipamiento válido', 422);
     }
 
-    $historial = $dao->historialDeEquipamiento($idEquipo);
-    http_response_code(200);
-    echo json_encode($historial, JSON_UNESCAPED_UNICODE);
+    $database = new Database();
+    $db = $database->getConnection();
+    if (!$db instanceof PDO) {
+        throw new RuntimeException('No se pudo conectar con la base de datos');
+    }
 
-} catch (\Throwable $ex) {
-    http_response_code(500);
-    echo json_encode([
-        'error'   => 'Error interno del servidor',
-        'detalle' => $ex->getMessage()
-    ], JSON_UNESCAPED_UNICODE);
+    $controller = new HistoricoController($db);
+    responderHistorico($controller->listar($idEquipo));
+} catch (Throwable $error) {
+    $estado = $error->getCode();
+    if ($estado < 400 || $estado > 599) {
+        $estado = 500;
+    }
+
+    responderHistorico(['error' => $error->getMessage()], $estado);
 }
