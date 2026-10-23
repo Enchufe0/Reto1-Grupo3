@@ -38,7 +38,10 @@ try {
 
     $controller = new EquipamientoController($db);
     $metodo = $_SERVER['REQUEST_METHOD'] ?? '';
-    $id = isset($_GET['id']) ? $_GET['id'] : null;
+    
+    // MEJORA: Forzamos a que el ID sea un número entero
+    $id = isset($_GET['id']) ? (int)$_GET['id'] : null; 
+    
     $cuerpo = file_get_contents('php://input');
     $json = json_decode($cuerpo, true);
     $datos = is_array($json) ? $json : $_POST;
@@ -50,7 +53,6 @@ try {
             if ($id !== null) {
                 responderEquipamiento($controller->ver($id));
             }
-
             responderEquipamiento($controller->listar());
 
         case 'POST':
@@ -66,13 +68,11 @@ try {
                 if (strtoupper((string) ($_SESSION['rol'] ?? '')) !== 'USER') {
                     throw new Exception('Solo el conserje puede mover equipos', 403);
                 }
-
                 $controller->cambiarUbicacion($id, $datos['id_ubicacion_actual']);
             } else {
                 requerirAdminEquipamiento();
                 $controller->actualizar($id, $datos);
             }
-
             responderEquipamiento([
                 'ok' => true,
                 'mensaje' => 'Equipo modificado correctamente',
