@@ -1,0 +1,52 @@
+#header,
+#nav,
+#footer{
+    box-sizing: border-box;
+}
+
+body{
+    margin: 0;
+}
+
+#header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 16px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 36px;
+    background: white;
+    z-index: 2;
+}
+
+#nav{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 8px 16px;
+    position: fixed;
+    top: 36px;
+    left: 0;
+    right: 0;
+    height: 36px;
+    background: white;
+    z-index: 2;
+}
+
+#main{
+    padding: 96px 16px 60px;
+}
+
+#footer{
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 36px;
+    padding: 8px 16px;
+    background: white;
+    z-index: 2;
+}
