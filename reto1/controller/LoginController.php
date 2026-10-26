@@ -1,40 +1,45 @@
 <?php
 require_once __DIR__ . '/../dao/LoginDAO.php';
 
-class LoginController {
-    private $loginDAO;
+class LoginController
+{
+    private LoginDAO $loginDAO;
 
-    // Recibimos la conexión a la base de datos
-    public function __construct(PDO $db) {
+    public function __construct(PDO $db)
+    {
         $this->loginDAO = new LoginDAO($db);
     }
 
-    // Procesa el login
-    public function login($usuario, $password) {
-        if (empty($usuario) || empty($password)) {
-            throw new Exception("Usuario y contraseña obligatorios", 400);
+    public function login(string $nombreUsuario, string $password): array
+    {
+        $nombreUsuario = trim($nombreUsuario);
+
+        if ($nombreUsuario === '' || $password === '') {
+            throw new InvalidArgumentException('Usuario y contraseña obligatorios', 400);
         }
 
-        // Buscamos al usuario en la BD
-        $user = $this->loginDAO->buscarPorNombreUsuario($usuario);
-
-        // Verificamos contraseña
-        if (!$user || !password_verify($password, $user['password_hash'])) {
-            throw new Exception("Usuario o contraseña incorrectos", 401);
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
         }
 
-        // 👇 AQUÍ ESTÁ EL AUTH 👇
-        // Guardamos los datos en la sesión de PHP
-        $_SESSION['usuario_id'] = $user['id_usuario'];
-        $_SESSION['nombre']     = $user['nombre'];
-        $_SESSION['rol']        = strtoupper($user['rol']);
+        $usuario = $this->loginDAO->buscarPorNombreUsuario($nombreUsuario);
 
-        // Devolvemos los datos limpios (sin el password_hash)
+        if ($usuario === null || !password_verify($password, (string) $usuario['password_hash'])) {
+            throw new InvalidArgumentException('Credenciales inválidas', 401);
+        }
+
+        $_SESSION['usuario_id'] = (int) $usuario['id_usuario'];
+        $_SESSION['nombre'] = $usuario['nombre'];
+        $_SESSION['apellidos'] = $usuario['apellidos'] ?? '';
+        $_SESSION['nombre_usuario'] = $nombreUsuario;
+        $_SESSION['rol'] = $usuario['rol'] ?? 'USER';
+
         return [
-            'id_usuario' => $user['id_usuario'],
-            'nombre'     => $user['nombre'],
-            'apellidos'  => $user['apellidos'],
-            'rol'        => strtoupper($user['rol'])
+            'id_usuario' => (int) $usuario['id_usuario'],
+            'nombre' => $usuario['nombre'],
+            'apellidos' => $usuario['apellidos'] ?? '',
+            'nombre_usuario' => $nombreUsuario,
+            'rol' => $usuario['rol'] ?? 'USER',
         ];
     }
 }
