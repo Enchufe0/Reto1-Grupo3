@@ -1,281 +1,185 @@
-/*COLOR DE FUENTES */
-:root {
-    --color-fondo: #f5f0dc;       /* Beis claro del fondo */
-    --color-principal: #3f4a9b;   /* Azul añil oscuro (color principal) */
-    --color-acento: #e63946;      /* Rojo (color accent) */
-    --color-exito: #2a9d8f;       /* Verde (color secundario) */
-    --color-blanco: #ffffff;
-    --fuente-principal: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-/* RESETEO BASICO */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
+/* Configuracion basica para toda la pagina */
 body {
-    background-color: var(--color-fondo);
-    font-family: var(--fuente-principal);
-    color: var(--color-principal);
+    font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
+    background-color: #f8fafc; /* Gris super clarito y limpio, adios al beige */
+    color: #0f172a; /* Letra azul marino oscuro */
+    margin: 0; /* Quitamos margenes por defecto del navegador */
 }
 
-/* CABECERA */
+/* Centramos el contenido principal para que respire y no toque los bordes */
+.contenido-pagina {
+    max-width: 1200px; /* Tope de ancho para que no se estire a lo loco en pantallas enormes */
+    margin: 0 auto; /* Lo centra en la pantalla */
+    padding: 2rem; /* Le da espacio a los lados para que no se pegue */
+}
+
+/* La zona de arriba con el logo y tu perfil */
 #top-header {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 40px;
+    justify-content: space-between; /* Manda el logo a una esquina y el perfil a la otra */
+    align-items: center; /* Los centra en vertical */
+    padding: 1rem 2rem;
+    background-color: white;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05); /* Sombrita fina abajo */
 }
-
-.logo img {
-    height: 50px;
-}
-
 #perfil {
     display: flex;
     align-items: center;
-    justify-content: center;
+    gap: 0.8rem; /* Hueco entre tu nombre y el circulito */
+    font-weight: 600;
+    color: #334155;
 }
-
 #avatar {
-    background-color: var(--color-fondo);
-    color: var(--color-principal);
-    border: 2px solid var(--color-principal);
-    border-radius: 50%; /* Círculo perfecto */
-    width: 45px;
-    height: 45px;
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 40px;
+    height: 40px;
+    background-color: #eff6ff; /* Fondo azulito */
+    color: #2563eb; /* Letra azul fuerte */
+    border-radius: 50%; /* Hace el circulo perfecto */
     font-weight: bold;
     font-size: 1.2rem;
 }
 
-/* MENU PRINCIPAL */
+/* El menu principal centrado */
 #main-nav {
-    margin: 10px 40px 30px 40px;
+    background-color: white; /* Limpio, sin colores raros */
+    padding: 1rem 0;
+    border-bottom: 1px solid #e2e8f0; /* Linea separadora por debajo */
 }
-
 #main-nav ul {
-    list-style: none; 
     display: flex;
-    gap: 15px;
+    justify-content: center; /* Pone las opciones justo en el medio */
+    gap: 2rem;
+    list-style: none; /* Quita los puntitos clasicos de las listas */
+    margin: 0;
+    padding: 0;
 }
-
 #main-nav a {
-    text-decoration: none; 
-    color: var(--color-principal);
-    border: 2px solid var(--color-principal);
-    padding: 10px 25px;
-    border-radius: 20px; 
-    font-weight: bold;
-    transition: all 0.3s ease;
+    text-decoration: none; /* Quita el subrayado feo de los links */
+    color: #64748b;
+    font-weight: 600;
+    padding: 0.5rem 1.2rem;
+    border-radius: 9999px; /* Hace el efecto pildora o capsula redondita */
+    transition: all 0.2s; /* Hace que el cambio de color al pasar el raton sea suave */
 }
-
-/* Clase para la página activa (la pones en el HTML) o al pasar el ratón */
-#main-nav a.active, 
 #main-nav a:hover {
-    background-color: var(--color-principal);
-    color: var(--color-blanco);
+    background-color: #f1f5f9; /* Se pone grisecito al pasar el raton */
+}
+#main-nav a.activo {
+    background-color: #eff6ff; /* Se queda fijo en azul para saber en que pagina estas */
+    color: #2563eb;
 }
 
-/* CONTENIDO Y BARRA DE ACCION */
-.contenido-pagina {
-    padding: 0 40px;
+/* Los titulos grandes de cada seccion */
+.cabecera-seccion {
+    padding: 0 0 1rem 0; 
+}
+.cabecera-seccion h1 { 
+    margin: 0; 
+    font-size: 1.8rem; 
+    color: #0f172a; 
+}
+.cabecera-seccion p { 
+    margin: 0.5rem 0 0; 
+    color: #64748b; 
 }
 
-section {
+/* Las cajas de resumen con los numeros grandes */
+.estadisticas {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 30px;
+    gap: 1.5rem; /* Hueco entre cajas */
+    margin-bottom: 2rem; /* Lo separa de la barra de busqueda de abajo */
 }
+.stat-card {
+    background: white;
+    flex: 1; /* Hace que todas las cajas ocupen lo mismo */
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); /* Sombrita moderna y limpia */
+}
+.stat-title { margin: 0; color: #64748b; font-size: 0.9rem; }
+.stat-value { margin: 10px 0 0; font-size: 2.2rem; font-weight: bold; color: #0f172a; }
 
+/* Buscador a la izquierda y Boton a la derecha (AQUI ESTA LA SOLUCION DEL BOTON) */
+.controles-accion {
+    display: flex;
+    justify-content: space-between; /* Esta magia empuja los extremos cada uno a su lado */
+    align-items: center;
+    width: 100%; /* Le decimos que ocupe todo el ancho para que el boton se vaya al final de verdad */
+    margin-bottom: 2rem; /* Le da aire por abajo antes de las tarjetas */
+}
 #barra-busqueda {
     display: flex;
-    border: 2px solid var(--color-principal);
-    border-radius: 20px;
-    overflow: hidden; /* Evita que el input se salga del borde curvo */
-    background-color: var(--color-blanco);
+    gap: 0.5rem; /* Hueco entre el cuadro de texto y el icono de la lupa */
 }
-
 #buscarUsuario {
-    border: none;
-    padding: 10px 15px;
-    outline: none;
-    color: var(--color-principal);
+    padding: 0.6rem 1.2rem;
+    border-radius: 9999px;
+    border: 1px solid #cbd5e1;
+    outline: none; /* Quita el borde feo que sale al hacer click para escribir */
     width: 250px;
 }
-
-#btnBuscar {
-    background: none;
-    border: none;
-    padding: 0 15px;
-    cursor: pointer;
-    font-size: 1.2rem;
-}
-
 #btnAñadir {
-    background-color: var(--color-acento);
-    color: var(--color-blanco);
+    background-color: #0f172a;
+    color: white;
+    border-radius: 9999px;
+    padding: 0.6rem 1.5rem;
     border: none;
-    padding: 12px 30px;
-    border-radius: 20px;
-    font-weight: bold;
-    cursor: pointer;
+    font-weight: 600;
+    cursor: pointer; /* Hace que salga la mano en vez de la flecha al pasar por encima */
+    transition: background 0.2s;
+}
+#btnAñadir:hover {
+    background-color: #1e293b; /* Se pone un poco mas oscuro */
 }
 
-/* TARJETA DE USUARIOS */
+/* La cuadrilla donde van las tarjetas de los usuarios */
 .tarjetaUsuario {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Cuadrícula adaptable */
-    gap: 20px;
-    align-items: start;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Crea columnas el solo segun el espacio que haya */
+    gap: 1.5rem; /* Hueco entre cada tarjeta */
+}
+.tarjetaUsuario article {
+    background-color: white; /* Base blanca, sin lineas de borde feas */
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); /* Sombra suave para que destaquen del fondo gris */
+    transition: all 0.2s ease;
+}
+.tarjetaUsuario article:hover {
+    box-shadow: 0 10px 15px -3px rgba(37,99,235,0.15); /* Se ilumina con una sombra azul al pasar el raton */
+    transform: translateY(-2px); /* Efectito sutil de que la carta levita un poco */
 }
 
-article {
-    background-color: var(--color-principal);
-    color: var(--color-blanco);
-    border-radius: 20px;
-    padding: 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-}
-
-.tarjetaInfo p {
-    margin-bottom: 5px;
-}
-
+/* Botoncitos pequeños para editar o borrar dentro de cada tarjeta */
 .tarjetaAccion {
+    margin-top: 1.5rem;
     display: flex;
-    flex-direction: column;
-    gap: 10px;
+    gap: 0.5rem;
 }
-
+.tarjetaAccion button {
+    border-radius: 9999px;
+    padding: 0.4rem 1rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
 .btnEditar {
-    background-color: var(--color-blanco);
-    color: var(--color-principal);
-    border: none;
-    padding: 8px 15px;
-    border-radius: 15px;
-    cursor: pointer;
-    font-weight: bold;
+    background-color: #f1f5f9;
+    color: #334155;
 }
-
+.btnEditar:hover {
+    background-color: #e2e8f0;
+}
 .btnEliminar {
-    background-color: var(--color-acento);
-    border: none;
-    width: 35px;
-    height: 30px;
-    border-radius: 5px; /* Cuadrado con bordes suaves */
-    cursor: pointer;
-    align-self: flex-end;
+    background-color: #fee2e2; /* Rojito palido para que no de el cante */
+    color: #ef4444;
 }
-
-/* ESTILOS PARA LA TARJETA 2 (Secundaria con fondo blanco) */
-article.secondary-card {
-    background-color: var(--color-fondo);
-    color: var(--color-principal);
-    border: 3px solid var(--color-principal);
-}
-
-article.secondary-card .btn-edit {
-    background-color: var(--color-principal);
-    color: var(--color-blanco);
-    border: none;
-    padding: 8px 15px;
-    border-radius: 15px;
-    cursor: pointer;
-    font-weight: bold;
-}
-
-article.secondary-card .btn-delete {
-    background-color: var(--color-acento);
-    border: none;
-    width: 35px;
-    height: 30px;
-    border-radius: 5px;
-    cursor: pointer;
-    align-self: flex-end;
-}
-
-/* POP UP */
-.popup {
-    margin: auto; /* Lo centra en la pantalla automaticamente */
-    border: none;
-    border-radius: 20px;
-    background-color: var(--color-fondo);
-    padding: 30px;
-    width: 400px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-    color: var(--color-principal);
-}
-
-/* El fondo oscuro translucido detrás del Pop-Up */
-.popup::backdrop {
-    background-color: rgba(0, 0, 0, 0.6);
-}
-
-#popupTitulo {
-    color: var(--color-acento);
-    text-align: right;
-    margin-bottom: 20px;
-    font-size: 1.2rem;
-}
-
-.tarjetaEditarPopUp {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-    background-color: var(--color-blanco);
-    border: 2px solid var(--color-fondo);
-    border-radius: 15px;
-    padding: 5px 15px;
-}
-
-.tarjetaEditarPopUp label {
-    font-weight: bold;
-    font-size: 0.9rem;
-}
-
-.tarjetaEditarPopUp input {
-    border: none;
-    background: transparent;
-    padding: 10px;
-    outline: none;
-    color: var(--color-principal);
-    text-align: right;
-    width: 60%;
-}
-
-.btnPopUp {
-    display: flex;
-    justify-content: flex-end;
-    gap: 15px;
-    margin-top: 25px;
-}
-
-.btnConfirm {
-    background-color: var(--color-exito); /* VERDE ACEPTAR */
-    color: var(--color-blanco);
-    border: none;
-    padding: 10px 20px;
-    border-radius: 15px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.btnCancel {
-    background-color: var(--color-principal); /* AZUL CANCELAR */
-    color: var(--color-blanco);
-    border: none;
-    padding: 10px 20px;
-    border-radius: 15px;
-    font-weight: bold;
-    cursor: pointer;
+.btnEliminar:hover {
+    background-color: #ef4444; /* Se pone rojo fuerte al pasar el raton */
+    color: white;
 }

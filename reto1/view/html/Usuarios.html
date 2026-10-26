@@ -10,33 +10,55 @@
 <body>
 <!--CABECERA-->
     <header id="top-header">
-        <div class="logo">
-            <img src="img/logo.png" alt="Logo de la Empresa">
-        </div>
-        <div id="perfil">
-            <span id="avatar">U</span> <!--Inicial de la persona logeada-->
-        </div>
-    </header>
+    <div class="logo">
+        <img src="img/logo.png" alt="Logo de la Empresa">
+    </div>
+    <div id="perfil">
+        <span id="nombre-usuario">Admin User</span>
+        <span id="avatar">U</span>
+    </div>
+</header>
 <!--MENU PRINCIPAL-->
     <nav id="main-nav">
         <ul>
             <li><a href="Equipos.html">EQUIPOS</a></li>
             <li><a href="Usuarios.html">USUARIOS</a></li>
-            <li><a href="Ubicaciones.html">UBICACIONES</a></li>
+            <li><a href="Ubicaciones.html" class="activo">UBICACIONES</a></li>
             <li><a href="NotificacionesAdmin.html">NOTIFICACIONES</a></li>
         </ul>
     </nav>
 <!--CONTENIDO-->
 <main class="contenido-pagina">
+    
+    <header class="cabecera-seccion">
+        <h1>Gestión de usuarios</h1>
+        <p>Consulta y organiza los usuarios del sistema</p>
+    </header>
+
+    <!-- Tarjetas de estadísticas -->
+    <section class="estadisticas">
+        <div class="stat-card">
+            <p class="stat-title">Total de usuarios</p>
+            <p class="stat-value" id="stat-total">0</p>
+        </div>
+        <div class="stat-card">
+            <p class="stat-title">Administradores</p>
+            <p class="stat-value">3</p>
+        </div>
+        <div class="stat-card">
+            <p class="stat-title">Nuevos este mes</p>
+            <p class="stat-value">5</p>
+        </div>
+    </section>
 
     <!--Buscador y btnAñadir-->
-    <section>
-        <div id="barra-busqueda">
-            <input type="text" id="buscarUsuario" placeholder="Buscar usuario">
-            <button id="btnBuscar" aria-label="Buscar" >🔍</button>
-        </div>
-        <button id="btnAñadir">Añadir</button>
-    </section>
+    <section class="controles-accion">
+    <div id="barra-busqueda">
+        <input type="text" id="buscarUsuario" placeholder="Buscar usuario">
+        <button id="btnBuscar" aria-label="Buscar">🔍</button>
+    </div>
+    <button id="btnAñadir">Añadir</button>
+</section>
 
     <!--contenedor tarjetas usuarios-->
     <section class="tarjetaUsuario" >
@@ -55,15 +77,15 @@
         </article>
 
         <!-- Ejemplo de Tarjeta 2 (Borde azul) -->
-        <article class="user-card secondary-card">
-            <div class="card-info">
-                <p><strong>Nombre:</strong> María</p>
-                <p><strong>Apellido:</strong> Gómez</p>
-                <p><strong>Usuario:</strong> mgomez</p>
+        <article>
+            <div class="tarjetaInfo">
+                <p><strong>Nombre:</strong> Ana</p>
+                <p><strong>Apellido:</strong> Pérez</p>
+                <p><strong>Usuario:</strong> Aperez</p>
             </div>
-            <div class="card-actions">
-                <button class="btn-edit">editar</button>
-                <button class="btn-delete" aria-label="Borrar"></button>
+            <div class="tarjetaAccion">
+                <button class="btnEditar">Editar</button>
+                <button class="btnEliminar" aria-label="Borrar"></button>
             </div>
         </article>
     </section>

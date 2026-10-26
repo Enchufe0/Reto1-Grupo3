@@ -3,11 +3,10 @@
 
 use enumNotificaciones\EstadoNotificaciones;
 
-    require_once 'Notificaciones.php';
 
     // si tienes el enum aparte tambien tienes que traertelo
-    require_once 'enumNotificaciones.php';
-
+    require_once __DIR__ . '/../model/Notificaciones.php';
+        require_once __DIR__ . '/../model/EstadoNotificaciones.php';
 
 
 
@@ -107,12 +106,12 @@ use enumNotificaciones\EstadoNotificaciones;
 
             $stmt = $this->conexion->prepare($sql);
 
-            $stmt->bindValue(':id_notificacion', $notificacion->getIdNotificacion());
             $stmt->bindValue(':titulo', $notificacion->getTitulo());
             $stmt->bindValue(':descripcion', $notificacion->getDescripcion());
             $stmt->bindValue(':fecha_creacion', $notificacion->getFechaCreacion());
             $stmt->bindValue(':estado', $notificacion->getEstado()->value);
-            $stmt->bindValue(':id', $notificacion->getIdUsuario());
+            $stmt->bindValue(':id_usuario', $notificacion->getIdUsuario());
+            $stmt->bindValue(':id', $notificacion->getIdNotificacion());
 
             return $stmt->execute();
         }

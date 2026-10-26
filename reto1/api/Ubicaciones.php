@@ -136,14 +136,15 @@
         case 'DELETE':
             if (isset($_GET['id'])) {
                 $id = intval($_GET['id']);
+                
+                // Ejecutamos el borrado en el DAO
+                $ubicacionesDAO->borrar($id);
 
-                //aqui llamariamos al dao: $ubicacionesDAO->borrar($id)
-
-                http_response_code(200); //todo ok
-                echo json_encode(["mensaje"]);
+                http_response_code(200); 
+                echo json_encode(["mensaje" => "Ubicación eliminada correctamente"]);
             } else {
-                http_response_code(400); //error
-                echo json_encode(["error"]);
+                http_response_code(400); 
+                echo json_encode(["error" => "Falta el ID en la petición"]);
             }
             break;
     }   

@@ -131,6 +131,9 @@
                             intval($datos['id_usuario'])
                         );
 
+                        // 2. Forzamos la asignación del ID por si el constructor lo estaba ignorando o desordenando
+                        $notificacionModificada->setIdNotificacion(intval($datos['id_notificacion']));
+
                         // Sobreescribimos en el almacén
                         $exito = $notificacionesDAO->actualizar($notificacionModificada);
 
