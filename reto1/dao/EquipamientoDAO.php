@@ -1,142 +1,60 @@
 <?php
-require_once __DIR__ . '/../model/Equipamientos.php';
-require_once __DIR__ . '/../model/CategoriaEquipamiento.php';
-
-use enumCategoria\CategoriaEquipamiento;
-
 class EquipamientoDAO {
+    private $db;
 
-    private PDO $db;
-
+    // Recibe la conexión a la base de datos
     public function __construct(PDO $db) {
         $this->db = $db;
     }
 
-    // CREATE
-    public function crear(Equipamientos $e): int {
-        $sql = "INSERT INTO equipamientos
-                    (nombre, descripcion, marca, modelo, categoria, id_ubicacion_actual)
-                VALUES
-                    (:nombre, :descripcion, :marca, :modelo, :categoria, :ubicacion_actual)";
-
-        try {
-            $this->db->beginTransaction();
-
-            $stmt = $this->db->prepare($sql);
-        
-            $cat = $e->getCategoria();
-            $categoriaValor = ($cat instanceof CategoriaEquipamiento) ? $cat->value : (string) $cat;
-
-            $ok = $stmt->execute([
-                ':nombre'           => $e->getNombre(),
-                ':descripcion'      => $e->getDescripcion(),
-                ':marca'            => $e->getMarca(),
-                ':modelo'           => $e->getModelo(),
-                ':categoria'        => $categoriaValor,
-                ':ubicacion_actual' => $e->getIdUbicacionActual(),
-            ]);
-
-            if (!$ok) {
-                $this->db->rollBack();
-                return 0;
-            }
-
-            $id = (int) $this->db->lastInsertId();
-
-            $stmtHistorico = $this->db->prepare(
-                "INSERT INTO historico_ubicaciones (id_equipamiento, id_ubicacion, fecha_inicio, fecha_fin)
-                 VALUES (:id_equipamiento, :id_ubicacion, :fecha_inicio, NULL)"
-            );
-
-            $okHistorico = $stmtHistorico->execute([
-                ':id_equipamiento' => $id,
-                ':id_ubicacion'    => $e->getIdUbicacionActual(),
-                ':fecha_inicio'    => date('Y-m-d H:i:s'),
-            ]);
-
-            if (!$okHistorico) {
-                $this->db->rollBack();
-                return 0;
-            }
-
-            $this->db->commit();
-            return $id;
-        } catch (Throwable $e) {
-            if ($this->db->inTransaction()) {
-                $this->db->rollBack();
-            }
-            return 0;
-        }
+    // 1. LEER TODOS (Con el nombre de la ubicación)
+    public function listar() {
+        $sql = "SELECT e.*, u.nombre AS ubicacion 
+                FROM equipamientos e 
+                JOIN ubicaciones u ON e.id_ubicacion_actual = u.id_ubicacion 
+                ORDER BY e.id_equipamiento DESC";
+        return $this->db->query($sql)->fetchAll();
     }
 
-    // READ
-    public function listarTodos(): array {
-        $sql = "SELECT e.*, u.nombre AS ubicacion_actual
-                FROM equipamientos e
-                JOIN ubicaciones u ON u.id_ubicacion = e.id_ubicacion_actual
-                ORDER BY e.nombre";
-
-        return $this->db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+    // 2. LEER UNO SOLO
+    public function buscarPorId($id) {
+        $stmt = $this->db->prepare("SELECT * FROM equipamientos WHERE id_equipamiento = ?");
+        $stmt->execute([$id]);
+        return $stmt->fetch();
     }
 
-    public function buscarPorId(int $id): ?Equipamientos {
-        $sql = "SELECT * FROM equipamientos WHERE id_equipamiento = :id";
-
+    // 3. CREAR
+    public function crear($nombre, $descripcion, $marca, $modelo, $categoria) {
+        // IMPORTANTE: Tu SQL tiene un Trigger llamado 'trg_equipamiento_ubicacion_inicial' 
+        // que fuerza a que id_ubicacion_actual sea 1 (Almacén). Le pasamos 1 por defecto.
+        $sql = "INSERT INTO equipamientos (nombre, descripcion, marca, modelo, categoria, id_ubicacion_actual) 
+                VALUES (?, ?, ?, ?, ?, 1)";
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([':id' => $id]);
-        $fila = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        return $fila ? $this->filaAObjeto($fila) : null;
+        return $stmt->execute([$nombre, $descripcion, $marca, $modelo, $categoria]);
     }
 
-    // UPDATE
-    public function actualizar(Equipamientos $e): bool {
-        $sql = "UPDATE equipamientos
-                   SET nombre = :nombre,
-                       descripcion = :descripcion,
-                       marca = :marca,
-                       modelo = :modelo,
-                       categoria = :categoria,
-                       id_ubicacion_actual = :ubicacion
-                 WHERE id_equipamiento = :id";
-
+    // 4. ACTUALIZAR (Solo los datos, NO la ubicación)
+    public function actualizar($id, $nombre, $descripcion, $marca, $modelo, $categoria) {
+        $sql = "UPDATE equipamientos 
+                SET nombre = ?, descripcion = ?, marca = ?, modelo = ?, categoria = ? 
+                WHERE id_equipamiento = ?";
         $stmt = $this->db->prepare($sql);
-
-        $cat = $e->getCategoria();
-        $categoriaValor = ($cat instanceof CategoriaEquipamiento) ? $cat->value : (string) $cat;
-
-        return $stmt->execute([
-            ':nombre'      => $e->getNombre(),
-            ':descripcion' => $e->getDescripcion(),
-            ':marca'       => $e->getMarca(),
-            ':modelo'      => $e->getModelo(),
-            ':categoria'   => $categoriaValor,
-            ':ubicacion'   => $e->getIdUbicacionActual(),
-            ':id'          => $e->getIdEquipamiento(),
-        ]);
+        return $stmt->execute([$nombre, $descripcion, $marca, $modelo, $categoria, $id]);
     }
 
-    // DELETE
-    public function eliminar(int $id): bool {
-        $stmt = $this->db->prepare(
-            "DELETE FROM equipamientos WHERE id_equipamiento = :id"
-        );
-        return $stmt->execute([':id' => $id]);
+    // 5. CAMBIAR UBICACIÓN (Solo Conserje)
+    public function cambiarUbicacion($id, $idUbicacion) {
+        // IMPORTANTE: Tu SQL tiene un Trigger llamado 'trg_equipamiento_traslado'
+        // que se encarga automáticamente de cerrar el histórico viejo y abrir el nuevo.
+        // Por eso aquí SOLO hacemos un UPDATE simple.
+        $sql = "UPDATE equipamientos SET id_ubicacion_actual = ? WHERE id_equipamiento = ?";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([$idUbicacion, $id]);
     }
 
-    // Convierte una fila SQL en objeto Equipamientos
-    private function filaAObjeto(array $fila): Equipamientos {
-        // Convierte el string de la BD al enum CategoriaEquipamiento correspondiente
-        $categoriaEnum = CategoriaEquipamiento::tryFrom($fila['categoria']) ?? CategoriaEquipamiento::OTROS;
-
-        return new Equipamientos(
-            (int) $fila['id_equipamiento'],
-            $fila['nombre'],
-            $fila['descripcion'],
-            $fila['marca'],
-            $fila['modelo'],
-            $categoriaEnum,
-            (int) $fila['id_ubicacion_actual']
-        );
+    // 6. ELIMINAR
+    public function eliminar($id) {
+        $stmt = $this->db->prepare("DELETE FROM equipamientos WHERE id_equipamiento = ?");
+        return $stmt->execute([$id]);
     }
 }

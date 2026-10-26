@@ -1,7 +1,7 @@
 <?php
     class Database{
         private $host = "localhost";
-        private $db_name = "Grupo03";
+        private $db_name = "reto_2daw";
         private $username = "root";
         private $password = "";
         private ?PDO $conexion = null;
