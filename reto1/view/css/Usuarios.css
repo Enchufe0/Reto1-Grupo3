@@ -7,14 +7,14 @@ body {
 }
 
 /* Centramos el contenido principal para que respire y no toque los bordes */
-.contenido-pagina {
+.contenidoPagina {
     max-width: 1200px; /* Tope de ancho para que no se estire a lo loco en pantallas enormes */
     margin: 0 auto; /* Lo centra en la pantalla */
     padding: 2rem; /* Le da espacio a los lados para que no se pegue */
 }
 
 /* La zona de arriba con el logo y tu perfil */
-#top-header {
+#topHeader {
     display: flex;
     justify-content: space-between; /* Manda el logo a una esquina y el perfil a la otra */
     align-items: center; /* Los centra en vertical */
@@ -43,12 +43,12 @@ body {
 }
 
 /* El menu principal centrado */
-#main-nav {
+#mainNav {
     background-color: white; /* Limpio, sin colores raros */
     padding: 1rem 0;
     border-bottom: 1px solid #e2e8f0; /* Linea separadora por debajo */
 }
-#main-nav ul {
+#mainNav ul {
     display: flex;
     justify-content: center; /* Pone las opciones justo en el medio */
     gap: 2rem;
@@ -56,7 +56,7 @@ body {
     margin: 0;
     padding: 0;
 }
-#main-nav a {
+#mainNav a {
     text-decoration: none; /* Quita el subrayado feo de los links */
     color: #64748b;
     font-weight: 600;
@@ -64,10 +64,10 @@ body {
     border-radius: 9999px; /* Hace el efecto pildora o capsula redondita */
     transition: all 0.2s; /* Hace que el cambio de color al pasar el raton sea suave */
 }
-#main-nav a:hover {
+#mainNav a:hover {
     background-color: #f1f5f9; /* Se pone grisecito al pasar el raton */
 }
-#main-nav a.activo {
+#mainNav a.activo {
     background-color: #eff6ff; /* Se queda fijo en azul para saber en que pagina estas */
     color: #2563eb;
 }
@@ -92,15 +92,15 @@ body {
     gap: 1.5rem; /* Hueco entre cajas */
     margin-bottom: 2rem; /* Lo separa de la barra de busqueda de abajo */
 }
-.stat-card {
+.tarjeta-estadistica {
     background: white;
     flex: 1; /* Hace que todas las cajas ocupen lo mismo */
     padding: 1.5rem;
     border-radius: 12px;
     box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); /* Sombrita moderna y limpia */
 }
-.stat-title { margin: 0; color: #64748b; font-size: 0.9rem; }
-.stat-value { margin: 10px 0 0; font-size: 2.2rem; font-weight: bold; color: #0f172a; }
+.estadistica-titulo { margin: 0; color: #64748b; font-size: 0.9rem; }
+.estadistica-cantidad { margin: 10px 0 0; font-size: 2.2rem; font-weight: bold; color: #0f172a; }
 
 /* Buscador a la izquierda y Boton a la derecha (AQUI ESTA LA SOLUCION DEL BOTON) */
 .controles-accion {
@@ -110,7 +110,7 @@ body {
     width: 100%; /* Le decimos que ocupe todo el ancho para que el boton se vaya al final de verdad */
     margin-bottom: 2rem; /* Le da aire por abajo antes de las tarjetas */
 }
-#barra-busqueda {
+#barraBusqueda {
     display: flex;
     gap: 0.5rem; /* Hueco entre el cuadro de texto y el icono de la lupa */
 }

@@ -9,26 +9,26 @@
 </head>
 <body>
 <!--CABECERA-->
-    <header id="top-header">
-    <div class="logo">
-        <img src="img/logo.png" alt="Logo de la Empresa">
-    </div>
-    <div id="perfil">
-        <span id="nombre-usuario">Admin User</span>
-        <span id="avatar">U</span>
-    </div>
-</header>
+    <header id="topHeader">
+        <div class="logo">
+            <img src="img/logo.png" alt="Logo de la Empresa">
+        </div>
+        <div id="perfil">
+            <span id="nombreUsuario">Admin User</span>
+            <span id="avatar">U</span>
+        </div>
+    </header>
 <!--MENU PRINCIPAL-->
-    <nav id="main-nav">
+    <nav id="mainNav">
         <ul>
-            <li><a href="Equipos.html">EQUIPOS</a></li>
+            <li><a href="gestionarEquipos.html">EQUIPOS</a></li>
             <li><a href="Usuarios.html">USUARIOS</a></li>
             <li><a href="Ubicaciones.html" class="activo">UBICACIONES</a></li>
             <li><a href="NotificacionesAdmin.html">NOTIFICACIONES</a></li>
         </ul>
     </nav>
 <!--CONTENIDO-->
-<main class="contenido-pagina">
+<main class="contenidoPagina">
     
     <header class="cabecera-seccion">
         <h1>Gestión de usuarios</h1>
@@ -37,23 +37,23 @@
 
     <!-- Tarjetas de estadísticas -->
     <section class="estadisticas">
-        <div class="stat-card">
-            <p class="stat-title">Total de usuarios</p>
-            <p class="stat-value" id="stat-total">0</p>
+        <div class="tarjeta-estadistica">
+            <p class="estadistica-titulo">Total de usuarios</p>
+            <p class="estadistica-cantidad" id="estadisticaTotal">0</p>
         </div>
-        <div class="stat-card">
-            <p class="stat-title">Administradores</p>
-            <p class="stat-value">3</p>
+        <div class="tarjeta-estadistica">
+            <p class="estadistica-titulo">Administradores</p>
+            <p class="estadistica-cantidad">3</p>
         </div>
-        <div class="stat-card">
-            <p class="stat-title">Nuevos este mes</p>
-            <p class="stat-value">5</p>
+        <div class="tarjeta-estadistica">
+            <p class="estadistica-titulo">Nuevos este mes</p>
+            <p class="estadistica-cantidad">5</p>
         </div>
     </section>
 
     <!--Buscador y btnAñadir-->
     <section class="controles-accion">
-    <div id="barra-busqueda">
+    <div id="barraBusqueda">
         <input type="text" id="buscarUsuario" placeholder="Buscar usuario">
         <button id="btnBuscar" aria-label="Buscar">🔍</button>
     </div>

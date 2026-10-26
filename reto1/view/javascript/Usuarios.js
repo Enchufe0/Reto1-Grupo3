@@ -51,7 +51,7 @@ window.abrirEditar = function(id, nombre, apellido, username) {
     document.getElementById('apellido').value = apellido;
     document.getElementById('username').value = username;
     document.getElementById('password').removeAttribute('required'); // La contraseña es opcional al editar
-    document.getElementById('stat-total').textContent = usuarios.length;
+    document.getElementById('statTotal').textContent = usuarios.length;
     
     tituloPopup.textContent = 'EDITAR USUARIO';
     dialogPopup.showModal();
