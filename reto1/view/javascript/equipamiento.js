@@ -1,3 +1,17 @@
+// Check the role passed from index.php to show the Create button
+document.addEventListener("DOMContentLoaded", () => {
+    if (window.ROL === 'ADMIN') {
+        const btnCreate = document.getElementById('btn-crear-equipamiento');
+        if (btnCreate) {
+            btnCreate.style.display = 'flex'; // Show the button
+        }
+    }
+    
+    // Load the data
+    cargarEquipos();
+});
+
+// ... (Keep the rest of your existing JS: cargarEquipos, renderizarTabla, etc.)
 let todosLosEquipos = [];
 
 async function cargarEquipos() {
