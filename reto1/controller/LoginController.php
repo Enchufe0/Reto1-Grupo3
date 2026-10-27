@@ -1,6 +1,5 @@
 <?php
 require_once __DIR__ . '/../dao/LoginDAO.php';
-
 class LoginController
 {
     private LoginDAO $loginDAO;
@@ -9,12 +8,11 @@ class LoginController
     {
         $this->loginDAO = new LoginDAO($db);
     }
-
     public function login(string $nombreUsuario, string $password): array
     {
-        $nombreUsuario = trim($nombreUsuario);
+        $cleanUsername = trim($nombreUsuario);
 
-        if ($nombreUsuario === '' || $password === '') {
+        if ($cleanUsername === '' || $password === '') {
             throw new InvalidArgumentException('Usuario y contraseña obligatorios', 400);
         }
 
@@ -22,24 +20,41 @@ class LoginController
             session_start();
         }
 
-        $usuario = $this->loginDAO->buscarPorNombreUsuario($nombreUsuario);
+        $usuario = $this->loginDAO->buscarPorNombreUsuario($cleanUsername);
 
-        if ($usuario === null || !password_verify($password, (string) $usuario['password_hash'])) {
+        if ($usuario === null) {
+            throw new InvalidArgumentException('Credenciales inválidas', 401);
+        }
+
+        $hashFromDb = (string) $usuario['password_hash'];
+        if (!password_verify($password, $hashFromDb)) {
             throw new InvalidArgumentException('Credenciales inválidas', 401);
         }
 
         $_SESSION['usuario_id'] = (int) $usuario['id_usuario'];
         $_SESSION['nombre'] = $usuario['nombre'];
-        $_SESSION['apellidos'] = $usuario['apellidos'] ?? '';
-        $_SESSION['nombre_usuario'] = $nombreUsuario;
-        $_SESSION['rol'] = $usuario['rol'] ?? 'USER';
+        $_SESSION['nombre_usuario'] = $cleanUsername;
+        
+        if (isset($usuario['apellidos'])) {
+            $_SESSION['apellidos'] = $usuario['apellidos'];
+        } else {
+            $_SESSION['apellidos'] = '';
+        }
+        
+        $userRole = 'USER';
+        if (isset($usuario['rol'])) {
+            $userRole = $usuario['rol'];
+        }
+        $_SESSION['rol'] = $userRole;
 
-        return [
-            'id_usuario' => (int) $usuario['id_usuario'],
-            'nombre' => $usuario['nombre'],
-            'apellidos' => $usuario['apellidos'] ?? '',
-            'nombre_usuario' => $nombreUsuario,
-            'rol' => $usuario['rol'] ?? 'USER',
+        $response = [
+            'id_usuario'     => (int) $usuario['id_usuario'],
+            'nombre'         => $usuario['nombre'],
+            'apellidos'      => $usuario['apellidos'] ?? '',
+            'nombre_usuario' => $cleanUsername,
+            'rol'            => $userRole,
         ];
+        
+        return $response;
     }
 }

@@ -1,17 +1,20 @@
 <?php
 require_once __DIR__ . '/../dao/HistoricoDAO.php';
-class HistoricoController {
-    private $dao;
+class HistoricoController
+{
+    private HistoricoDAO $historicoDAO;
 
-    public function __construct(PDO $db) {
-        $this->dao = new HistoricoDAO($db);
+    public function __construct(PDO $db)
+    {
+        $this->historicoDAO = new HistoricoDAO($db);
     }
-
-    // Devuelve el array con el historial del equipo
-    public function listar($idEquipamiento) {
-        if (empty($idEquipamiento)) {
-            throw new Exception("ID de equipamiento requerido", 400);
+    public function listar(int $equipmentId): array
+    {
+        if ($equipmentId <= 0) {
+            throw new InvalidArgumentException('ID de equipamiento requerido y debe ser mayor a 0', 400);
         }
-        return $this->dao->historialDeEquipamiento($idEquipamiento);
+        $historyData = $this->historicoDAO->historialDeEquipamiento($equipmentId);
+
+        return $historyData;
     }
 }

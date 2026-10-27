@@ -1,99 +1,48 @@
 <?php
-header('Content-Type: application/json; charset=utf-8');
+// 1. Traemos la conexión, la sesión y la seguridad desde api.php
+require 'api.php'; 
+require __DIR__ . '/../controller/EquipamientoController.php';
 
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-require_once __DIR__ . '/../Conexion/conexion.php';
-require_once __DIR__ . '/../controller/EquipamientoController.php';
-
-function responderEquipamiento(array $respuesta, int $estado = 200): void
-{
-    http_response_code($estado);
-    echo json_encode($respuesta, JSON_UNESCAPED_UNICODE);
-    exit;
-}
-
-function requerirLoginEquipamiento(): void
-{
-    if (!isset($_SESSION['usuario_id'])) {
-        throw new Exception('Debes iniciar sesión', 401);
-    }
-}
-
-function requerirAdminEquipamiento(): void
-{
-    if (strtoupper((string) ($_SESSION['rol'] ?? '')) !== 'ADMIN') {
-        throw new Exception('Acceso solo para administradores', 403);
-    }
-}
+$c = new EquipamientoController($db);
+$metodo = $_SERVER['REQUEST_METHOD'];
+$id = isset($_GET['id']) ? (int)$_GET['id'] : null;
+$datos = json_decode(file_get_contents('php://input'), true) ?? $_POST;
 
 try {
-    $database = new Database();
-    $db = $database->getConnection();
-    if (!$db instanceof PDO) {
-        throw new RuntimeException('No se pudo conectar con la base de datos');
+    checkLogin(); // Todos deben estar logueados
+
+    if ($metodo === 'GET') {
+        if ($id !== null) {
+            json($c->ver($id));
+        }
+        json($c->listar());
     }
 
-    $controller = new EquipamientoController($db);
-    $metodo = $_SERVER['REQUEST_METHOD'] ?? '';
-    
-    // MEJORA: Forzamos a que el ID sea un número entero
-    $id = isset($_GET['id']) ? (int)$_GET['id'] : null; 
-    
-    $cuerpo = file_get_contents('php://input');
-    $json = json_decode($cuerpo, true);
-    $datos = is_array($json) ? $json : $_POST;
-
-    requerirLoginEquipamiento();
-
-    switch ($metodo) {
-        case 'GET':
-            if ($id !== null) {
-                responderEquipamiento($controller->ver($id));
-            }
-            responderEquipamiento($controller->listar());
-
-        case 'POST':
-            requerirAdminEquipamiento();
-            $controller->crear($datos);
-            responderEquipamiento([
-                'ok' => true,
-                'mensaje' => 'Equipo creado correctamente',
-            ], 201);
-
-        case 'PUT':
-            if (array_key_exists('id_ubicacion_actual', $datos)) {
-                if (strtoupper((string) ($_SESSION['rol'] ?? '')) !== 'USER') {
-                    throw new Exception('Solo el conserje puede mover equipos', 403);
-                }
-                $controller->cambiarUbicacion($id, $datos['id_ubicacion_actual']);
-            } else {
-                requerirAdminEquipamiento();
-                $controller->actualizar($id, $datos);
-            }
-            responderEquipamiento([
-                'ok' => true,
-                'mensaje' => 'Equipo modificado correctamente',
-            ]);
-
-        case 'DELETE':
-            requerirAdminEquipamiento();
-            $controller->eliminar($id);
-            responderEquipamiento([
-                'ok' => true,
-                'mensaje' => 'Equipo eliminado correctamente',
-            ]);
-
-        default:
-            throw new Exception('Método no permitido', 405);
-    }
-} catch (Throwable $error) {
-    $estado = $error->getCode();
-    if ($estado < 400 || $estado > 599) {
-        $estado = 500;
+    if ($metodo === 'POST') {
+        checkAdmin(); // Solo Admin crea
+        $c->crear($datos);
+        json(['ok' => true, 'mensaje' => 'Equipo creado']);
     }
 
-    responderEquipamiento(['error' => $error->getMessage()], $estado);
+    if ($metodo === 'PUT') {
+        if (isset($datos['id_ubicacion_actual'])) {
+            // Mover equipo (Solo Conserje)
+            if ($_SESSION['rol'] !== 'USER') throw new Exception("Solo el conserje mueve equipos", 403);
+            $c->cambiarUbicacion($id, $datos['id_ubicacion_actual']);
+        } else {
+            // Editar datos (Solo Admin)
+            checkAdmin();
+            $c->actualizar($id, $datos);
+        }
+        json(['ok' => true]);
+    }
+
+    if ($metodo === 'DELETE') {
+        checkAdmin(); // Solo Admin borra
+        $c->eliminar($id);
+        json(['ok' => true]);
+    }
+} catch (Throwable $e) {
+    json(['error' => $e->getMessage()], $e->getCode() ?: 500);
 }
+?>
