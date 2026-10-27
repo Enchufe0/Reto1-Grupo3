@@ -1,0 +1,185 @@
+/* Configuracion basica para toda la pagina */
+body {
+    font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
+    background-color: #f8fafc; /* Gris super clarito y limpio, adios al beige */
+    color: #0f172a; /* Letra azul marino oscuro */
+    margin: 0; /* Quitamos margenes por defecto del navegador */
+}
+
+/* Centramos el contenido principal para que respire y no toque los bordes */
+.contenidoPagina {
+    max-width: 1200px; /* Tope de ancho para que no se estire a lo loco en pantallas enormes */
+    margin: 0 auto; /* Lo centra en la pantalla */
+    padding: 2rem; /* Le da espacio a los lados para que no se pegue */
+}
+
+/* La zona de arriba con el logo y tu perfil */
+#topHeader {
+    display: flex;
+    justify-content: space-between; /* Manda el logo a una esquina y el perfil a la otra */
+    align-items: center; /* Los centra en vertical */
+    padding: 1rem 2rem;
+    background-color: white;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05); /* Sombrita fina abajo */
+}
+#perfil {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem; /* Hueco entre tu nombre y el circulito */
+    font-weight: 600;
+    color: #334155;
+}
+#avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background-color: #eff6ff; /* Fondo azulito */
+    color: #2563eb; /* Letra azul fuerte */
+    border-radius: 50%; /* Hace el circulo perfecto */
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+/* El menu principal centrado */
+#mainNav {
+    background-color: white; /* Limpio, sin colores raros */
+    padding: 1rem 0;
+    border-bottom: 1px solid #e2e8f0; /* Linea separadora por debajo */
+}
+#mainNav ul {
+    display: flex;
+    justify-content: center; /* Pone las opciones justo en el medio */
+    gap: 2rem;
+    list-style: none; /* Quita los puntitos clasicos de las listas */
+    margin: 0;
+    padding: 0;
+}
+#mainNav a {
+    text-decoration: none; /* Quita el subrayado feo de los links */
+    color: #64748b;
+    font-weight: 600;
+    padding: 0.5rem 1.2rem;
+    border-radius: 9999px; /* Hace el efecto pildora o capsula redondita */
+    transition: all 0.2s; /* Hace que el cambio de color al pasar el raton sea suave */
+}
+#mainNav a:hover {
+    background-color: #f1f5f9; /* Se pone grisecito al pasar el raton */
+}
+#mainNav a.activo {
+    background-color: #eff6ff; /* Se queda fijo en azul para saber en que pagina estas */
+    color: #2563eb;
+}
+
+/* Los titulos grandes de cada seccion */
+.cabecera-seccion {
+    padding: 0 0 1rem 0; 
+}
+.cabecera-seccion h1 { 
+    margin: 0; 
+    font-size: 1.8rem; 
+    color: #0f172a; 
+}
+.cabecera-seccion p { 
+    margin: 0.5rem 0 0; 
+    color: #64748b; 
+}
+
+/* Las cajas de resumen con los numeros grandes */
+.estadisticas {
+    display: flex;
+    gap: 1.5rem; /* Hueco entre cajas */
+    margin-bottom: 2rem; /* Lo separa de la barra de busqueda de abajo */
+}
+.tarjeta-estadistica {
+    background: white;
+    flex: 1; /* Hace que todas las cajas ocupen lo mismo */
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); /* Sombrita moderna y limpia */
+}
+.estadistica-titulo { margin: 0; color: #64748b; font-size: 0.9rem; }
+.estadistica-cantidad { margin: 10px 0 0; font-size: 2.2rem; font-weight: bold; color: #0f172a; }
+
+/* Buscador a la izquierda y Boton a la derecha (AQUI ESTA LA SOLUCION DEL BOTON) */
+.controles-accion {
+    display: flex;
+    justify-content: space-between; /* Esta magia empuja los extremos cada uno a su lado */
+    align-items: center;
+    width: 100%; /* Le decimos que ocupe todo el ancho para que el boton se vaya al final de verdad */
+    margin-bottom: 2rem; /* Le da aire por abajo antes de las tarjetas */
+}
+#barraBusqueda {
+    display: flex;
+    gap: 0.5rem; /* Hueco entre el cuadro de texto y el icono de la lupa */
+}
+#buscarUsuario {
+    padding: 0.6rem 1.2rem;
+    border-radius: 9999px;
+    border: 1px solid #cbd5e1;
+    outline: none; /* Quita el borde feo que sale al hacer click para escribir */
+    width: 250px;
+}
+#btnAñadir {
+    background-color: #0f172a;
+    color: white;
+    border-radius: 9999px;
+    padding: 0.6rem 1.5rem;
+    border: none;
+    font-weight: 600;
+    cursor: pointer; /* Hace que salga la mano en vez de la flecha al pasar por encima */
+    transition: background 0.2s;
+}
+#btnAñadir:hover {
+    background-color: #1e293b; /* Se pone un poco mas oscuro */
+}
+
+/* La cuadrilla donde van las tarjetas de los usuarios */
+.tarjetaUsuario {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Crea columnas el solo segun el espacio que haya */
+    gap: 1.5rem; /* Hueco entre cada tarjeta */
+}
+.tarjetaUsuario article {
+    background-color: white; /* Base blanca, sin lineas de borde feas */
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); /* Sombra suave para que destaquen del fondo gris */
+    transition: all 0.2s ease;
+}
+.tarjetaUsuario article:hover {
+    box-shadow: 0 10px 15px -3px rgba(37,99,235,0.15); /* Se ilumina con una sombra azul al pasar el raton */
+    transform: translateY(-2px); /* Efectito sutil de que la carta levita un poco */
+}
+
+/* Botoncitos pequeños para editar o borrar dentro de cada tarjeta */
+.tarjetaAccion {
+    margin-top: 1.5rem;
+    display: flex;
+    gap: 0.5rem;
+}
+.tarjetaAccion button {
+    border-radius: 9999px;
+    padding: 0.4rem 1rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.btnEditar {
+    background-color: #f1f5f9;
+    color: #334155;
+}
+.btnEditar:hover {
+    background-color: #e2e8f0;
+}
+.btnEliminar {
+    background-color: #fee2e2; /* Rojito palido para que no de el cante */
+    color: #ef4444;
+}
+.btnEliminar:hover {
+    background-color: #ef4444; /* Se pone rojo fuerte al pasar el raton */
+    color: white;
+}
