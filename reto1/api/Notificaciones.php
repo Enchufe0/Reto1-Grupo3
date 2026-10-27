@@ -1,9 +1,12 @@
 <?php
 
+    use enumNotificaciones\EstadoNotificaciones; 
+
     header('Content-Type: application/json; charset=utf-8');
 
     require_once __DIR__ . '/../model/Notificaciones.php';
     require_once __DIR__ . '/../dao/NotificacionesDAO.php';
+    require_once __DIR__ . '/../model/EstadoNotificaciones.php';
 
     //conexion con la base de datos
     try {
@@ -66,19 +69,90 @@
             break;
 
             case 'POST':
-                $contenido = file_get_contents("php//input");
+                $contenido = file_get_contents("php://input");
                 $datos = json_decode($contenido, true);
                 
-                http_response_code(201); 
-                echo json_encode(["mensaje" => "Notificación creada con éxito"]);
+                // Comprobamos que nos envían todos los datos necesarios
+                if (isset($datos['titulo'], $datos['descripcion'], $datos['fecha_creacion'], $datos['estado'], $datos['id_usuario'])) {
+                    
+                    try {
+                        // Convertimos el texto del estado en el Enum correspondiente
+                        $estado_enum = EstadoNotificaciones::from($datos['estado']);
+                        
+                        // Armamos la nueva caja (id 0 porque la base de datos lo genera)
+                        $nuevaNotificacion = new Notificaciones(
+                            0, 
+                            $datos['titulo'], 
+                            $datos['descripcion'], 
+                            $datos['fecha_creacion'], 
+                            $estado_enum, 
+                            intval($datos['id_usuario'])
+                        );
+
+                        // Mandamos la caja al almacén
+                        $exito = $notificacionesDAO->crear($nuevaNotificacion);
+
+                        if ($exito) {
+                            http_response_code(201); 
+                            echo json_encode(["mensaje" => "Notificación creada con éxito"]);
+                        } else {
+                            http_response_code(500); 
+                            echo json_encode(["error" => "Error al guardar en la base de datos"]);
+                        }
+                    } catch (ValueError $e) {
+                        // Si el estado que envían no existe en el Enum (ej: envían "patata" en vez de "LEIDA")
+                        http_response_code(400);
+                        echo json_encode(["error" => "El estado de la notificación no es válido"]);
+                    }
+
+                } else {
+                    http_response_code(400); 
+                    echo json_encode(["error" => "Faltan datos obligatorios para crear la notificación"]);
+                }
                 break;
 
             case 'PUT':
-                $contenido = file_get_contents("php//input");
+                $contenido = file_get_contents("php://input");
                 $datos = json_decode($contenido, true);
 
-                http_response_code(200);
-                echo json_encode(["mensaje" => "Notificación actualizada correctamente"]);
+                // Aquí exigimos también el id_notificacion para saber cuál modificar
+                if (isset($datos['id_notificacion'], $datos['titulo'], $datos['descripcion'], $datos['fecha_creacion'], $datos['estado'], $datos['id_usuario'])) {
+                    
+                    try {
+                        $estado_enum = EstadoNotificaciones::from($datos['estado']);
+                        
+                        // Armamos la caja con su ID real
+                        $notificacionModificada = new Notificaciones(
+                            intval($datos['id_notificacion']), 
+                            $datos['titulo'], 
+                            $datos['descripcion'], 
+                            $datos['fecha_creacion'], 
+                            $estado_enum, 
+                            intval($datos['id_usuario'])
+                        );
+
+                        // 2. Forzamos la asignación del ID por si el constructor lo estaba ignorando o desordenando
+                        $notificacionModificada->setIdNotificacion(intval($datos['id_notificacion']));
+
+                        // Sobreescribimos en el almacén
+                        $exito = $notificacionesDAO->actualizar($notificacionModificada);
+
+                        if ($exito) {
+                            http_response_code(200);
+                            echo json_encode(["mensaje" => "Notificación actualizada correctamente"]);
+                        } else {
+                            http_response_code(500);
+                            echo json_encode(["error" => "Error al actualizar la base de datos"]);
+                        }
+                    } catch (ValueError $e) {
+                        http_response_code(400);
+                        echo json_encode(["error" => "El estado de la notificación no es válido"]);
+                    }
+
+                } else {
+                    http_response_code(400);
+                    echo json_encode(["error" => "Faltan datos obligatorios para actualizar"]);
+                }
                 break;
 
             case 'DELETE':

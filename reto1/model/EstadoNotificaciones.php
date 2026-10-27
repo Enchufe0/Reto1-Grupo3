@@ -2,8 +2,8 @@
     namespace enumNotificaciones;
 
     enum EstadoNotificaciones: string {
-        case PENDIENTE = 'Pendiente';
-        case EN_PROCESO = 'En proceso';
-        case REALIZADA = 'Realizada';
+        case PENDIENTE = 'PENDIENTE';
+        case REALIZADA = 'REALIZADA';
+        case EN_PROCESO = 'EN_PROCESO';
     }
 ?>

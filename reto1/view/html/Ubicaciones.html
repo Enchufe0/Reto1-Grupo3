@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion - Ubicaciones </title>
+    <link rel="stylesheet" href="../css/Ubicaciones.css">
+</head>
+<body>
+    <!--Cabecera-->
+    <header id="topHeader">
+        <div class="logo">
+            <img src="img/logo.png" alt="Logo de la Empresa">
+        </div>
+        <div class="perfil">
+            <span id="nombreUsuario">Admin user</span>
+            <span id="avatar">U</span>
+        </div>
+    </header>
+
+    <!--Menu principal-->
+    <nav id="mainNav">
+        <ul>
+            <li><a href="gestionarEquipos.html">EQUIPOS</a></li>
+            <li><a href="Usuarios.html">USUARIOS</a></li>
+            <li><a href="Ubicaciones.html">UBICACIONES</a></li>
+            <li><a href="NotificacionesAdmin.html">NOTIFICACIONES</a></li>
+        </ul>
+    </nav>
+
+    <!--Contenido-->
+    <main class="contenidoPagina">
+        <header class="cabecera-seccion">
+            <h1>Gestión de Ubicaciones</h1>
+            <p>Consulta y organiza los espacios y aulas del centro</p>
+        </header>
+
+        <!--Tarjeta de estadisticas-->
+        <section class="estadisticas">
+        <div class="tarjeta-estadistica">
+            <p class="estadistica-titulo">Total de esoacios</p>
+            <p class="estadistica-cantidad" id="estadisticaTotal">0</p>
+        </div>
+        <div class="tarjeta-estadistica">
+            <p class="estadistica-titulo">Aulas</p>
+            <p class="estadistica-cantidad">3</p>
+        </div>
+        <div class="tarjeta-estadistica">
+            <p class="estadistica-titulo">Nuevos este mes</p>
+            <p class="estadistica-cantidad">5</p>
+        </div>
+    </section>
+
+    <section class="controles-accion">
+        <div id="barraBusqueda">
+            <input type="text" id="buscarUbicacion" placeholder="Buscar aula o espacio...">
+            <button id="btnBuscar" aria-label="Buscar">🔍</button>
+        </div>
+        <button id="btnAñadir">Añadir Ubicacion</button>
+    </section>
+
+    <section class="tarjeta-ubicacion">
+    <!-- Nivel 1: Planta -->
+    <details class="desplegable-planta">
+        <summary>Primera Planta</summary>
+        <div class="contenido-desplegable">
+            
+            <!-- Nivel 2: Aula -->
+            <details class="desplegable-aula">
+                <summary>Aula 1.01 - Desarrollo</summary>
+                <div class="contenido-desplegable">
+                    <!-- Nivel 3: Equipos (Enlaces simples) -->
+                    <a href="#" class="item-equipo">PC-01 (Profesor)</a>
+                    <a href="#" class="item-equipo">Proyector Epson</a>
+                    <a href="#" class="item-equipo">Switch 24 puertos</a>
+                </div>
+            </details>
+
+            <details class="desplegable-aula">
+                <summary>Aula 1.02 - Sistemas</summary>
+                <div class="contenido-desplegable">
+                    <span class="item-equipo">Sin equipos registrados</span>
+                </div>
+            </details>
+
+        </div>
+    </details>
+
+    <!-- Otra Planta -->
+    <details class="desplegable-planta">
+        <summary>Segunda Planta</summary>
+        <div class="contenido-desplegable">
+            <!-- Aulas de la segunda planta... -->
+        </div>
+    </details>
+</section>
+
+    </main>
+    
+</body>
+</html>
