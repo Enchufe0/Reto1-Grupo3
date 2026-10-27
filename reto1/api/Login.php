@@ -5,94 +5,69 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-require_once __DIR__ . '/../Conexion/conexion.php';
+require_once __DIR__ . '/../config/conexion.php';
 require_once __DIR__ . '/../controller/LoginController.php';
 
-function responderLogin($respuesta, int $estado = 200): void
+function sendJsonResponse(array $responseData, int $statusCode = 200): void 
 {
-    http_response_code($estado);
-    echo json_encode($respuesta, JSON_UNESCAPED_UNICODE);
+    http_response_code($statusCode); 
+    echo json_encode($responseData, JSON_UNESCAPED_UNICODE);
     exit;
 }
 
-$bufferIniciado = false;
-
 try {
-    $metodo = $_SERVER['REQUEST_METHOD'] ?? '';
+    $database = new Database();
+    $dbConnection = $database->getConnection();
 
-    switch ($metodo) {
-        case 'POST':
-            $cuerpo = file_get_contents('php://input');
-            $json = json_decode($cuerpo, true);
-            $datos = is_array($json) ? $json : $_POST;
-            $usuario = $datos['nombre_usuario'] ?? $datos['usuario'] ?? '';
-            $password = $datos['password'] ?? $datos['contrasena'] ?? '';
-
-            if (!is_string($usuario) || !is_string($password)) {
-                throw new Exception('Usuario y contraseña deben ser texto', 400);
-            }
-
-            $database = new Database();
-            ob_start();
-            $bufferIniciado = true;
-            $db = $database->getConnection();
-            ob_end_clean();
-            $bufferIniciado = false;
-
-            if (!$db instanceof PDO) {
-                throw new RuntimeException('No se pudo conectar con la base de datos');
-            }
-
-            $controller = new LoginController($db);
-            $userData = $controller->login(trim($usuario), $password);
-            responderLogin([
-                'mensaje' => 'Login correcto',
-                'usuario' => $userData,
-            ]);
-
-        case 'GET':
-            if (isset($_SESSION['usuario_id'])) {
-                responderLogin([
-                    'autenticado' => true,
-                    'usuario' => [
-                        'id_usuario' => $_SESSION['usuario_id'],
-                        'nombre' => $_SESSION['nombre'] ?? '',
-                        'rol' => $_SESSION['rol'] ?? 'USER',
-                    ],
-                ]);
-            }
-
-            responderLogin(['autenticado' => false]);
-
-        case 'DELETE':
-            $_SESSION = [];
-            if (ini_get('session.use_cookies')) {
-                $params = session_get_cookie_params();
-                setcookie(
-                    session_name(),
-                    '',
-                    time() - 42000,
-                    $params['path'],
-                    $params['domain'],
-                    $params['secure'],
-                    $params['httponly']
-                );
-            }
-            session_destroy();
-            responderLogin(['mensaje' => 'Sesión cerrada correctamente']);
-
-        default:
-            throw new Exception('Método no permitido', 405);
+    if (!$dbConnection instanceof PDO) {
+        throw new RuntimeException('No se pudo conectar con la base de datos', 500);
     }
+
+    $loginController = new LoginController($dbConnection);
+    $httpMethod = $_SERVER['REQUEST_METHOD'];
+
+    if ($httpMethod === 'POST') {
+    
+        $rawBody = file_get_contents('php://input');
+     
+        $decodedData = json_decode($rawBody, true);
+        
+        if (!is_array($decodedData)) {
+            throw new InvalidArgumentException('Formato JSON inválido', 400);
+        }
+
+        $inputUsuario = $decodedData['nombre_usuario'] ?? '';
+        $inputPassword = $decodedData['password'] ?? '';
+
+        $loggedUserData = $loginController->login($inputUsuario, $inputPassword);
+
+        $successResponse = [
+            'mensaje' => 'Login correcto',
+            'usuario' => $loggedUserData
+        ];
+
+        sendJsonResponse($successResponse, 200);
+    }
+
+    if ($httpMethod === 'DELETE') {
+        $_SESSION = [];
+        session_destroy();
+        
+        sendJsonResponse(['mensaje' => 'Sesión cerrada correctamente'], 200);
+    }
+
+    throw new Exception('Método HTTP no permitido', 405);
+
 } catch (Throwable $error) {
-    if ($bufferIniciado) {
-        ob_end_clean();
+    
+    $errorCode = $error->getCode();
+
+    if ($errorCode < 400 || $errorCode > 599) {
+        $errorCode = 500; 
     }
 
-    $estado = $error->getCode();
-    if ($estado < 400 || $estado > 599) {
-        $estado = 500;
-    }
-
-    responderLogin(['error' => $error->getMessage()], $estado);
+    $errorResponse = [
+        'error' => $error->getMessage()
+    ];
+    sendJsonResponse($errorResponse, $errorCode);
 }

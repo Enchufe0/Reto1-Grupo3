@@ -1,56 +1,46 @@
 <?php
-header('Content-Type: application/json; charset=utf-8');
-
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-require_once __DIR__ . '/../Conexion/conexion.php';
-require_once __DIR__ . '/../controller/HistoricoController.php';
-
-function responderHistorico($respuesta, int $estado = 200): void
-{
-    http_response_code($estado);
-    echo json_encode($respuesta, JSON_UNESCAPED_UNICODE);
-    exit;
-}
-
-function requerirLoginHistorico(): void
-{
-    if (!isset($_SESSION['usuario_id'])) {
-        throw new Exception('Debes iniciar sesión', 401);
-    }
-}
+require 'api.php';
+require __DIR__ . '/../controller/HistoricoController.php';
 
 try {
-    requerirLoginHistorico();
 
-    $metodo = $_SERVER['REQUEST_METHOD'] ?? '';
-    if ($metodo !== 'GET') {
-        throw new Exception('Método no permitido', 405);
+    checkLogin();
+
+    $httpMethod = $_SERVER['REQUEST_METHOD'];
+    if ($httpMethod !== 'GET') {
+        throw new Exception('Método HTTP no permitido. Solo se acepta GET.', 405);
     }
 
-    $idEquipo = filter_var(
-        $_GET['id_equipamiento'] ?? null,
-        FILTER_VALIDATE_INT
-    );
-    if ($idEquipo === false || $idEquipo === null || $idEquipo <= 0) {
-        throw new Exception('Debes indicar un id_equipamiento válido', 422);
+    $rawIdFromUrl = $_GET['id_equipamiento'] ?? null;
+    
+    if ($rawIdFromUrl === null) {
+        throw new Exception('Debes indicar un id_equipamiento en la URL', 422);
+    }
+
+    $validatedEquipmentId = filter_var($rawIdFromUrl, FILTER_VALIDATE_INT);
+    
+    if ($validatedEquipmentId === false || $validatedEquipmentId <= 0) {
+        throw new Exception('El id_equipamiento debe ser un número válido', 422);
     }
 
     $database = new Database();
-    $db = $database->getConnection();
-    if (!$db instanceof PDO) {
-        throw new RuntimeException('No se pudo conectar con la base de datos');
+    $dbConnection = $database->getConnection();
+
+    if (!$dbConnection instanceof PDO) {
+        throw new RuntimeException('Error de conexión a la base de datos', 500);
     }
 
-    $controller = new HistoricoController($db);
-    responderHistorico($controller->listar($idEquipo));
+    $historicoController = new HistoricoController($dbConnection);
+
+    $historyData = $historicoController->listar($validatedEquipmentId);
+    
+    json($historyData, 200);
+
 } catch (Throwable $error) {
-    $estado = $error->getCode();
-    if ($estado < 400 || $estado > 599) {
-        $estado = 500;
+    $errorCode = $error->getCode();
+    if ($errorCode < 400 || $errorCode > 599) {
+        $errorCode = 500;
     }
 
-    responderHistorico(['error' => $error->getMessage()], $estado);
+    json(['error' => $error->getMessage()], $errorCode);
 }
