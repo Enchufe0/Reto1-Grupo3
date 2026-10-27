@@ -23,7 +23,7 @@
         <ul>
             <li><a href="gestionarEquipos.html">EQUIPOS</a></li>
             <li><a href="Usuarios.html">USUARIOS</a></li>
-            <li><a href="Ubicaciones.html">UBICACIONES</a></li>
+            <li><a href="Ubicaciones.html" class="activo">UBICACIONES</a></li>
             <li><a href="NotificacionesAdmin.html">NOTIFICACIONES</a></li>
         </ul>
     </nav>
@@ -38,7 +38,7 @@
         <!--Tarjeta de estadisticas-->
         <section class="estadisticas">
         <div class="tarjeta-estadistica">
-            <p class="estadistica-titulo">Total de esoacios</p>
+            <p class="estadistica-titulo">Total de espacios</p>
             <p class="estadistica-cantidad" id="estadisticaTotal">0</p>
         </div>
         <div class="tarjeta-estadistica">
@@ -62,37 +62,71 @@
     <section class="tarjeta-ubicacion">
     <!-- Nivel 1: Planta -->
     <details class="desplegable-planta">
-        <summary>Primera Planta</summary>
+        <summary>
+            <span>Almacén | <span class="descripcion-aula">Ubicación inicial de todos los equipamientos</span></span>
+        </summary>
         <div class="contenido-desplegable">
             
-            <!-- Nivel 2: Aula -->
-            <details class="desplegable-aula">
-                <summary>Aula 1.01 - Desarrollo</summary>
+            <!-- Nivel 2: Equipos -->
                 <div class="contenido-desplegable">
-                    <!-- Nivel 3: Equipos (Enlaces simples) -->
+                    
                     <a href="#" class="item-equipo">PC-01 (Profesor)</a>
                     <a href="#" class="item-equipo">Proyector Epson</a>
                     <a href="#" class="item-equipo">Switch 24 puertos</a>
                 </div>
-            </details>
-
-            <details class="desplegable-aula">
-                <summary>Aula 1.02 - Sistemas</summary>
-                <div class="contenido-desplegable">
-                    <span class="item-equipo">Sin equipos registrados</span>
-                </div>
-            </details>
-
         </div>
     </details>
 
-    <!-- Otra Planta -->
     <details class="desplegable-planta">
-        <summary>Segunda Planta</summary>
+        <summary><span>Aula 101 | <span class="descripcion-aula">Aula de informatica de primer curso</span></span></summary>
         <div class="contenido-desplegable">
             <!-- Aulas de la segunda planta... -->
         </div>
     </details>
+
+    <details class="desplegable-planta">
+        <summary><span>Aula 102 |<span class="descripcion-aula">Aula de informatica de segundo curso</span></span></summary>
+        <div class="contenido-desplegable">
+            <!-- Aulas de la segunda planta... -->
+        </div>
+    </details>
+
+    <details class="desplegable-planta">
+        <summary><span>Aula 103 |<span class="descripcion-aula">Aula de informatica para proyectos</span></span></summary>
+        <div class="contenido-desplegable">
+            <!-- Aulas de la segunda planta... -->
+        </div>
+    </details>
+
+    <details class="desplegable-planta">
+        <summary><span>Sala Profesores |<span class="descripcion-aula">Sala destinada al personal docente</span></span></summary>
+        <div class="contenido-desplegable">
+            <!-- Aulas de la segunda planta... -->
+        </div>
+    </details>
+
+    <details class="desplegable-planta">
+        <summary><span>Despacho Dirección |<span class="descripcion-aula">Despacho dirección</span></span></summary>
+        <div class="contenido-desplegable">
+            <!-- Aulas de la segunda planta... -->
+        </div>
+    </details>
+
+    <details class="desplegable-planta">
+        <summary><span>Laboratio |<span class="descripcion-aula">Laboratorio de pruebas y sistemas</span></span></summary>
+        <div class="contenido-desplegable">
+            <!-- Aulas de la segunda planta... -->
+        </div>
+    </details>
+
+    <details class="desplegable-planta">
+        <summary><span>Salón de Actos |<span class="descripcion-aula">Espacio para presentación y eventos</span></span></summary>
+        <div class="contenido-desplegable">
+            <!-- Aulas de la segunda planta... -->
+        </div>
+    </details>
+
+
 </section>
 
     </main>
