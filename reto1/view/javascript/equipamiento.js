@@ -1,12 +1,30 @@
+document.addEventListener("DOMContentLoaded", () => {
+    if (window.ROL === 'ADMIN') {
+        const btnCreate = document.getElementById('btn-crear-equipamiento');
+        if (btnCreate) {
+            btnCreate.style.display = 'flex'; 
+        }
+    }
+    
+    // Load data ONLY ONCE
+    cargarEquipos();
+});
+
 let todosLosEquipos = [];
 
 async function cargarEquipos() {
     const tbody = document.getElementById('eq-table-body');
+    if (!tbody) {
+        console.error("❌ ERROR: No se encontró el tbody de la tabla.");
+        return;
+    }
+
     tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 20px;">Cargando datos...</td></tr>';
     try {
         const res = await fetch('api/Equipamiento.php');
         const datos = await res.json();
         if (!res.ok) throw new Error(datos.error);
+        
         todosLosEquipos = datos;
         actualizarEstadisticas();
         renderizarTabla();
@@ -59,18 +77,12 @@ function renderizarTabla() {
 
     filtrados.forEach(e => {
         let accionesHTML = '<div class="eq-actions-wrapper">';
-        
         if (window.ROL === 'ADMIN' || window.ROL === 'USER') {
             accionesHTML += `<button class="eq-action-btn eq-btn-move" onclick="moverEquipo(${e.id_equipamiento})">
                 <i class="fa-solid fa-arrow-right-arrow-left"></i> Mover</button>`;
         }
-        
-        // ADDING THE VERTICAL LINE HERE
-        if (window.ROL === 'ADMIN' && window.ROL === 'USER') { 
+        if (window.ROL === 'ADMIN') { 
             accionesHTML += `<div class="action-separator"></div>`;
-        }
-
-        if (window.ROL === 'ADMIN') {
             accionesHTML += `<button class="eq-action-btn eq-btn-delete" onclick="borrarEquipo(${e.id_equipamiento})">
                 <i class="fa-regular fa-trash-can"></i> Eliminar</button>`;
         }
@@ -80,20 +92,10 @@ function renderizarTabla() {
             <tr>
                 <td><input type="checkbox"></td>
                 <td>${e.id_equipamiento}</td>
-                <td>
-                    <div class="eq-item-name">
-                        <span class="eq-item-icon">${getIcon(e.categoria)}</span>
-                        ${e.nombre}
-                    </div>
-                </td>
+                <td><div class="eq-item-name"><span class="eq-item-icon">${getIcon(e.categoria)}</span>${e.nombre}</div></td>
                 <td>${e.marca}</td>
                 <td><span class="eq-badge">${e.categoria}</span></td>
-                <td>
-                    <div class="eq-location">
-                        <i class="fa-solid fa-location-dot"></i>
-                        ${e.ubicacion || 'Almacén'}
-                    </div>
-                </td>
+                <td><div class="eq-location"><i class="fa-solid fa-location-dot"></i>${e.ubicacion || 'Almacén'}</div></td>
                 <td>${accionesHTML}</td>
             </tr>
         `;
@@ -137,5 +139,3 @@ async function borrarEquipo(id) {
     await fetch(`api/Equipamiento.php?id=${id}`, { method: 'DELETE' });
     cargarEquipos();
 }
-
-cargarEquipos();
