@@ -1,31 +1,39 @@
 <!DOCTYPE html>
 <html>
     <head lang="es">
+        <!-- Metadatos de idioma, codificación y adaptación a pantallas. -->
         <meta charset="UTF-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Lista de notificaciones</title>
+        <!-- Estilos generales y específicos de las notificaciones. -->
         <link rel="stylesheet" href="../css/Main.css">
         <link rel="stylesheet" href="../css/Notificaciones.css">
         <script src=""></script>
     </head>
     <body>
+        <!-- Cabecera con controles de inicio y salida. -->
         <header id="header">
             <div id="inicio"><- Inicio</div> <div id="salir">Salir</div>
         </header>
+        <!-- Navegación principal entre las secciones de administración. -->
         <nav id="nav">
             <div>Equipamientos</div><div>Ubicaciones</div><div>Usuarios</div><div>Notificaciones</div>
         </nav>
         <main id="main">
+            <!-- Sección que presenta la lista de notificaciones enviadas. -->
             <section class="notificaciones-lista">
                 <div class="notificaciones-lista__controles">
                     <h1>Enviadas</h1>
+                    <!-- Acciones disponibles para buscar o filtrar la lista. -->
                     <div class="notificaciones-lista__acciones">
                         <button type="button">Search</button>
                         <button type="button">Filtros</button>
                     </div>
                 </div>
+                <!-- Tabla con los datos de las notificaciones. -->
                 <div class="notificaciones-lista__tabla">
                     <table>
+                        <!-- Encabezados de las columnas de la lista. -->
                         <thead>
                             <tr>
                                 <th>Fecha</th>
@@ -34,6 +42,7 @@
                                 <th>Estado</th>
                             </tr>
                         </thead>
+                        <!-- Filas que se rellenarán con los datos de las notificaciones. -->
                         <tbody>
                             <tr>
                                 <td></td>
@@ -46,6 +55,7 @@
                 </div>
             </section>
         </main>
+        <!-- Pie de página. -->
         <footer id="footer"></footer>
     </body>
 </html>

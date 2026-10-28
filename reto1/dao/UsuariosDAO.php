@@ -5,14 +5,17 @@ class UsuariosDAO
 {
     private PDO $conexion;
 
+    // Guarda la conexión para utilizarla en las operaciones de acceso a datos.
     public function __construct(PDO $conexion){
             $this->conexion = $conexion;
     }
 
+    // Comprueba las credenciales comparando la contraseña con el hash almacenado.
     public function login(string $nombre_usuario, string $password): bool
     {
         $sql = "SELECT password_hash FROM usuarios WHERE nombre_usuario = ?";
 
+        // La consulta preparada separa los datos recibidos de la instrucción SQL.
         $stmt = $this->conexion->prepare($sql);
         $stmt->execute([$nombre_usuario]);
 
@@ -21,6 +24,7 @@ class UsuariosDAO
         return $password_hash !== false && password_verify($password, $password_hash);
     }
 
+    // Busca un usuario por su ID y devuelve el objeto correspondiente o null si no existe.
     public function buscarPorId(int $id){
         $sql = "SELECT * FROM usuarios WHERE id_usuario = ?";
 
@@ -42,6 +46,7 @@ class UsuariosDAO
         return null;
     }
 
+    // Recupera todos los usuarios y convierte cada fila en un objeto Usuarios.
     public function buscarTodos(){
         $sql = "SELECT * FROM usuarios";
 
@@ -50,6 +55,7 @@ class UsuariosDAO
 
         $fila = $stmt->fetchAll(PDO::FETCH_OBJ);
 
+        // Acumula los objetos creados a partir de las filas obtenidas.
         $usuarios=[];
 
         foreach($fila as $filaUsuarios){
@@ -65,6 +71,7 @@ class UsuariosDAO
         return $usuarios;
     }
 
+    // Inserta un usuario nuevo usando sus datos y devuelve si la ejecución tuvo éxito.
     public function crear(Usuarios $usuario): bool{
         $sql = "INSERT INTO usuarios (nombre, apellidos, nombre_usuario, password_hash) VALUES (?, ?, ?, ?)";
 
@@ -77,6 +84,7 @@ class UsuariosDAO
         ]);
     }
 
+    // Actualiza los datos del usuario identificado por su ID.
     public function actualizar(Usuarios $usuario): bool{
         $sql = "UPDATE usuarios SET nombre = ?, apellidos = ?, nombre_usuario = ?, password_hash = ? WHERE id_usuario = ?";
 
@@ -90,6 +98,7 @@ class UsuariosDAO
         ]);
     }
 
+    // Genera un hash para la nueva contraseña y lo guarda para el usuario.
     public function actualizar_password(Usuarios $usuario, string $nuevaPassword): bool
     {
         $hashed_password = password_hash($nuevaPassword, PASSWORD_DEFAULT);
@@ -103,6 +112,7 @@ class UsuariosDAO
         ]);
     }
 
+    // Elimina el usuario que tenga el ID indicado.
     public function borrar(int $id): bool{
         $sql = "DELETE FROM usuarios WHERE id_usuario = ?";
 
