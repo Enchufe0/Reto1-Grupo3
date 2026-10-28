@@ -38,11 +38,10 @@
         <option value="">Ubicación: Todas</option>
     </select>
 
-    <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'ADMIN'): ?>
-    <button class="eq-btn-primary" onclick="abrirModalCrear()">
+    <!-- The button is hidden by default. JS will show it if user is ADMIN -->
+    <button class="eq-btn-primary" id="btn-crear-equipamiento" onclick="abrirModalCrear()" style="display: none;">
         <i class="fa-solid fa-plus"></i> Crear equipamiento
     </button>
-    <?php endif; ?>
 </div>
 
 <div class="eq-table-container">
