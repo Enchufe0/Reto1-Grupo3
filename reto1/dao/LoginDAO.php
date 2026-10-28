@@ -1,24 +1,34 @@
 <?php
 class LoginDAO
 {
-    private PDO $db;
+    private PDO $dbConnection;
 
     public function __construct(PDO $db)
     {
-        $this->db = $db;
+        
+        $this->dbConnection = $db;
     }
-
     public function buscarPorNombreUsuario(string $nombreUsuario): ?array
     {
-        $stmt = $this->db->prepare('
+        $queryText = '
             SELECT id_usuario, nombre, apellidos, password_hash, rol
             FROM usuarios
             WHERE nombre_usuario = :nombre_usuario
             LIMIT 1
-        ');
-        $stmt->execute(['nombre_usuario' => $nombreUsuario]);
-        $fila = $stmt->fetch(PDO::FETCH_ASSOC);
+        ';
 
-        return $fila ?: null;
+        $stmt = $this->dbConnection->prepare($queryText);
+
+        $stmt->execute([
+            'nombre_usuario' => $nombreUsuario
+        ]);
+        
+        $resultRow = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($resultRow !== false) {
+            return $resultRow;
+        } else {
+            return null;
+        }
     }
 }

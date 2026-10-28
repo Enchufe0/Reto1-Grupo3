@@ -1,101 +1,186 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestion - Ubicaciones </title>
+    <title>Gestión - Ubicaciones</title>
+    
+    <!-- Fuentes e iconos de FontAwesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Enlace a tu archivo CSS -->
     <link rel="stylesheet" href="../css/Ubicaciones.css">
 </head>
 <body>
-    <!--Cabecera-->
-    <header id="topHeader">
-        <div class="logo">
-            <img src="img/logo.png" alt="Logo de la Empresa">
-        </div>
-        <div class="perfil">
-            <span id="nombreUsuario">Admin user</span>
-            <span id="avatar">U</span>
-        </div>
-    </header>
 
-    <!--Menu principal-->
-    <nav id="mainNav">
-        <ul>
-            <li><a href="gestionarEquipos.html">EQUIPOS</a></li>
-            <li><a href="Usuarios.html">USUARIOS</a></li>
-            <li><a href="Ubicaciones.html" class="activo">UBICACIONES</a></li>
-            <li><a href="NotificacionesAdmin.html">NOTIFICACIONES</a></li>
-        </ul>
+    <!-- NAVEGACIÓN SUPERIOR (Exactamente la de tu compañera) -->
+    <nav class="top-navbar">
+        <div class="nav-tabs">
+            <a href="gestionarEquipos.html">Equipamientos</a>
+            <a href="Usuarios.html">Usuarios</a>
+            <a href="Ubicaciones.html" class="active">Ubicaciones</a>
+            <a href="NotificacionesAdmin.html">Notificaciones</a>
+        </div>
+
+        <div class="nav-logo-center">
+            <img src="../../img/logo.svg" alt="Logo" class="login-logo-img">
+            <div class="login-logo-text">r d e n z a</div>
+        </div>
+
+        <div class="nav-profile">
+            <i class="fa-regular fa-bell bell"></i>
+            <div class="user-avatar">AD</div>
+            <div class="dropdown-container">
+                <div class="admin-dropdown">
+                    Administración <i class="fa-solid fa-chevron-down" style="font-size: 10px; color: #6b7280; margin-left: 5px;"></i>
+                </div>
+            </div>
+        </div>
     </nav>
 
-    <!--Contenido-->
-    <main class="contenidoPagina">
-        <header class="cabecera-seccion">
-            <h1>Gestión de Ubicaciones</h1>
-            <p>Consulta y organiza los espacios y aulas del centro</p>
-        </header>
+    <!-- CONTENIDO PRINCIPAL -->
+    <main>
+        <div class="eq-header">
+            <h1 class="eq-title">Gestión de Ubicaciones</h1>
+            <p style="color: #6b7280; margin-top: 8px; font-size: 15px;">Consulta y organiza los espacios y aulas del centro</p>
+        </div>
 
-        <!--Tarjeta de estadisticas-->
-        <section class="estadisticas">
-        <div class="tarjeta-estadistica">
-            <p class="estadistica-titulo">Total de esoacios</p>
-            <p class="estadistica-cantidad" id="estadisticaTotal">0</p>
+        <!-- Tarjetas de estadísticas con la estructura de tu compañera -->
+        <div class="eq-stats-bar">
+            <div class="eq-stat">
+                <i class="fa-solid fa-map-location-dot" style="color: #9ca3af;"></i>
+                <span class="stat-number" id="estadisticaTotal">0</span> 
+                espacios en total
+            </div>
+            <div class="eq-stat-divider"></div>
+            <div class="eq-stat">
+                <i class="fa-solid fa-chalkboard-user" style="color: #9ca3af;"></i>
+                <span class="stat-number">3</span> aulas registradas
+            </div>
+            <div class="eq-stat-divider"></div>
+            <div class="eq-stat">
+                <i class="fa-solid fa-calendar-plus" style="color: #9ca3af;"></i>
+                <span class="stat-number">5</span> nuevos este mes
+            </div>
         </div>
-        <div class="tarjeta-estadistica">
-            <p class="estadistica-titulo">Aulas</p>
-            <p class="estadistica-cantidad">3</p>
-        </div>
-        <div class="tarjeta-estadistica">
-            <p class="estadistica-titulo">Nuevos este mes</p>
-            <p class="estadistica-cantidad">5</p>
-        </div>
-    </section>
 
-    <section class="controles-accion">
-        <div id="barraBusqueda">
-            <input type="text" id="buscarUbicacion" placeholder="Buscar aula o espacio...">
-            <button id="btnBuscar" aria-label="Buscar">🔍</button>
-        </div>
-        <button id="btnAñadir">Añadir Ubicacion</button>
-    </section>
-
-    <section class="tarjeta-ubicacion">
-    <!-- Nivel 1: Planta -->
-    <details class="desplegable-planta">
-        <summary>Primera Planta</summary>
-        <div class="contenido-desplegable">
+        <!-- Buscador y botón de añadir con su diseño -->
+        <div class="eq-filters-bar">
+            <div class="eq-search-box">
+                <i class="fa-solid fa-magnifying-glass" style="color: #9ca3af;"></i>
+                <input type="text" id="buscarUbicacion" placeholder="Buscar aula o espacio...">
+            </div>
             
-            <!-- Nivel 2: Aula -->
-            <details class="desplegable-aula">
-                <summary>Aula 1.01 - Desarrollo</summary>
+            <button class="eq-btn-primary" id="btnAñadir">
+                <i class="fa-solid fa-plus"></i> Añadir Ubicación
+            </button>
+        </div>
+
+        <!-- Contenedor blanco para las ubicaciones -->
+        <div class="eq-table-container">
+            
+            <details class="desplegable-planta">
+                <summary>
+                    <span class="titulo-alineado">
+                        <span class="nombre-aula">Almacén |</span>
+                        <span class="descripcion-aula">Ubicación inicial de todos los equipamientos</span>
+                    </span>
+                </summary>
                 <div class="contenido-desplegable">
-                    <!-- Nivel 3: Equipos (Enlaces simples) -->
                     <a href="#" class="item-equipo">PC-01 (Profesor)</a>
                     <a href="#" class="item-equipo">Proyector Epson</a>
                     <a href="#" class="item-equipo">Switch 24 puertos</a>
                 </div>
             </details>
 
-            <details class="desplegable-aula">
-                <summary>Aula 1.02 - Sistemas</summary>
+            <details class="desplegable-planta">
+                <summary>
+                    <span class="titulo-alineado">
+                        <span class="nombre-aula">Aula 101 |</span>
+                        <span class="descripcion-aula">Aula de informatica de primer curso</span>
+                    </span>
+                </summary>
+                <div class="contenido-desplegable">
+                    <span class="item-equipo">Sin equipos registrados</span>
+                </div>
+            </details>
+
+            <details class="desplegable-planta">
+                <summary>
+                    <span class="titulo-alineado">
+                        <span class="nombre-aula">Aula 102 |</span>
+                        <span class="descripcion-aula">Aula de informatica de segundo curso</span>
+                    </span>
+                </summary>
+                <div class="contenido-desplegable">
+                    <span class="item-equipo">Sin equipos registrados</span>
+                </div>
+            </details>
+
+            <details class="desplegable-planta">
+                <summary>
+                    <span class="titulo-alineado">
+                        <span class="nombre-aula">Aula 103 |</span>
+                        <span class="descripcion-aula">Aula de informatica para proyectos</span>
+                    </span>
+                </summary>
+                <div class="contenido-desplegable">
+                    <span class="item-equipo">Sin equipos registrados</span>
+                </div>
+            </details>
+
+            <details class="desplegable-planta">
+                <summary>
+                    <span class="titulo-alineado">
+                        <span class="nombre-aula">Sala Profesores |</span>
+                        <span class="descripcion-aula">Sala destinada al personal docente</span>
+                    </span>
+                </summary>
+                <div class="contenido-desplegable">
+                    <span class="item-equipo">Sin equipos registrados</span>
+                </div>
+            </details>
+
+            <details class="desplegable-planta">
+                <summary>
+                    <span class="titulo-alineado">
+                        <span class="nombre-aula">Despacho Dirección |</span>
+                        <span class="descripcion-aula">Despacho dirección</span>
+                    </span>
+                </summary>
+                <div class="contenido-desplegable">
+                    <span class="item-equipo">Sin equipos registrados</span>
+                </div>
+            </details>
+
+            <details class="desplegable-planta">
+                <summary>
+                    <span class="titulo-alineado">
+                        <span class="nombre-aula">Laboratorio |</span>
+                        <span class="descripcion-aula">Laboratorio de pruebas y sistemas</span>
+                    </span>
+                </summary>
+                <div class="contenido-desplegable">
+                    <span class="item-equipo">Sin equipos registrados</span>
+                </div>
+            </details>
+
+            <details class="desplegable-planta">
+                <summary>
+                    <span class="titulo-alineado">
+                        <span class="nombre-aula">Salón de Actos |</span>
+                        <span class="descripcion-aula">Espacio para presentación y eventos</span>
+                    </span>
+                </summary>
                 <div class="contenido-desplegable">
                     <span class="item-equipo">Sin equipos registrados</span>
                 </div>
             </details>
 
         </div>
-    </details>
-
-    <!-- Otra Planta -->
-    <details class="desplegable-planta">
-        <summary>Segunda Planta</summary>
-        <div class="contenido-desplegable">
-            <!-- Aulas de la segunda planta... -->
-        </div>
-    </details>
-</section>
-
     </main>
-    
+
 </body>
 </html>
