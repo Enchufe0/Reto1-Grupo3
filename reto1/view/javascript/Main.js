@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", async () => {
+    // index.html?page=equipamientos)
     const urlParams = new URLSearchParams(window.location.search);
     let page = urlParams.get('page') || 'login';
 
@@ -7,12 +8,15 @@ document.addEventListener("DOMContentLoaded", async () => {
         const sessionData = await res.json();
 
         if (sessionData.autenticado === false) {
+            // NOT LOGGED IN
             if (page !== 'login') {
                 window.location.href = 'index.html?page=login';
                 return;
             }
-            loadView('Login', 'login');
+            loadView('login');
+            
         } else {
+            // LOGGED IN
             const user = sessionData.usuario;
             window.ROL = user.rol; 
 
@@ -21,11 +25,13 @@ document.addEventListener("DOMContentLoaded", async () => {
                 return;
             }
 
+            // Security Check (Block USER from admin pages)
             if ((page === 'usuarios' || page === 'ubicaciones') && user.rol !== 'ADMIN') {
                 window.location.href = 'index.html?page=equipamientos';
                 return;
             }
 
+            // Setup Navbar
             document.getElementById('main-navbar').style.display = 'flex';
             document.getElementById('main-footer').style.display = 'block';
             document.getElementById('nav-username').textContent = user.nombre;
@@ -36,13 +42,14 @@ document.addEventListener("DOMContentLoaded", async () => {
                 document.getElementById('nav-usuarios').style.display = 'block';
             }
 
+            // Highlight the active tab
             document.querySelectorAll('.nav-link').forEach(link => {
                 if (link.dataset.page === page) link.classList.add('active');
                 else link.classList.remove('active');
             });
 
-            const capitalizedPage = page.charAt(0).toUpperCase() + page.slice(1);
-            loadView(capitalizedPage, page);
+            // Load the specific view
+            loadView(page, user.rol);
         }
     } catch (error) {
         console.error("Error checking session:", error);
@@ -50,43 +57,104 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 });
 
-async function loadView(fileName, pageName) {
+// =====================================================================
+// AQUI ESTA LOS METODOS PARA CARGAR VISTAS DINAMICAMENTE
+// =====================================================================
+async function loadView(pageName, role) {
     const mainContent = document.getElementById('app-content');
     mainContent.innerHTML = '<p style="text-align:center; margin-top:50px;">Cargando vista...</p>';
 
+    let htmlFile = '';
+    let cssFile = '';
+    let jsFile = '';
+
+    // --- MAPA DE LOS ARCHIVOS ---
+    if (pageName === 'login') { 
+        htmlFile = 'Login'; // HTML -MIZARNE
+        cssFile = 'Login';  // CSS -MIZARNE
+        jsFile = 'Login';   // JS -MIZARNE
+    } 
+    else if (pageName === 'equipamientos') {
+        htmlFile = 'Equipamientos'; // HTML -MIZARNE
+        cssFile = 'Equipamiento';    // CSS -MIZARNE
+        jsFile = 'Equipamiento';    // JS -MIZARNE
+    } 
+    else if (pageName === 'usuarios') {
+        htmlFile = 'Usuarios'; // HTML - ADRIAN
+        cssFile = 'Usuarios'; // CSS - ADRIAN
+        jsFile = 'Usuarios'; // JS - ADRIAN
+    } 
+    else if (pageName === 'ubicaciones') {
+        htmlFile = 'Ubicaciones'; // HTML - ADRIAN
+        cssFile = 'Ubicaciones'; // CSS - ADRIAN
+        jsFile = 'Ubicaciones'; // JS - ADRIAN
+    } 
+    else if (pageName === 'notificaciones') {
+        htmlFile = (role === 'ADMIN') ? 'NotificacionesAdmin' : 'NotificacionesLista'; // HTML - VICTOR
+        cssFile = 'Notificaciones'; // CSS - VICTOR
+        jsFile = 'Notificaciones'; // JS - VICTOR
+    } 
+    else if (pageName === 'historico') {
+        htmlFile = 'Historico'; // HTML -MIZARNE
+        cssFile = 'Historico'; // CSS -MIZARNE
+        jsFile = 'Historico'; // JS -MIZARNE
+    }
+
+    // --- CARGAR HTML ---
     try {
-        const res = await fetch(`view/html/${fileName}.html`);
-        if (!res.ok) throw new Error(`No se encontró ${fileName}.html`);
+        const res = await fetch(`view/html/${htmlFile}.html`);
+        if (!res.ok) throw new Error(`No se encontró ${htmlFile}.html`);
         
         const html = await res.text();
         mainContent.innerHTML = html;
 
-        const oldScript = document.getElementById('dynamic-script');
-        if (oldScript) oldScript.remove();
+        // Load specific CSS and JS
+        loadPageCSS(cssFile);
+        loadPageJS(jsFile);
 
-        let scriptPath = '';
-        // 👇 CORRECT PATH 👇
-        if (pageName === 'equipamientos') scriptPath = 'view/javascript/Equipamiento.js';
-        if (pageName === 'historico') scriptPath = 'view/javascript/Historico.js';
-        if (pageName === 'login') scriptPath = 'view/javascript/Login.js';
-
-        if (scriptPath) {
-            const script = document.createElement('script');
-            script.id = 'dynamic-script';
-            script.src = scriptPath;
-            
-            // Shows errors in console if the script fails to load
-            script.onerror = () => console.error("❌ ERROR 404: No se pudo cargar", scriptPath);
-            script.onload = () => console.log("✅ Script cargado:", scriptPath);
-            
-            document.body.appendChild(script);
-        }
     } catch (error) {
         console.error(error);
-        mainContent.innerHTML = `<p style="text-align:center; color:red;">Error 404: No se encontró la vista ${fileName}.html</p>`;
+        mainContent.innerHTML = `<p style="text-align:center; color:red;">Error 404: No se encontró la vista ${htmlFile}.html</p>`;
     }
 }
 
+// =====================================================================
+// 4. DYNAMIC CSS LOADER
+// =====================================================================
+function loadPageCSS(cssFileName) {
+    // Remove old specific CSS
+    const oldCSS = document.getElementById('dynamic-css');
+    if (oldCSS) oldCSS.remove();
+
+    if (cssFileName) {
+        const link = document.createElement('link');
+        link.id = 'dynamic-css';
+        link.rel = 'stylesheet';
+        link.href = `view/css/${cssFileName}.css`;
+        document.head.appendChild(link);
+    }
+}
+
+// =====================================================================
+// 5. DYNAMIC JS LOADER
+// =====================================================================
+function loadPageJS(jsFileName) {
+    // Remove old specific JS
+    const oldScript = document.getElementById('dynamic-script');
+    if (oldScript) oldScript.remove();
+
+    if (jsFileName) {
+        const script = document.createElement('script');
+        script.id = 'dynamic-script';
+        script.src = `view/javascript/${jsFileName}.js`;
+        script.onerror = () => console.error(`❌ ERROR 404: No se pudo cargar view/javascript/${jsFileName}.js`);
+        document.body.appendChild(script);
+    }
+}
+
+// =====================================================================
+// 6. NAVBAR UTILITIES
+// =====================================================================
 function toggleDropdown(event) {
     event.stopPropagation();
     document.getElementById('adminMenu').classList.toggle('show');
