@@ -21,16 +21,16 @@
             <a href="gestionarEquipos.html">Equipamientos</a>
             <a href="Usuarios.html">Usuarios</a>
             <a href="Ubicaciones.html" class="active">Ubicaciones</a>
-            <a href="NotificacionesAdmin.html">Notificaciones</a>
+            <a href="NotificacionesAdmin.html">Historial</a>
         </div>
 
-        <div class="nav-logo-center">
+        <div class="nav-logo-centro">
             <img src="../../img/logo.svg" alt="Logo" class="login-logo-img">
-            <div class="login-logo-text">r d e n z a</div>
+            <div class="login-logo-texto">r d e n z a</div>
         </div>
 
-        <div class="nav-profile">
-            <i class="fa-regular fa-bell bell"></i>
+        <div class="nav-perfil">
+            <i class="fa-regular fa-bell campana"></i>
             <div class="user-avatar">AD</div>
             <div class="dropdown-container">
                 <div class="admin-dropdown">
@@ -39,47 +39,49 @@
             </div>
         </div>
     </nav>
-
+<!--BORRAR EL NAV-->
     <!-- CONTENIDO PRINCIPAL -->
     <main>
-        <div class="eq-header">
-            <h1 class="eq-title">Gestión de Ubicaciones</h1>
-            <p style="color: #6b7280; margin-top: 8px; font-size: 15px;">Consulta y organiza los espacios y aulas del centro</p>
+        <div class="header-ubi">
+            <h1 class="titulo-ubi">Gestión de Ubicaciones</h1>
+            <p class="subtitulo-ubi">Consulta y organiza los espacios y aulas del centro</p>
         </div>
 
-        <!-- Tarjetas de estadísticas con la estructura de tu compañera -->
-        <div class="eq-stats-bar">
-            <div class="eq-stat">
-                <i class="fa-solid fa-map-location-dot" style="color: #9ca3af;"></i>
-                <span class="stat-number" id="estadisticaTotal">0</span> 
-                espacios en total
+        <!-- Tarjetas de estadísticas -->
+        <div class="ubi-barra-estadisticas">
+            <div class="ubi-estadisticas">
+                <i class="fa-solid fa-map-location-dot"></i> 
+                <span class="estadistica-numero" id="estadisticaTotal">0</span> 
+                <span class="estadistica-barra">espacios en total</span>
             </div>
-            <div class="eq-stat-divider"></div>
-            <div class="eq-stat">
-                <i class="fa-solid fa-chalkboard-user" style="color: #9ca3af;"></i>
-                <span class="stat-number">3</span> aulas registradas
+            <div class="ubi-estadisticas-division"></div>
+            <div class="ubi-estadisticas">
+                <i class="fa-solid fa-chalkboard-user"></i>
+                <span class="estadistica-numero">3</span> 
+                <span class="estadistica-barra">aulas registradas</span>
             </div>
-            <div class="eq-stat-divider"></div>
-            <div class="eq-stat">
-                <i class="fa-solid fa-calendar-plus" style="color: #9ca3af;"></i>
-                <span class="stat-number">5</span> nuevos este mes
+            <div class="ubi-estadisticas-division"></div>
+            <div class="ubi-estadisticas">
+                <i class="fa-solid fa-calendar-plus"></i>
+                <span class="estadistica-numero">5</span> 
+                <span class="estadistica-barra">nuevos este mes</span>
             </div>
         </div>
 
-        <!-- Buscador y botón de añadir con su diseño -->
-        <div class="eq-filters-bar">
-            <div class="eq-search-box">
-                <i class="fa-solid fa-magnifying-glass" style="color: #9ca3af;"></i>
+        <!-- Buscador y botón de añadir -->
+        <div class="ubi-filtro-buscador">
+            <div class="ubi-buscador">
+                <i class="fa-solid fa-magnifying-glass"></i>
                 <input type="text" id="buscarUbicacion" placeholder="Buscar aula o espacio...">
             </div>
             
-            <button class="eq-btn-primary" id="btnAñadir">
+            <button class="ubi-boton-añadir" id="btnAñadir">
                 <i class="fa-solid fa-plus"></i> Añadir Ubicación
             </button>
         </div>
 
         <!-- Contenedor blanco para las ubicaciones -->
-        <div class="eq-table-container">
+        <div class="ubi-contenedor-tabla">
             
             <details class="desplegable-planta">
                 <summary>

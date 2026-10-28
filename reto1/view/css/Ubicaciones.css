@@ -31,7 +31,6 @@ main {
     align-items: center; 
     height: 84px; 
     padding: 0 40px; 
-    border-bottom: 1px solid rgba(0,0,0,0.04); 
     position: sticky; 
     top: 0; 
     z-index: 1000; /*funcion como capas, como quieres que se quede arriba cuando escroleas le pones un nunmero tan alto para que siempre sea el primero*/
@@ -57,7 +56,7 @@ main {
     background-color: #efece3; 
 }
 
-/* hover delraton */
+/* hover delraton en los links*/
 .nav-tabs a:hover { 
     background-color: #e5e1d5; 
 }
@@ -69,7 +68,7 @@ main {
 }
 
 /* El logo del centro con las letras super separadas */
-.nav-logo-center { 
+.nav-logo-centro { 
     display: flex; 
     align-items: center; 
     gap: 15px; 
@@ -81,7 +80,7 @@ main {
     object-fit: contain; /*esto sirve para que la imagen, en este caso el logo, cuadno lo metas en la caja, no se deforme*/
 }
 
-.login-logo-text { 
+.login-logo-texto { 
     font-size: 18px; 
     font-weight: 500; 
     color: #11225b; 
@@ -89,7 +88,7 @@ main {
 }
 
 /* La zona de la derecha con tu avatar y la campanita */
-.nav-profile {
+.nav-perfil {
     display: flex; 
     justify-content: flex-end; 
     align-items: center; 
@@ -97,7 +96,7 @@ main {
     flex: 1; 
 }
 
-.bell {
+.campana {
     color: #6b7280; 
     font-size: 18px; 
     cursor: pointer; /* hace que cuando pases el raton por encima se ponga la manita para que sepas que se puede clickar*/
@@ -128,12 +127,18 @@ main {
     border-radius: 20px; 
     cursor: pointer; /* hace que cuando pases el raton por encima se ponga la manita para que sepas que se puede clickar*/
 }
+/*======================
+    BORRAR DE AQUI PA ARRIBA
+=============================*/
 
-/* El titulo de Gestion de Ubicaciones */
-.eq-header { 
+/* -------------------------------------
+    El titulo de Gestion de Ubicaciones 
+    ------------------------------------    
+*/
+.header-ubi { 
     margin-bottom: 24px; 
 }
-.eq-title { 
+.titulo-ubi { 
     font-size: 32px; 
     font-weight: 300; 
     color: #111827; 
@@ -142,7 +147,7 @@ main {
 }
 
 /* La fila donde van las tres estadisticas */
-.eq-stats-bar { 
+.ubi-barra-estadisticas { 
     display: flex; 
     align-items: center; 
     gap: 20px; 
@@ -150,32 +155,46 @@ main {
     font-size: 15px; 
     color: #6b7280; 
 }
+/* Estilo del texto pequeño bajo el título principal */
+.subtitulo-ubi {
+    color: #6b7280; 
+    margin-top: 8px; 
+    font-size: 15px;
+}
 
-.eq-stat { 
+/* Etiqueta para el texto que acompaña al número */
+.estadistica-barra {
+    display: inline-block;
+    color: #6b7280;
+}
+
+.ubi-estadisticas { 
     display: flex; 
     align-items: center; 
     gap: 8px; 
 }
 
 /* El numero de la estadistica */
-.stat-number { 
-    color: #111827; 
-    font-size: 20px; 
+.estadistica-numero { 
+    color: #6b7280; 
+    font-size: 15px; 
     font-weight: 500; 
 }
 
 /* El palito gris que separa una estadistica de la otra */
-.eq-stat-divider { 
+.ubi-estadisticas-division { 
     width: 1.5px; 
     height: 24px; 
     background-color: #e5e7eb; 
 }
 
 
-/* BUSCADOR Y BOTON AÑADIR*/
+/*--------------------------- 
+    BUSCADOR Y BOTON AÑADIR
+-----------------------------*/
 
 /* Caja invisible que empuja el buscador a un lado y el boton al otro */
-.eq-filters-bar { 
+.ubi-filtro-buscador { 
     display: flex; 
     gap: 12px; 
     margin-bottom: 24px; 
@@ -183,8 +202,9 @@ main {
     justify-content: space-between; 
 }
 
+
 /* La caja blanca del buscador */
-.eq-search-box { 
+.ubi-buscador { 
     flex: 1; 
     display: flex; 
     align-items: center; 
@@ -194,10 +214,11 @@ main {
     border-radius: 8px; 
     padding: 0 16px; 
     max-width: 600px;
+    color: #9ca3af;
 }
 
 /* El input transparente para poder escribir sin que salga el borde feo por defecto */
-.eq-search-box input { 
+.ubi-buscador input { 
     border: none; 
     outline: none; 
     width: 100%; 
@@ -207,12 +228,12 @@ main {
     background-color: transparent; }
 
 /* El color del texto falso de Buscar aula o espacio... */
-.eq-search-box input::placeholder { 
-    color: #9ca3af; 
+.ubi-buscador input::placeholder { /*al poner input directamente va a todos los imputs que esten dentro de la clase ubi-buscador. */
+    color: #9ca3af;              /*luego los :: hace referencia a algo en concreto que esta en ese ibnput*/
 }
 
 /* Boton de añadir ubicacion azul oscuro */
-.eq-btn-primary { 
+.ubi-boton-añadir { 
     display: flex; 
     align-items: center; 
     gap: 8px; 
@@ -226,15 +247,17 @@ main {
     cursor: pointer; 
     transition: 0.2s; 
 }
-.eq-btn-primary:hover { 
+.ubi-boton-añadir:hover { 
     background-color: #1e293b; 
 }
 
 
-/*LISTA DE AULKAS*/
+/*-----------------------
+    LISTA DE AULKAS
+----------------------------*/
 
 /* La caja blanca que envuelve todas las ubicaciones */
-.eq-table-container { 
+.ubi-contenedor-tabla { 
     background-color: white; 
     border: 1px solid #e5e7eb; 
     border-radius: 8px; 
@@ -296,7 +319,9 @@ summary::-webkit-details-marker {
     font-size: 14px;
 }
 
-/*CONTENIDO DESPLEGABLE*/
+/*---------------------------
+    CONTENIDO DESPLEGABLE
+-------------------------------*/
 
 /* El cajon que se abre hacia abajo cuando haces click en un aula */
 .contenido-desplegable {
@@ -324,3 +349,8 @@ summary::-webkit-details-marker {
     border-left-color: #2563eb;
     background-color: #eff6ff;
 }
+
+
+
+
+
