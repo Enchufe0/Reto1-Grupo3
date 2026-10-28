@@ -9,25 +9,29 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- CSS -->
+    <!-- GLOBAL CSS -->
     <link rel="stylesheet" href="view/css/Main.css">
-    <link rel="stylesheet" href="view/css/equipamiento.css">
+    
+    <!-- Base CSS (Login and Equipamientos) -->
     <link rel="stylesheet" href="view/css/login.css">
+    <link rel="stylesheet" href="view/css/equipamiento.css">
 
     <style>
+        /* Hide navbar and footer by default until JS verifies the session */
         #main-navbar, #main-footer { display: none; }
-        #app-content { min-height: 50vh; }
+        #app-content { min-height: 60vh; }
     </style>
 </head>
 <body>
 
-    <!-- NAVBAR -->
+    <!-- NAVBAR (Hidden by default) -->
     <nav class="top-navbar" id="main-navbar">
         <div class="nav-tabs">
             <a href="index.html?page=equipamientos" class="nav-link" data-page="equipamientos">Equipamiento</a>
             <a href="index.html?page=ubicaciones" class="nav-link" data-page="ubicaciones" id="nav-ubicaciones" style="display:none;">Ubicaciones</a>
             <a href="index.html?page=historico" class="nav-link" data-page="historico">Historial</a>
             <a href="index.html?page=usuarios" class="nav-link" data-page="usuarios" id="nav-usuarios" style="display:none;">Usuarios</a>
+            <a href="index.html?page=notificaciones" class="nav-link" data-page="notificaciones">Notificaciones</a>
         </div>
 
         <div class="nav-logo-center">
@@ -49,17 +53,17 @@
         </div>
     </nav>
 
-    <!-- DYNAMIC CONTENT -->
+    <!-- MAIN CONTENT (The HTML files will be injected here) -->
     <main id="app-content">
         <p style="text-align:center; margin-top:50px;">Cargando aplicación...</p>
     </main>
 
-    <!-- FOOTER -->
+    <!-- FOOTER (Hidden by default) -->
     <footer id="main-footer">
-        &copy; 2026 Reto 2DAW - Ordenza. Todos los derechos reservados.
+        &copy; 2026 Reto 2DAW - rdenza. Todos los derechos reservados.
     </footer>
 
-    <!-- CORRECT PATH TO JAVASCRIPT FOLDER -->
+    <!-- MAIN ROUTER SCRIPT -->
     <script src="view/javascript/Main.js"></script>
 </body>
 </html>
