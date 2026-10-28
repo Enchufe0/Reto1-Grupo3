@@ -203,3 +203,10 @@ details.desplegable-aula summary {
     border-left-color: #2563eb;
     background-color: #eff6ff;
 }
+
+/* La descripción ya no necesita margen porque el ancho del nombre la empuja sola */
+.descripcion-aula {
+    margin-left: 1.5rem; 
+    color: #475569cb; 
+    
+}
