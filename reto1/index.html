@@ -2,29 +2,40 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Reto 2DAW - rdenza</title>
+    <title>Ordenza</title>
     
-    <!-- Fonts & Icons -->
+    <!-- Fonts Y Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- GLOBAL CSS -->
+
+    <!-------------------------CSS ARCHIVOS------------------------------------>
+    <!-- Aqui esta el MAIN CSS -->
     <link rel="stylesheet" href="view/css/Main.css">
     
-    <!-- Base CSS (Login and Equipamientos) -->
-    <link rel="stylesheet" href="view/css/login.css">
-    <link rel="stylesheet" href="view/css/equipamiento.css">
+    <!-- AQUI PONEMOS LOS ARCHIVOS CSS ESPECIFICOS ---------------------------->
+    <link rel="stylesheet" href="view/css/login.css">           <!-- CSS MIZARNE -->
+    <link rel="stylesheet" href="view/css/equipamiento.css">    <!-- CSS MIZARNE -->
+                                                                <!-- CSS MIZARNE -->   
+    <link rel="stylesheet" href="view/css/Usuarios.css">        <!-- CSS ADRIAN -->
+    <link rel="stylesheet" href="view/css/Ubicaciones.css">     <!-- CSS ADRIAN -->
+    <link rel="stylesheet" href="view/css/Notificaciones.css">  <!-- CSS VICTOR -->
+
+    <!-------------------------CSS ARCHIVOS------------------------------------>
+
 
     <style>
-        /* Hide navbar and footer by default until JS verifies the session */
+     /* Esto oculta la barra de navegación y el pie de página por defecto hasta que JS verifique la sesión */
         #main-navbar, #main-footer { display: none; }
         #app-content { min-height: 60vh; }
     </style>
 </head>
 <body>
 
-    <!-- NAVBAR (Hidden by default) -->
+    <!------------------------------------------------------------------------->
+    <!-------------------------NAVBAR------------------------------------>
+    <!------------------------------------------------------------------------->
     <nav class="top-navbar" id="main-navbar">
         <div class="nav-tabs">
             <a href="index.html?page=equipamientos" class="nav-link" data-page="equipamientos">Equipamiento</a>
@@ -34,14 +45,21 @@
             <a href="index.html?page=notificaciones" class="nav-link" data-page="notificaciones">Notificaciones</a>
         </div>
 
+        <!----------LOGO----------->
         <div class="nav-logo-center">
             <img src="img/logo.svg" alt="Logo" class="login-logo-img">
             <div class="login-logo-text">r d e n z a</div>
         </div>
+        <!----------LOGO----------->
 
+        <!-----NOTIF, AVATAR, MENU---->
         <div class="nav-profile">
-            <i class="fa-regular fa-bell bell"></i>
+            <i class="fa-regular fa-bell bell"></i>      <!--Cocina Victor-->
+
+            <!--AVATAR-->
             <div class="user-avatar" id="nav-avatar">AD</div>
+
+            <!--MENU (ESPERA QUE TERMINE -MIZ)-->
             <div class="dropdown-container">
                 <div class="admin-dropdown" onclick="toggleDropdown(event)">
                     <span id="nav-username">Administración</span> <i class="fa-solid fa-chevron-down" style="font-size: 10px; color: #6b7280; margin-left: 5px;"></i>
@@ -51,19 +69,20 @@
                 </div>
             </div>
         </div>
+        <!-----NOTIF, AVATAR, MENU---->
     </nav>
 
-    <!-- MAIN CONTENT (The HTML files will be injected here) -->
+    <!-- MAIN CONTENT -->
     <main id="app-content">
         <p style="text-align:center; margin-top:50px;">Cargando aplicación...</p>
     </main>
 
-    <!-- FOOTER (Hidden by default) -->
+    <!--FOOTER-->
     <footer id="main-footer">
-        &copy; 2026 Reto 2DAW - rdenza. Todos los derechos reservados.
+        &copy; 2026 Reto 2DAW - Ordenza. Todos los derechos reservados.
     </footer>
 
-    <!-- MAIN ROUTER SCRIPT -->
+    <!--MAIN DE JS DONDE ESTAN LOS HTML-->
     <script src="view/javascript/Main.js"></script>
 </body>
 </html>

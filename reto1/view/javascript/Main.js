@@ -71,32 +71,26 @@ async function loadView(pageName, role) {
     // --- MAPA DE LOS ARCHIVOS ---
     if (pageName === 'login') { 
         htmlFile = 'Login'; // HTML -MIZARNE
-        cssFile = 'Login';  // CSS -MIZARNE
         jsFile = 'Login';   // JS -MIZARNE
     } 
     else if (pageName === 'equipamientos') {
         htmlFile = 'Equipamientos'; // HTML -MIZARNE
-        cssFile = 'Equipamiento';    // CSS -MIZARNE
         jsFile = 'Equipamiento';    // JS -MIZARNE
     } 
     else if (pageName === 'usuarios') {
         htmlFile = 'Usuarios'; // HTML - ADRIAN
-        cssFile = 'Usuarios'; // CSS - ADRIAN
         jsFile = 'Usuarios'; // JS - ADRIAN
     } 
     else if (pageName === 'ubicaciones') {
         htmlFile = 'Ubicaciones'; // HTML - ADRIAN
-        cssFile = 'Ubicaciones'; // CSS - ADRIAN
         jsFile = 'Ubicaciones'; // JS - ADRIAN
     } 
     else if (pageName === 'notificaciones') {
         htmlFile = (role === 'ADMIN') ? 'NotificacionesAdmin' : 'NotificacionesLista'; // HTML - VICTOR
-        cssFile = 'Notificaciones'; // CSS - VICTOR
         jsFile = 'Notificaciones'; // JS - VICTOR
     } 
     else if (pageName === 'historico') {
         htmlFile = 'Historico'; // HTML -MIZARNE
-        cssFile = 'Historico'; // CSS -MIZARNE
         jsFile = 'Historico'; // JS -MIZARNE
     }
 
@@ -108,7 +102,6 @@ async function loadView(pageName, role) {
         const html = await res.text();
         mainContent.innerHTML = html;
 
-        // Load specific CSS and JS
         loadPageCSS(cssFile);
         loadPageJS(jsFile);
 
@@ -119,7 +112,7 @@ async function loadView(pageName, role) {
 }
 
 // =====================================================================
-// 4. DYNAMIC CSS LOADER
+// DYNAMIC CSS LOADER
 // =====================================================================
 function loadPageCSS(cssFileName) {
     // Remove old specific CSS
@@ -136,7 +129,7 @@ function loadPageCSS(cssFileName) {
 }
 
 // =====================================================================
-// 5. DYNAMIC JS LOADER
+//  DYNAMIC JS LOADER
 // =====================================================================
 function loadPageJS(jsFileName) {
     // Remove old specific JS
