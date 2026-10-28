@@ -1,23 +1,45 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
     <head lang="es">
         <!-- Metadatos de idioma, codificación y adaptación a pantallas. -->
         <meta charset="UTF-8"/>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Lista de notificaciones</title>
-        <!-- Estilos generales y específicos de las notificaciones. -->
-        <link rel="stylesheet" href="../css/Main.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Reto 2DAW - Notificaciones</title>
+
+        <!-- Fuentes e iconos de FontAwesome -->
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+        <!-- Estilos compartidos con el panel de equipamientos y de esta lista. -->
+        <link rel="stylesheet" href="../css/AEquipamientos.css">
         <link rel="stylesheet" href="../css/Notificaciones.css">
         <script src=""></script>
     </head>
     <body>
-        <!-- Cabecera con controles de inicio y salida. -->
-        <header id="header">
-            <div id="inicio"><- Inicio</div> <div id="salir">Salir</div>
-        </header>
-        <!-- Navegación principal entre las secciones de administración. -->
-        <nav id="nav">
-            <div>Equipamientos</div><div>Ubicaciones</div><div>Usuarios</div><div>Notificaciones</div>
+        <!-- NAVEGACIÓN SUPERIOR (Opcional, si quieres usar la suya) -->
+        <nav class="top-navbar">
+            <div class="nav-tabs">
+                <a href="#" class="active">Equipamiento</a>
+                <a href="#">Ubicaciones</a>
+                <a href="#">Historial</a>
+                <a href="#">Usuarios</a>
+            </div>
+
+            <div class="nav-logo-center">
+                <img src="../../img/logo.svg" alt="Logo" class="login-logo-img">
+                <div class="login-logo-text">r d e n z a</div>
+            </div>
+
+            <div class="nav-profile">
+                <i class="fa-regular fa-bell bell"></i>
+                <div class="user-avatar">AD</div>
+                <div class="dropdown-container">
+                    <div class="admin-dropdown">
+                        Administración <i class="fa-solid fa-chevron-down" style="font-size: 10px; color: #6b7280; margin-left: 5px;"></i>
+                    </div>
+                </div>
+            </div>
         </nav>
         <main id="main">
             <!-- Sección que presenta la lista de notificaciones enviadas. -->
@@ -26,8 +48,12 @@
                     <h1>Enviadas</h1>
                     <!-- Acciones disponibles para buscar o filtrar la lista. -->
                     <div class="notificaciones-lista__acciones">
-                        <button type="button">Search</button>
-                        <button type="button">Filtros</button>
+                        <button type="button" class="notificaciones-lista__accion">
+                            <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i> Search
+                        </button>
+                        <button type="button" class="notificaciones-lista__accion">
+                            <i class="fa-solid fa-filter" aria-hidden="true"></i> Filtros
+                        </button>
                     </div>
                 </div>
                 <!-- Tabla con los datos de las notificaciones. -->

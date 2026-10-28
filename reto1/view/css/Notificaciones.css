@@ -1,161 +1,225 @@
-:root{
-    --bg-body: #fff8d3;
-    --glow-yellow: #fcf178;
-    --circle-bg: #f0eff4;
-    --azul: #000855;
-    --azul-icono: #6b7280;
-    --texto-escrito: #000855;
-    --dorado-foco: #daba37;
-    --dorado-enlace: #ebaf17;
-    --interruptor-activo: #cab516;
-    --boton-hover-1: #fef285;
-    --boton-hover-2: #ddbc03;
-    --boton-hover-texto: #000855;
-}
-
-body{
-    background-color: var(--bg-body);
-    color: var(--azul);
-}
-
-#header,
-#nav,
-#footer{
-    background-color: var(--circle-bg);
-    color: var(--azul);
-    box-shadow: 0 2px 8px rgba(0, 8, 85, 0.08);
-}
-
-#main form{
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
+.notificaciones-lista {
     width: 100%;
-    max-width: 480px;
-    margin: 0 auto;
-    color: var(--azul);
 }
 
-#main h1{
-    margin: 0;
-    color: var(--azul);
-}
-
-#main form input[type="text"],
-#main form textarea,
-#main form select{
-    width: 100%;
-    padding: 12px 14px;
-    border: 1px solid rgba(0, 8, 85, 0.12);
-    border-radius: 12px;
-    outline: none;
-    background: var(--circle-bg);
-    color: var(--texto-escrito);
-    font: inherit;
-    box-shadow:
-        inset 4px 4px 8px rgba(0, 0, 0, 0.05),
-        inset -4px -4px 8px rgba(255, 255, 255, 0.9);
-    transition: border-color 0.25s ease, box-shadow 0.25s ease;
-}
-
-#main form textarea{
-    resize: vertical;
-}
-
-#main form input[type="text"]:focus,
-#main form textarea:focus,
-#main form select:focus{
-    border-color: var(--dorado-foco);
-    box-shadow: 0 0 0 3px rgba(218, 186, 55, 0.2);
-}
-
-#main form input[type="submit"],
-.notificaciones-lista__acciones button{
-    padding: 10px 18px;
-    border: none;
-    border-radius: 12px;
-    background: var(--circle-bg);
-    color: var(--azul);
-    font: inherit;
-    font-weight: 600;
-    cursor: pointer;
-    box-shadow:
-        -5px -5px 12px rgba(255, 255, 255, 0.9),
-        5px 5px 12px rgba(0, 0, 0, 0.08);
-    transition: color 0.3s ease, background 0.3s ease, transform 0.2s ease;
-}
-
-#main form input[type="submit"]:hover,
-.notificaciones-lista__acciones button:hover{
-    transform: translateY(-2px);
-    color: var(--boton-hover-texto);
-    background: linear-gradient(155deg, var(--boton-hover-1), var(--boton-hover-2));
-}
-
-.notificaciones-lista{
-    width: 100%;
-    color: var(--azul);
-}
-
-.notificaciones-lista h1{
-    color: var(--azul);
-}
-
-.notificaciones-lista__controles{
+.notificaciones-lista__controles {
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 16px;
-    margin-bottom: 16px;
+    margin-bottom: 24px;
 }
 
-.notificaciones-lista__acciones{
+.notificaciones-lista h1,
+.notificaciones-admin h1 {
+    margin: 0;
+    color: #111827;
+    font-size: 32px;
+    font-weight: 300;
+    letter-spacing: -0.5px;
+}
+
+.notificaciones-lista__acciones {
     display: flex;
+    gap: 12px;
+}
+
+.notificaciones-lista__accion {
+    display: inline-flex;
+    align-items: center;
     gap: 8px;
+    padding: 12px 16px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: white;
+    color: #374151;
+    font: inherit;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
 }
 
-.notificaciones-lista__tabla{
+.notificaciones-lista__accion:hover {
+    background: #fff79d;
+    border-color: #e5e7eb;
+}
+
+.notificaciones-lista__tabla {
     overflow-x: auto;
-    margin: 0 32px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: white;
 }
 
-.notificaciones-lista table{
+.notificaciones-lista table {
     width: 100%;
+    min-width: 600px;
     border-collapse: collapse;
     text-align: left;
-    overflow: hidden;
-    border-radius: 12px;
-    background: var(--circle-bg);
-    box-shadow: 0 4px 14px rgba(0, 8, 85, 0.08);
 }
 
-.notificaciones-lista th,
-.notificaciones-lista td{
-    padding: 12px;
-    border: 1px solid rgba(0, 8, 85, 0.12);
+.notificaciones-lista th {
+    padding: 16px 20px;
+    border-bottom: 1px solid #e5e7eb;
+    background: #fff79d;
+    color: #6b7280;
+    font-size: 13px;
+    font-weight: 500;
 }
 
-.notificaciones-lista th{
-    background: var(--azul);
-    color: var(--circle-bg);
-    font-weight: 600;
+.notificaciones-lista td {
+    padding: 16px 20px;
+    border-bottom: 1px solid #f3f4f6;
+    color: #111827;
+    font-size: 14px;
+    vertical-align: middle;
 }
 
-.notificaciones-lista tbody tr:nth-child(even){
-    background: rgba(252, 241, 120, 0.18);
+.notificaciones-lista tbody tr:last-child td {
+    border-bottom: none;
 }
 
-.notificaciones-lista tbody tr:hover{
-    background: rgba(252, 241, 120, 0.4);
+.notificaciones-lista tbody tr:hover {
+    background: #fffbea;
 }
 
-@media (max-width: 480px){
-    .notificaciones-lista__controles{
+.notificaciones-admin {
+    width: 100%;
+}
+
+.notificaciones-admin__form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 720px;
+    padding: 28px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: white;
+}
+
+.notificaciones-admin__campo {
+    color: #374151;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.notificaciones-admin__campo input,
+.notificaciones-admin__campo textarea,
+.notificaciones-admin__campo select {
+    box-sizing: border-box;
+    width: 100%;
+    margin-top: 8px;
+    padding: 12px 14px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    outline: none;
+    background: white;
+    color: #111827;
+    font: inherit;
+}
+
+.notificaciones-admin__campo textarea {
+    resize: vertical;
+}
+
+.notificaciones-admin__campo input:focus,
+.notificaciones-admin__campo textarea:focus,
+.notificaciones-admin__campo select:focus {
+    border-color: #9ca3af;
+    box-shadow: 0 0 0 3px rgba(156, 163, 175, 0.2);
+}
+
+.notificaciones-admin__acciones {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.notificaciones-admin__acciones .notificaciones-lista__accion {
+    background: #0b1b42;
+    border-color: #0b1b42;
+    color: white;
+}
+
+.notificaciones-admin__acciones .notificaciones-lista__accion:hover {
+    background: #1e293b;
+    border-color: #1e293b;
+}
+
+@media (max-width: 600px) {
+    .notificaciones-lista__controles {
         align-items: flex-start;
         flex-direction: column;
     }
 
-    .notificaciones-lista__tabla{
-        margin: 0 8px;
+    .notificaciones-admin__form {
+        box-sizing: border-box;
+        width: 100%;
+        padding: 20px;
+    }
+
+    .notificaciones-lista__acciones {
+        width: 100%;
+    }
+
+    .notificaciones-lista__accion {
+        justify-content: center;
+        flex: 1;
+    }
+}
+
+@media (max-width: 1000px) {
+    .top-navbar {
+        gap: 12px;
+        padding: 0 20px;
+    }
+
+    .nav-tabs {
+        gap: 4px;
+    }
+
+    .nav-tabs a {
+        padding: 10px 12px;
+        white-space: nowrap;
+    }
+
+    .nav-logo-center {
+        gap: 8px;
+    }
+
+    .login-logo-text {
+        display: none;
+    }
+
+    .nav-profile {
+        gap: 12px;
+    }
+}
+
+@media (max-width: 700px) {
+    .top-navbar {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        height: auto;
+        min-height: 84px;
+        padding: 12px 16px;
+    }
+
+    .nav-logo-center {
+        grid-column: 1;
+        grid-row: 1;
+    }
+
+    .nav-profile {
+        grid-column: 2;
+        grid-row: 1;
+        flex: none;
+    }
+
+    .nav-tabs {
+        grid-column: 1 / -1;
+        grid-row: 2;
+        min-width: 0;
+        overflow-x: auto;
     }
 }
