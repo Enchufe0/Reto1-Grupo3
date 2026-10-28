@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     
-    // 1. Remember switch toggle
+    // Remember switch toggle
     const rememberSwitch = document.getElementById('rememberSwitch');
     if (rememberSwitch) {
         rememberSwitch.addEventListener('click', function () {
@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // 2. Login Form Submission
+    // Login Form Submission
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {
         loginForm.addEventListener('submit', async function(e) {

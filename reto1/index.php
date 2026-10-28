@@ -1,30 +1,16 @@
 <?php
 session_start();
 
-// Get the requested page (default to login)
 $page = $_GET['page'] ?? 'login';
 $allowed = ['login', 'equipamientos', 'ubicaciones', 'notificaciones', 'usuarios', 'historico'];
 if (!in_array($page, $allowed)) { $page = 'login'; }
 
-// Check login status and role
 $isLogged = isset($_SESSION['usuario_id']);
 $rol = $_SESSION['rol'] ?? '';
 
-// Security Redirects
-if (!$isLogged && $page !== 'login') { 
-    header('Location: index.php?page=login'); 
-    exit; 
-}
-if ($isLogged && $page === 'login') { 
-    header('Location: index.php?page=equipamientos'); 
-    exit; 
-}
-
-// Block USER from accessing Users or Ubicaciones pages via URL
-if (($page === 'usuarios' || $page === 'ubicaciones') && $rol !== 'ADMIN') { 
-    header('Location: index.php?page=equipamientos'); 
-    exit; 
-}
+if (!$isLogged && $page !== 'login') { header('Location: index.php?page=login'); exit; }
+if ($isLogged && $page === 'login') { header('Location: index.php?page=equipamientos'); exit; }
+if (($page === 'usuarios' || $page === 'ubicaciones') && $rol !== 'ADMIN') { header('Location: index.php?page=equipamientos'); exit; }
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -32,21 +18,18 @@ if (($page === 'usuarios' || $page === 'ubicaciones') && $rol !== 'ADMIN') {
     <meta charset="UTF-8">
     <title>Reto 2DAW - <?= ucfirst($page) ?></title>
     
-    <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- 👇 PAGE SPECIFIC CSS (Fixed paths) 👇 -->
     <?php if ($page === 'login'): ?>
         <link rel="stylesheet" href="view/css/login.css">
     <?php endif; ?>
 
     <?php if (in_array($page, ['equipamientos', 'usuarios', 'ubicaciones', 'historico'])): ?>
-    <link rel="stylesheet" href="view/css/equipamiento.css">
-<?php endif; ?>
+        <link rel="stylesheet" href="view/css/equipamiento.css">
+    <?php endif; ?>
 
-    <!-- GLOBAL LAYOUT & NAVBAR CSS -->
     <style>
         body { margin: 0; font-family: 'Inter', sans-serif; background: #fff7d3; color: #111827; }
 
@@ -54,12 +37,7 @@ if (($page === 'usuarios' || $page === 'ubicaciones') && $rol !== 'ADMIN') {
             html, body { height: auto; min-height: 100vh; overflow-x: hidden; overflow-y: auto; }
             main { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
             
-            .top-navbar { 
-                background: #fff2b3; display: flex; justify-content: space-between; align-items: center; 
-                height: 84px; padding: 0 40px; border-bottom: 1px solid rgba(0,0,0,0.04); 
-                position: sticky; top: 0; z-index: 1000;
-            }
-            
+            .top-navbar { background: #fff2b3; display: flex; justify-content: space-between; align-items: center; height: 84px; padding: 0 40px; border-bottom: 1px solid rgba(0,0,0,0.04); position: sticky; top: 0; z-index: 1000; }
             .nav-tabs { display: flex; gap: 8px; align-items: center; flex: 1; }
             .nav-tabs a { text-decoration: none; color: #4b5563; font-weight: 500; font-size: 14px; padding: 10px 20px; border-radius: 20px; transition: 0.2s; background: #efece3; }
             .nav-tabs a:hover { background: #e5e1d5; }
@@ -80,7 +58,6 @@ if (($page === 'usuarios' || $page === 'ubicaciones') && $rol !== 'ADMIN') {
             .dropdown-menu.show { display: block; }
             .dropdown-item { display: block; padding: 10px 16px; color: #ef4444; text-decoration: none; font-size: 14px; font-weight: 500; cursor: pointer; }
             .dropdown-item:hover { background: #fef2f2; }
-
         <?php else: ?>
             html, body { height: 100vh; overflow: hidden; }
             main { width: 100%; height: 100%; margin: 0; padding: 0; max-width: none; }
@@ -105,7 +82,6 @@ if (($page === 'usuarios' || $page === 'ubicaciones') && $rol !== 'ADMIN') {
         </div>
 
         <div class="nav-logo-center">
-            <!-- Fixed path to img/ -->
             <img src="img/logo.svg" alt="Logo" class="login-logo-img">
             <div class="login-logo-text">r d e n z a</div>
         </div>
@@ -113,7 +89,6 @@ if (($page === 'usuarios' || $page === 'ubicaciones') && $rol !== 'ADMIN') {
         <div class="nav-profile">
             <i class="fa-regular fa-bell bell"></i>
             <div class="user-avatar">AD</div>
-            
             <div class="dropdown-container">
                 <div class="admin-dropdown" onclick="toggleDropdown(event)">
                     Administración <i class="fa-solid fa-chevron-down" style="font-size: 10px; color: #6b7280; margin-left: 5px;"></i>
@@ -127,15 +102,16 @@ if (($page === 'usuarios' || $page === 'ubicaciones') && $rol !== 'ADMIN') {
     <?php endif; ?>
 
     <main>
-        <!-- 👇 FIXED PATH: Loads the .html files 👇 -->
         <?php require "view/html/{$page}.html"; ?>
     </main>
 
-        <!-- 👇 FIXED PATH: Loads the .js files 👇 -->
+    <!--JS IS LOADED-->
     <?php if ($page === 'equipamientos'): ?>
-        <script src="view/js/equipamiento.js"></script>
+        <script src="view/js/Equipamiento.js"></script>
     <?php elseif ($page === 'historico'): ?>
-        <script src="view/js/historico.js"></script>
+        <script src="view/js/Historico.js"></script>
+    <?php elseif ($page === 'login'): ?>
+        <script src="view/js/Login.js"></script>
     <?php endif; ?>
 
     <?php if ($isLogged): ?>
@@ -144,28 +120,17 @@ if (($page === 'usuarios' || $page === 'ubicaciones') && $rol !== 'ADMIN') {
             event.stopPropagation();
             document.getElementById('adminMenu').classList.toggle('show');
         }
-
         window.onclick = function(event) {
             const menu = document.getElementById('adminMenu');
             if (menu && menu.classList.contains('show')) {
                 menu.classList.remove('show');
             }
         }
-
         async function logout() {
             await fetch('api/Login.php', { method: 'DELETE' });
             window.location.href = 'index.php?page=login';
         }
     </script>
-    <?php endif; ?>
-
-        <!-- 👇 SPECIFIC JS FOR PAGES 👇 -->
-    <?php if ($page === 'equipamientos'): ?>
-        <script src="view/js/Equipamiento.js"></script>
-    <?php elseif ($page === 'historico'): ?>
-        <script src="view/js/historico.js"></script>
-    <?php elseif ($page === 'login'): ?> <!-- ADD THIS -->
-        <script src="view/js/login.js"></script>
     <?php endif; ?>
 
 </body>
