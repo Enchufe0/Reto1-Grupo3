@@ -92,3 +92,28 @@
         </form>
     </div>
 </div>
+
+<!-- 👇 NEW EDIT MODAL 👇 -->
+<div id="modal-editar" class="eq-modal" style="display: none;">
+    <div class="eq-modal-content">
+        <h3>Editar Equipamiento</h3>
+        <form id="form-editar-eq">
+            <input type="hidden" id="edit-id">
+            <input type="text" id="edit-nombre" placeholder="Nombre" required>
+            <input type="text" id="edit-marca" placeholder="Marca" required>
+            <input type="text" id="edit-modelo" placeholder="Modelo" required>
+            <input type="text" id="edit-desc" placeholder="Descripción" required>
+            <select id="edit-categoria">
+                <option value="PORTATIL">Portátil</option>
+                <option value="SOBREMESA">Sobremesa</option>
+                <option value="PERIFERICO">Periférico</option>
+                <option value="AUDIOVISUAL">Audiovisual</option>
+                <option value="OTROS">Otros</option>
+            </select>
+            <div class="eq-modal-actions">
+                <button type="button" class="eq-btn-secondary" onclick="cerrarModalEditar()">Cancelar</button>
+                <button type="submit" class="eq-btn-primary">Guardar Cambios</button>
+            </div>
+        </form>
+    </div>
+</div>
