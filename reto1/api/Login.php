@@ -1,6 +1,5 @@
 <?php
 header('Content-Type: application/json; charset=utf-8');
-
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -8,66 +7,48 @@ if (session_status() === PHP_SESSION_NONE) {
 require_once __DIR__ . '/../config/conexion.php';
 require_once __DIR__ . '/../controller/LoginController.php';
 
-function sendJsonResponse(array $responseData, int $statusCode = 200): void 
-{
-    http_response_code($statusCode); 
-    echo json_encode($responseData, JSON_UNESCAPED_UNICODE);
+function sendJson($data, $code = 200) {
+    http_response_code($code);
+    echo json_encode($data);
     exit;
 }
 
 try {
     $database = new Database();
-    $dbConnection = $database->getConnection();
+    $db = $database->getConnection();
+    $loginController = new LoginController($db);
+    $method = $_SERVER['REQUEST_METHOD'];
 
-    if (!$dbConnection instanceof PDO) {
-        throw new RuntimeException('No se pudo conectar con la base de datos', 500);
-    }
-
-    $loginController = new LoginController($dbConnection);
-    $httpMethod = $_SERVER['REQUEST_METHOD'];
-
-    if ($httpMethod === 'POST') {
-    
-        $rawBody = file_get_contents('php://input');
-     
-        $decodedData = json_decode($rawBody, true);
-        
-        if (!is_array($decodedData)) {
-            throw new InvalidArgumentException('Formato JSON inválido', 400);
+    // 1. CHECK SESSION (Used by Main.js)
+    if ($method === 'GET') {
+        if (isset($_SESSION['usuario_id'])) {
+            sendJson([
+                'autenticado' => true, 
+                'usuario' => [
+                    'id_usuario' => $_SESSION['usuario_id'],
+                    'nombre' => $_SESSION['nombre'],
+                    'rol' => $_SESSION['rol']
+                ]
+            ]);
+        } else {
+            sendJson(['autenticado' => false]);
         }
-
-        $inputUsuario = $decodedData['nombre_usuario'] ?? '';
-        $inputPassword = $decodedData['password'] ?? '';
-
-        $loggedUserData = $loginController->login($inputUsuario, $inputPassword);
-
-        $successResponse = [
-            'mensaje' => 'Login correcto',
-            'usuario' => $loggedUserData
-        ];
-
-        sendJsonResponse($successResponse, 200);
     }
 
-    if ($httpMethod === 'DELETE') {
+    // 2. LOGIN (Used by Login.js)
+    if ($method === 'POST') {
+        $body = json_decode(file_get_contents('php://input'), true);
+        $user = $loginController->login($body['nombre_usuario'] ?? '', $body['password'] ?? '');
+        sendJson(['mensaje' => 'Login correcto', 'usuario' => $user]);
+    }
+
+    // 3. LOGOUT
+    if ($method === 'DELETE') {
         $_SESSION = [];
         session_destroy();
-        
-        sendJsonResponse(['mensaje' => 'Sesión cerrada correctamente'], 200);
+        sendJson(['mensaje' => 'Sesión cerrada']);
     }
 
-    throw new Exception('Método HTTP no permitido', 405);
-
-} catch (Throwable $error) {
-    
-    $errorCode = $error->getCode();
-
-    if ($errorCode < 400 || $errorCode > 599) {
-        $errorCode = 500; 
-    }
-
-    $errorResponse = [
-        'error' => $error->getMessage()
-    ];
-    sendJsonResponse($errorResponse, $errorCode);
+} catch (Throwable $e) {
+    sendJson(['error' => $e->getMessage()], $e->getCode() ?: 500);
 }
