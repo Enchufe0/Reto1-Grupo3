@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Reto 2DAW - rdenza</title>
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="view/css/Main.css">
+    <link rel="stylesheet" href="view/css/equipamiento.css">
+    <link rel="stylesheet" href="view/css/login.css">
+
+    <style>
+        #main-navbar, #main-footer { display: none; }
+        #app-content { min-height: 50vh; }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="top-navbar" id="main-navbar">
+        <div class="nav-tabs">
+            <a href="index.html?page=equipamientos" class="nav-link" data-page="equipamientos">Equipamiento</a>
+            <a href="index.html?page=ubicaciones" class="nav-link" data-page="ubicaciones" id="nav-ubicaciones" style="display:none;">Ubicaciones</a>
+            <a href="index.html?page=historico" class="nav-link" data-page="historico">Historial</a>
+            <a href="index.html?page=usuarios" class="nav-link" data-page="usuarios" id="nav-usuarios" style="display:none;">Usuarios</a>
+        </div>
+
+        <div class="nav-logo-center">
+            <img src="img/logo.svg" alt="Logo" class="login-logo-img">
+            <div class="login-logo-text">r d e n z a</div>
+        </div>
+
+        <div class="nav-profile">
+            <i class="fa-regular fa-bell bell"></i>
+            <div class="user-avatar" id="nav-avatar">AD</div>
+            <div class="dropdown-container">
+                <div class="admin-dropdown" onclick="toggleDropdown(event)">
+                    <span id="nav-username">Administración</span> <i class="fa-solid fa-chevron-down" style="font-size: 10px; color: #6b7280; margin-left: 5px;"></i>
+                </div>
+                <div class="dropdown-menu" id="adminMenu">
+                    <a class="dropdown-item" onclick="logout()">Salir</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- DYNAMIC CONTENT -->
+    <main id="app-content">
+        <p style="text-align:center; margin-top:50px;">Cargando aplicación...</p>
+    </main>
+
+    <!-- FOOTER -->
+    <footer id="main-footer">
+        &copy; 2026 Reto 2DAW - Ordenza. Todos los derechos reservados.
+    </footer>
+
+    <!-- CORRECT PATH TO JAVASCRIPT FOLDER -->
+    <script src="view/javascript/Main.js"></script>
+</body>
+</html>

@@ -1,47 +1,64 @@
-document.addEventListener('DOMContentLoaded', function() {
-    
-    // Remember switch toggle
+// Wait 200ms to ensure the HTML form is fully injected into the DOM
+setTimeout(() => {
+    const loginForm = document.getElementById('loginForm');
+    const btnLogin = document.getElementById('btnLogin');
     const rememberSwitch = document.getElementById('rememberSwitch');
+
+    // 1. Toggle "Remember Me"
     if (rememberSwitch) {
         rememberSwitch.addEventListener('click', function () {
-            this.classList.toggle('on');
+            this.classList.toggle('on'); 
         });
     }
 
-    // Login Form Submission
-    const loginForm = document.getElementById('loginForm');
+    // 2. Handle Login
     if (loginForm) {
-        loginForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
+        loginForm.addEventListener('submit', async function(event) {
+            event.preventDefault();
             
-            const btn = document.getElementById('btnLogin');
-            const usuario = document.getElementById('usuario').value;
-            const password = document.getElementById('password').value;
+            const inputUsuario = document.getElementById('usuario').value;
+            const inputPassword = document.getElementById('password').value;
             
-            btn.textContent = "Cargando...";
-            btn.disabled = true;
+            btnLogin.textContent = "Cargando...";
+            btnLogin.disabled = true;
 
             try {
-                const res = await fetch('api/Login.php', {
+                const respuesta = await fetch('api/Login.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ nombre_usuario: usuario, password: password })
+                    body: JSON.stringify({ 
+                        nombre_usuario: inputUsuario, 
+                        password: inputPassword 
+                    })
                 });
                 
-                const data = await res.json();
+                // Read raw text first to catch PHP errors
+                const text = await respuesta.text();
+                let datos;
                 
-                if (res.ok) {
-                    window.location.href = 'index.php?page=equipamientos';
-                } else {
-                    alert(data.error || "Usuario o contraseña incorrectos");
-                    btn.textContent = "Iniciar sesión";
-                    btn.disabled = false;
+                try {
+                    datos = JSON.parse(text);
+                } catch (e) {
+                    throw new Error("El servidor no devolvió JSON. Posible error en PHP.");
                 }
-            } catch (err) {
-                alert("Error de conexión con el servidor");
-                btn.textContent = "Iniciar sesión";
-                btn.disabled = false;
+                
+                if (respuesta.ok) {
+                    // Success! Redirect
+                    window.location.href = 'index.html?page=equipamientos';
+                } else {
+                    // Logic error (like wrong password)
+                    alert(datos.error || "Usuario o contraseña incorrectos");
+                    btnLogin.textContent = "Iniciar sesión";
+                    btnLogin.disabled = false;
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                alert("Error de conexión: " + error.message);
+                btnLogin.textContent = "Iniciar sesión";
+                btnLogin.disabled = false;
             }
         });
+    } else {
+        console.error("No se encontró el formulario con id 'loginForm'");
     }
-});
+}, 200);
