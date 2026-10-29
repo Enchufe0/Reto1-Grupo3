@@ -2,12 +2,14 @@
 
 header('Content-Type: application/json; charset=utf-8');
 
+// Envía una respuesta JSON y establece el código de estado HTTP.
 function responderUsuarios(array $datos, int $estado = 200): void
 {
     http_response_code($estado);
     echo json_encode($datos, JSON_UNESCAPED_UNICODE);
 }
 
+// Lee y valida que el cuerpo de la solicitud sea un objeto JSON.
 function leerJsonUsuarios(): ?array
 {
     $contenido = file_get_contents('php://input');
@@ -21,6 +23,7 @@ function leerJsonUsuarios(): ?array
     return $datos;
 }
 
+// Comprueba que los campos indicados existan, sean texto y no estén vacíos.
 function tieneCamposTextoUsuarios(array $datos, array $campos): bool
 {
     foreach ($campos as $campo) {
@@ -32,6 +35,7 @@ function tieneCamposTextoUsuarios(array $datos, array $campos): bool
     return true;
 }
 
+// Indica si existe un usuario con el identificador proporcionado.
 function existeUsuario(PDO $conexion, int $id): bool
 {
     $consulta = $conexion->prepare('SELECT 1 FROM usuarios WHERE id_usuario = :id_usuario');
@@ -40,6 +44,7 @@ function existeUsuario(PDO $conexion, int $id): bool
     return $consulta->fetchColumn() !== false;
 }
 
+// Obtiene el ID de usuario desde el parámetro de consulta o la ruta.
 function obtenerIdUsuarioApi(array $ruta): ?int
 {
     if (isset($_GET['id'])) {
@@ -53,6 +58,7 @@ function obtenerIdUsuarioApi(array $ruta): ?int
     return null;
 }
 
+// Determina los segmentos de ruta posteriores a "usuarios".
 function obtenerRutaUsuarioApi(): array
 {
     $ruta = $_SERVER['PATH_INFO'] ?? '';
@@ -73,6 +79,7 @@ function obtenerRutaUsuarioApi(): array
     return array_values(array_filter(explode('/', trim($ruta, '/')), 'strlen'));
 }
 
+// Abre la conexión con la base de datos; ante un error, responde y termina.
 try {
     $conexion = new PDO(
         'mysql:host=localhost;dbname=reto_2daw;charset=utf8',
@@ -93,6 +100,7 @@ $id = obtenerIdUsuarioApi($ruta);
 try {
     switch ($metodo) {
         case 'GET':
+            // Devuelve un usuario concreto si hay ID, o la lista completa en caso contrario.
             if ($ruta !== [] && (count($ruta) !== 1 || !ctype_digit($ruta[0]))) {
                 responderUsuarios(['error' => 'Ruta no encontrada.'], 404);
                 break;
@@ -127,6 +135,7 @@ try {
             break;
 
         case 'POST':
+            // Autentica al usuario cuando la ruta o el parámetro de acción indican login.
             if (($ruta === ['login']) || ($_GET['accion'] ?? '') === 'login') {
                 $datos = leerJsonUsuarios();
                 if ($datos === null) {
@@ -149,6 +158,7 @@ try {
                 break;
             }
 
+            // Crea un usuario nuevo y guarda la contraseña como hash.
             if ($ruta !== []) {
                 responderUsuarios(['error' => 'Ruta no encontrada.'], 404);
                 break;
@@ -190,6 +200,7 @@ try {
             break;
 
         case 'PUT':
+            // Actualiza los datos de perfil del usuario identificado por ID.
             if (($ruta !== [] && (count($ruta) !== 1 || !ctype_digit($ruta[0])))
                 || $id === null || $id < 1) {
                 responderUsuarios(['error' => 'Se requiere un ID de usuario válido.'], 400);
@@ -226,6 +237,7 @@ try {
             break;
 
         case 'PATCH':
+            // Cambia únicamente la contraseña del usuario indicado en la ruta.
             if (count($ruta) !== 2 || !ctype_digit($ruta[0]) || $ruta[1] !== 'password'
                 || $id === null || $id < 1) {
                 responderUsuarios(['error' => 'Se requiere un ID y la ruta password.'], 400);
@@ -258,6 +270,7 @@ try {
             break;
 
         case 'DELETE':
+            // Elimina el usuario identificado por ID.
             if (($ruta !== [] && (count($ruta) !== 1 || !ctype_digit($ruta[0])))
                 || $id === null || $id < 1) {
                 responderUsuarios(['error' => 'Se requiere un ID de usuario válido.'], 400);
@@ -276,6 +289,7 @@ try {
             break;
 
         default:
+            // Informa cuando se solicita un método HTTP que esta API no admite.
             responderUsuarios(['error' => 'Método HTTP no permitido.'], 405);
             break;
     }
