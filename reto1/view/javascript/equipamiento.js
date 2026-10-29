@@ -11,10 +11,10 @@ fetch('api/Equipamiento.php')
     .then(res => res.json())
     .then(data => {
         const tbody = document.getElementById('eq-table-body');
-        if (!tbody) return; // Safety check
+        if (!tbody) return; 
         
         if (data.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 20px;">No hay equipos.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding: 20px;">No hay equipos.</td></tr>';
             return;
         }
 
@@ -35,13 +35,15 @@ fetch('api/Equipamiento.php')
             if (e.categoria === 'PERIFERICO') icon = '<i class="fa-solid fa-computer-mouse"></i>';
             if (e.categoria === 'AUDIOVISUAL') icon = '<i class="fa-solid fa-video"></i>';
 
-            let btns = '<div class="eq-actions-wrapper">';
+            // Actions Wrapper
+            let btns = `<div class="eq-actions-wrapper" id="actions-${e.id_equipamiento}">`;
             if (window.ROL === 'ADMIN') {
-                btns += `<button id="btn-edit-${e.id_equipamiento}" class="eq-action-btn eq-btn-edit" onclick="toggleEdit(${e.id_equipamiento})"><i class="fa-solid fa-pen"></i> Editar</button>`;
+                btns += `<button class="eq-action-btn eq-btn-edit" onclick="toggleEdit(${e.id_equipamiento})"><i class="fa-solid fa-pen"></i> Editar</button>`;
                 btns += `<button class="eq-action-btn eq-btn-delete" onclick="borrarEquipo(${e.id_equipamiento})"><i class="fa-regular fa-trash-can"></i> Eliminar</button>`;
             }
             btns += '</div>';
 
+            // 👇 HERE IS THE TABLE ROW WITH THE MODELO COLUMN 👇
             html += `
                 <tr id="row-${e.id_equipamiento}">
                     <td><input type="checkbox"></td>
@@ -53,6 +55,10 @@ fetch('api/Equipamiento.php')
                         </div>
                     </td>
                     <td><input type="text" id="edit-marca-${e.id_equipamiento}" class="inline-edit" value="${e.marca}" disabled></td>
+                    
+                    <!-- 👇 NEW MODELO CELL 👇 -->
+                    <td><input type="text" id="edit-modelo-${e.id_equipamiento}" class="inline-edit" value="${e.modelo}" disabled></td>
+                    
                     <td>
                         <select id="edit-cat-${e.id_equipamiento}" class="inline-edit eq-badge" disabled style="border: none; background: transparent;">
                             <option value="PORTATIL" ${e.categoria === 'PORTATIL' ? 'selected' : ''}>Portátil</option>
@@ -77,88 +83,117 @@ fetch('api/Equipamiento.php')
     })
     .catch(err => {
         const tbody = document.getElementById('eq-table-body');
-        if (tbody) tbody.innerHTML = `<tr><td colspan="7" style="color:red; text-align:center;">Error al cargar datos</td></tr>`;
+        if (tbody) tbody.innerHTML = `<tr><td colspan="8" style="color:red; text-align:center;">Error al cargar datos</td></tr>`;
         console.error(err);
     });
 
 // ==========================================
 // 3. INLINE EDIT LOGIC
 // ==========================================
-async function toggleEdit(id) {
+function toggleEdit(id) {
     const row = document.getElementById(`row-${id}`);
     const nombreInput = document.getElementById(`edit-nombre-${id}`);
     const marcaInput = document.getElementById(`edit-marca-${id}`);
+    const modeloInput = document.getElementById(`edit-modelo-${id}`);
     const catSelect = document.getElementById(`edit-cat-${id}`);
-    const btn = document.getElementById(`btn-edit-${id}`);
+    const actionsWrapper = document.getElementById(`actions-${id}`);
 
-    if (nombreInput.disabled) {
-        // ENABLE EDIT MODE
-        nombreInput.disabled = false;
-        marcaInput.disabled = false;
-        catSelect.disabled = false;
-        
-        row.classList.add('row-editing'); // Yellow background
-        
-        btn.innerHTML = '<i class="fa-solid fa-check"></i> Guardar';
-        btn.classList.add('eq-btn-save');
-        btn.classList.remove('eq-btn-edit');
-        nombreInput.focus();
+    // Enable inputs
+    nombreInput.disabled = false;
+    marcaInput.disabled = false;
+    modeloInput.disabled = false;
+    catSelect.disabled = false;
+    
+    row.classList.add('row-editing'); 
+    
+    // 👇 SWAP BUTTONS TO GUARDAR AND CANCELAR 👇
+    actionsWrapper.innerHTML = `
+        <button class="eq-action-btn eq-btn-save" onclick="guardarEdicion(${id})"><i class="fa-solid fa-check"></i> Guardar</button>
+        <button class="eq-action-btn eq-btn-cancel" onclick="cancelarEdicion(${id})"><i class="fa-solid fa-xmark"></i> Cancelar</button>
+    `;
+    
+    nombreInput.focus();
+}
 
-    } else {
-        // SAVE CHANGES
-        if (nombreInput.value.trim() === '') {
-            alert("El nombre no puede estar vacío");
-            return;
-        }
+async function guardarEdicion(id) {
+    const nombreInput = document.getElementById(`edit-nombre-${id}`);
+    const marcaInput = document.getElementById(`edit-marca-${id}`);
+    const modeloInput = document.getElementById(`edit-modelo-${id}`);
+    const catSelect = document.getElementById(`edit-cat-${id}`);
+    const actionsWrapper = document.getElementById(`actions-${id}`);
+    const row = document.getElementById(`row-${id}`);
 
-        const originalBtnHtml = btn.innerHTML;
-        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Guardando...';
-        btn.disabled = true;
-
-        const equipoOriginal = todosLosEquipos.find(e => e.id_equipamiento == id);
-
-        const body = {
-            nombre: nombreInput.value,
-            marca: marcaInput.value,
-            categoria: catSelect.value || 'OTROS',
-            descripcion: equipoOriginal.descripcion,
-            modelo: equipoOriginal.modelo
-        };
-
-        try {
-            const res = await fetch(`api/Equipamiento.php?id=${id}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(body)
-            });
-
-            if (!res.ok) {
-                const text = await res.text();
-                try {
-                    const json = JSON.parse(text);
-                    throw new Error(json.error || "Error desconocido");
-                } catch(e) {
-                    throw new Error("PHP Error: " + text.substring(0, 100));
-                }
-            }
-
-            // Success! Revert to normal
-            nombreInput.disabled = true;
-            marcaInput.disabled = true;
-            catSelect.disabled = true;
-            row.classList.remove('row-editing'); 
-            
-            btn.innerHTML = '<i class="fa-solid fa-pen"></i> Editar';
-            btn.classList.remove('eq-btn-save');
-            btn.classList.add('eq-btn-edit');
-            btn.disabled = false;
-
-        } catch (error) {
-            alert("ERROR: " + error.message);
-            btn.innerHTML = originalBtnHtml;
-            btn.disabled = false;
-        }
+    if (nombreInput.value.trim() === '') {
+        alert("El nombre no puede estar vacío");
+        return;
     }
+
+    actionsWrapper.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Guardando...';
+
+    const equipoOriginal = todosLosEquipos.find(e => e.id_equipamiento == id);
+
+    const body = {
+        nombre: nombreInput.value,
+        marca: marcaInput.value,
+        modelo: modeloInput.value,
+        categoria: catSelect.value || 'OTROS',
+        descripcion: equipoOriginal.descripcion 
+    };
+
+    try {
+        const res = await fetch(`api/Equipamiento.php?id=${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        });
+
+        if (!res.ok) throw new Error("Error al guardar");
+
+        // Success! Revert to normal
+        nombreInput.disabled = true;
+        marcaInput.disabled = true;
+        modeloInput.disabled = true;
+        catSelect.disabled = true;
+        row.classList.remove('row-editing'); 
+        
+        actionsWrapper.innerHTML = `
+            <button class="eq-action-btn eq-btn-edit" onclick="toggleEdit(${id})"><i class="fa-solid fa-pen"></i> Editar</button>
+            <button class="eq-action-btn eq-btn-delete" onclick="borrarEquipo(${id})"><i class="fa-regular fa-trash-can"></i> Eliminar</button>
+        `;
+
+    } catch (error) {
+        alert("ERROR: " + error.message);
+        cancelarEdicion(id);
+    }
+}
+
+function cancelarEdicion(id) {
+    const nombreInput = document.getElementById(`edit-nombre-${id}`);
+    const marcaInput = document.getElementById(`edit-marca-${id}`);
+    const modeloInput = document.getElementById(`edit-modelo-${id}`);
+    const catSelect = document.getElementById(`edit-cat-${id}`);
+    const actionsWrapper = document.getElementById(`actions-${id}`);
+    const row = document.getElementById(`row-${id}`);
+
+    // Revert values to original
+    const equipoOriginal = todosLosEquipos.find(e => e.id_equipamiento == id);
+    nombreInput.value = equipoOriginal.nombre;
+    marcaInput.value = equipoOriginal.marca;
+    modeloInput.value = equipoOriginal.modelo;
+    catSelect.value = equipoOriginal.categoria;
+
+    // Disable inputs
+    nombreInput.disabled = true;
+    marcaInput.disabled = true;
+    modeloInput.disabled = true;
+    catSelect.disabled = true;
+    row.classList.remove('row-editing');
+
+    // Restore Edit/Delete buttons
+    actionsWrapper.innerHTML = `
+        <button class="eq-action-btn eq-btn-edit" onclick="toggleEdit(${id})"><i class="fa-solid fa-pen"></i> Editar</button>
+        <button class="eq-action-btn eq-btn-delete" onclick="borrarEquipo(${id})"><i class="fa-regular fa-trash-can"></i> Eliminar</button>
+    `;
 }
 
 // ==========================================
