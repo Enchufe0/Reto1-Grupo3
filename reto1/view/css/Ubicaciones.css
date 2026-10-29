@@ -127,9 +127,7 @@ main {
     border-radius: 20px; 
     cursor: pointer; /* hace que cuando pases el raton por encima se ponga la manita para que sepas que se puede clickar*/
 }
-/*======================
-    BORRAR DE AQUI PA ARRIBA
-=============================*/
+
 
 /* -------------------------------------
     El titulo de Gestion de Ubicaciones 
@@ -274,7 +272,7 @@ main {
     border-bottom: none; 
 }
 
-/* El rectangulo grande que pulsas para desplegar (ej: Aula 101) */
+/* la barra del desplegable */
 summary {
     padding: 16px 20px;
     font-size: 14px;
@@ -283,6 +281,45 @@ summary {
     display: flex;
     align-items: center;
     transition: background 0.2s;
+    list-style: none; 
+}
+
+/*editas el contenedor donde estan los dos botones */
+.ubi-boton-editar-eliminar {
+    display: flex;
+    gap: 6px; 
+    margin-left: auto; 
+}
+
+/* editas los dos botones a la vez, en cuanto al fondo, el grosor... */
+.ubi-boton-editar, .ubi-boton-eliminar {
+    background: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+}
+
+/* edtias el boton de editar */
+.ubi-boton-editar {
+    color: #d97706; 
+    border: 1px solid #fcd34d; /* Borde naranja claro */
+}
+.ubi-boton-editar:hover {
+    background-color: #fffbeb; 
+}
+
+/* edkitas el boton eliminar*/
+.ubi-boton-eliminar {
+    color: #ef4444; 
+    border: 1px solid #fecaca; 
+}
+.ubi-boton-eliminar:hover {
+    background-color: #fef2f2; 
 }
 
 /* El fondo se pone azul clarito al pasar el raton */
