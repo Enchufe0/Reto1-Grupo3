@@ -146,7 +146,7 @@ function loadPageJS(jsFileName) {
 }
 
 // =====================================================================
-// 6. NAVBAR UTILITIES
+// NAVBAR UTILITIES
 // =====================================================================
 function toggleDropdown(event) {
     event.stopPropagation();
