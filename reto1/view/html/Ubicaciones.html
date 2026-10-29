@@ -60,25 +60,60 @@
             <!--Aqui se meten las ubicaciones-->
         </div>
 
-        <div id="modalAñadir" class="ubi-modal" style="display: none;">
+        <!-- 1. POP-UP AÑADIR -->
+        <div id="modalAnadir" class="ubi-modal" style="display: none;">
             <div class="ubi-modal-contenido">
-                <h3>Añadir nueva Ubicación</h3>
-                <form id="formAñadir">
+                <h3>Añadir Nueva Ubicación</h3>
+                <form id="formAnadir">
                     <div class="ubi-form-grupo">
-                        <label for="nuevoNombre">Nombre de la Ubicación</label>
-                        <input type="text" id="nuevoNombre" placeholder="Nombre" required>
+                        <label for="nuevoNombre">Nombre</label>
+                        <input type="text" id="nuevoNombre" required>
                     </div>
                     <div class="ubi-form-grupo">
-                        <label for="nuevaDescripcion">Descripción</label>
-                        <input type="text" id="nuevaDescripcion" placeholder="Descripción" required>
+                        <label for="nuevaDesc">Descripción</label>
+                        <input type="text" id="nuevaDesc" required>
                     </div>
                     <div class="ubi-modal-acciones">
-                        <button type="button" class="ubi-btn-cancelar" id="btnCancelarAñadir">Cancelar</button>
+                        <button type="button" class="ubi-btn-cancelar" id="btnCancelarAnadir">Cancelar</button>
                         <button type="submit" class="ubi-btn-guardar">Guardar</button>
                     </div>
                 </form>
             </div>
+        </div>
 
+        <!-- 2. POP-UP EDITAR -->
+        <div id="modalEditar" class="ubi-modal" style="display: none;">
+            <div class="ubi-modal-contenido">
+                <h3>Editar Ubicación</h3>
+                <form id="formEditar">
+                    <input type="hidden" id="editarId"> 
+                    <div class="ubi-form-grupo">
+                        <label for="editarNombre">Nombre</label>
+                        <input type="text" id="editarNombre" required>
+                    </div>
+                    <div class="ubi-form-grupo">
+                        <label for="editarDesc">Descripción</label>
+                        <input type="text" id="editarDesc" required>
+                    </div>
+                    <div class="ubi-modal-acciones">
+                        <button type="button" class="ubi-btn-cancelar" id="btnCancelarEditar">Cancelar</button>
+                        <button type="submit" class="ubi-btn-guardar">Guardar Cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- 3. POP-UP ELIMINAR -->
+        <div id="modalEliminar" class="ubi-modal" style="display: none;">
+            <div class="ubi-modal-contenido">
+                <h3>¿Eliminar Ubicación?</h3>
+                <p class="ubi-texto-eliminar">¿Estás seguro de que quieres eliminar esta ubicación? Esta acción no se puede deshacer.</p>
+                <input type="hidden" id="eliminarId">
+                <div class="ubi-modal-acciones">
+                    <button type="button" class="ubi-btn-cancelar" id="btnCancelarEliminar">Cancelar</button>
+                    <button type="button" class="ubi-btn-peligro" id="btnConfirmarEliminar">Eliminar</button>
+                </div>
+            </div>
         </div>
 
         <script src="../javascript/Ubicaciones.js"></script>
