@@ -3,12 +3,33 @@
    ========================================= */
 
 /* 1. Header & Stats */
-.eq-header { margin-bottom: 24px; }
-.eq-title { font-size: 32px; font-weight: 300; color: #111827; margin: 0; letter-spacing: -0.5px; }
-.eq-stats-bar { display: flex; align-items: center; gap: 20px; margin-bottom: 32px; font-size: 15px; color: #6b7280; }
-.eq-stat { display: flex; align-items: center; gap: 8px; }
-.stat-number { color: #111827; font-size: 20px; font-weight: 500; }
-.eq-stat-divider { width: 1px; height: 24px; background: #e5e7eb; }
+.eq-header { 
+    margin-bottom: 24px; }
+.eq-title { 
+    font-size: 32px; 
+    font-weight: 300; 
+    color: #111827; 
+    margin: 0; 
+    letter-spacing: -0.5px; }
+.eq-stats-bar { 
+    display: flex; 
+    align-items: center; 
+    gap: 20px; 
+    margin-bottom: 32px; 
+    font-size: 15px; 
+    color: #6b7280; }
+.eq-stat { 
+    display: flex; 
+    align-items: center; 
+    gap: 8px; }
+.stat-number { 
+    color: #111827; 
+    font-size: 20px; 
+    font-weight: 500; }
+.eq-stat-divider { 
+    width: 1px; 
+    height: 24px; 
+    background: #e5e7eb; }
 
 /* 2. Filters Bar */
 .eq-filters-bar { display: flex; gap: 12px; margin-bottom: 24px; align-items: center; }
@@ -20,8 +41,8 @@
 .eq-btn-primary:hover { background: #1e293b; }
 
 /* 3. Table */
-.eq-table-container { background: white; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; }
-.eq-table { width: 100%; border-collapse: collapse; text-align: left; }
+.eq-table-container { background: white; border: 1px solid #e5e7eb; border-radius: 8px; overflow-x: auto; }
+.eq-table { width: 100%; border-collapse: collapse; text-align: left; min-width: 900px;}
 .eq-table th { background: #fff79d; padding: 16px 20px; font-size: 13px; font-weight: 500; color: #6b7280; border-bottom: 1px solid #e5e7eb; }
 .eq-table td { padding: 16px 20px; border-bottom: 1px solid #f3f4f6; font-size: 14px; color: #111827; vertical-align: middle; }
 .eq-table tr:last-child td { border-bottom: none; }
@@ -193,4 +214,12 @@
 }
 .eq-btn-save:hover {
     background: #ecfdf5;
+}
+/* Cancel Button (Gray) */
+.eq-btn-cancel {
+    color: #6b7280;
+    border: 1px solid #d1d5db;
+}
+.eq-btn-cancel:hover {
+    background: #f3f4f6;
 }
