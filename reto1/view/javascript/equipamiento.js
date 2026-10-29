@@ -271,21 +271,24 @@ if (formCrear) {
                 body: JSON.stringify(body)
             });
 
+            // 👇 THIS WILL SHOW THE EXACT ERROR IN AN ALERT BOX 👇
             if (!res.ok) {
                 const text = await res.text();
                 try {
                     const json = JSON.parse(text);
-                    throw new Error(json.error || "Error desconocido del servidor");
+                    alert("❌ ERROR DEL SERVIDOR: " + json.error);
                 } catch(e) {
-                    throw new Error("PHP Error: " + text.substring(0, 100));
+                    alert("❌ ERROR GRAVE (PHP Crash): " + text.substring(0, 150));
                 }
+                return;
             }
 
+            // If everything is OK
             cerrarModalCrear();
             location.reload();
 
         } catch (error) {
-            alert("❌ ERROR AL CREAR: " + error.message);
+            alert("❌ ERROR DE CONEXIÓN: " + error.message);
         }
     });
 }

@@ -119,16 +119,14 @@
     border: 1px solid #e5e7eb; 
     border-radius: 8px;
     width: 100%; 
-    overflow-x: auto; 
+    overflow-x: auto;
 }
-
 .eq-table { 
     width: 100%; 
     border-collapse: collapse; 
     text-align: left; 
     table-layout: auto;
 }
-
 .eq-table th { 
     background: #fff79d; 
     padding: 16px 20px; 
@@ -139,12 +137,12 @@
     white-space: nowrap; 
 }
 .desc-truncate {
-    max-width: 20s0px;
+    max-width: 350px; 
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     cursor: pointer;
-    color: #2563eb; /* Blue link color */
+    color: #2563eb;
     font-weight: 500;
 }
 
@@ -158,7 +156,6 @@
     font-size: 14px; 
     color: #111827; 
     vertical-align: middle; 
-    white-space: nowrap; 
 }
 
 .eq-table tr:last-child td { 
@@ -354,6 +351,7 @@
    ========================================= */
 .inline-edit {
     width: 100%;
+    min-width: 140px; 
     padding: 6px;
     border: 1px solid transparent;
     background: transparent;
