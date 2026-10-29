@@ -24,11 +24,10 @@ footer {
 
 /* Main content area */
 main { 
-    flex: 1; /* Pushes footer to the bottom */
-    max-width: 1200px; 
+    width: 100%;
+    max-width: 95%; 
     margin: 0 auto; 
     padding: 40px 20px; 
-    width: 100%;
 }
 
 /* 2. Navigation Bar */

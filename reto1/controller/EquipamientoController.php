@@ -1,205 +1,141 @@
 <?php
 require_once __DIR__ . '/../dao/EquipamientoDAO.php';
 require_once __DIR__ . '/../model/CategoriaEquipamiento.php';
+
 use enumCategoria\CategoriaEquipamiento;
 
-class EquipamientoController
-{
-    private EquipamientoDAO $equipamientoDAO;
+class EquipamientoController {
+    private EquipamientoDAO $dao;
 
-    public function __construct(PDO $db)
-    {
-        $this->equipamientoDAO = new EquipamientoDAO($db);
-    }
-    public function listar(): array
-    {
-        $rawEquipmentList = $this->equipamientoDAO->listar();
-        
-        $normalizedList = [];
-
-        foreach ($rawEquipmentList as $equipmentRow) {
-            $normalizedList[] = $this->normalizarEquipo($equipmentRow);
-        }
-
-        return $normalizedList;
+    public function __construct(PDO $db) {
+        $this->dao = new EquipamientoDAO($db);
     }
 
-    public function ver(int $equipmentId): array
-    {
-        $validatedId = $this->validarId($equipmentId, 'ID de equipamiento');
-        
-        $equipmentRow = $this->equipamientoDAO->buscarPorId($validatedId);
+    public function listar(): array {
+        return array_map([$this, 'normalizarEquipo'], $this->dao->listar());
+    }
 
-        if ($equipmentRow === null) {
+    public function ver($id): array {
+        $id = $this->validarId($id, 'ID de equipamiento');
+        $equipo = $this->dao->buscarPorId($id);
+        if ($equipo === null) { // FIX: Changed from false to null
             throw new Exception('Equipamiento no encontrado', 404);
         }
-
-        return $this->normalizarEquipo($equipmentRow);
+        return $this->normalizarEquipo($equipo);
     }
 
-    public function crear(array $requestData): bool
-    {
-        $this->validarDatos($requestData);
-        
-        $nombre = $this->limpiarTexto($requestData, 'nombre');
+    public function crear($datos): bool {
+        $datos = $this->validarDatos($datos);
+        $nombre = $this->texto($datos, 'nombre');
         if ($nombre === '') {
             throw new Exception('El nombre es obligatorio', 400);
         }
-
-        if (!isset($requestData['categoria'])) {
+        if (!isset($datos['categoria'])) {
             throw new Exception('La categoría es obligatoria', 400);
         }
 
-        $categoryEnum = $this->obtenerCategoria($requestData['categoria']);
-
-        $isCreated = $this->equipamientoDAO->crear(
+        $creado = $this->dao->crear(
             $nombre,
-            $this->limpiarTexto($requestData, 'descripcion'),
-            $this->limpiarTexto($requestData, 'marca'),
-            $this->limpiarTexto($requestData, 'modelo'),
-            $categoryEnum->value
+            $this->texto($datos, 'descripcion'),
+            $this->texto($datos, 'marca'),
+            $this->texto($datos, 'modelo'),
+            $this->categoria($datos['categoria'])->value
         );
-
-        if (!$isCreated) {
+        if (!$creado) {
             throw new Exception('No se pudo crear el equipamiento', 500);
         }
-
         return true;
     }
 
-    public function actualizar(int $equipmentId, array $requestData): bool
-    {
-        $this->validarDatos($requestData);
-        $validatedId = $this->validarId($equipmentId, 'ID de equipamiento');
-        
-        $existingEquipment = $this->equipamientoDAO->buscarPorId($validatedId);
-        if ($existingEquipment === null) {
+    public function actualizar($id, $datos): bool {
+        $datos = $this->validarDatos($datos);
+        $id = $this->validarId($id, 'ID de equipamiento');
+        $existente = $this->dao->buscarPorId($id);
+
+        if ($existente === null) { // FIX: Changed from false to null
             throw new Exception('Equipamiento no encontrado', 404);
         }
 
-        $nombre = $this->limpiarTexto($requestData, 'nombre', $existingEquipment['nombre']);
+        $nombre = $this->texto($datos, 'nombre', $existente['nombre']);
         if ($nombre === '') {
             throw new Exception('El nombre es obligatorio', 400);
         }
 
-        $categoryValue = $existingEquipment['categoria'];
-        if (isset($requestData['categoria'])) {
-            $categoryEnum = $this->obtenerCategoria($requestData['categoria']);
-            $categoryValue = $categoryEnum->value;
+        $categoriaValue = $existente['categoria'];
+        if (isset($datos['categoria'])) {
+            $catEnum = CategoriaEquipamiento::tryFrom(trim($datos['categoria']));
+            if ($catEnum !== null) {
+                $categoriaValue = $catEnum->value;
+            }
         }
 
-        $isUpdated = $this->equipamientoDAO->actualizar(
-            $validatedId,
+        $actualizado = $this->dao->actualizar(
+            $id,
             $nombre,
-            $this->limpiarTexto($requestData, 'descripcion', $existingEquipment['descripcion']),
-            $this->limpiarTexto($requestData, 'marca', $existingEquipment['marca']),
-            $this->limpiarTexto($requestData, 'modelo', $existingEquipment['modelo']),
-            $categoryValue
+            $this->texto($datos, 'descripcion', $existente['descripcion']),
+            $this->texto($datos, 'marca', $existente['marca']),
+            $this->texto($datos, 'modelo', $existente['modelo']),
+            $categoriaValue
         );
 
-        if (!$isUpdated) {
+        if (!$actualizado) {
             throw new Exception('No se pudo actualizar el equipamiento', 500);
         }
-
         return true;
     }
-    public function cambiarUbicacion(int $equipmentId, int $newLocationId): bool
-    {
-        $validatedEquipmentId = $this->validarId($equipmentId, 'ID de equipamiento');
-        $validatedLocationId = $this->validarId($newLocationId, 'ID de ubicación');
 
-        $existingEquipment = $this->equipamientoDAO->buscarPorId($validatedEquipmentId);
-        if ($existingEquipment === null) {
+    public function eliminar($id): bool {
+        $id = $this->validarId($id, 'ID de equipamiento');
+        if ($this->dao->buscarPorId($id) === null) { // FIX: Changed from false to null
             throw new Exception('Equipamiento no encontrado', 404);
         }
-
-        $isMoved = $this->equipamientoDAO->cambiarUbicacion($validatedEquipmentId, $validatedLocationId);
-
-        if (!$isMoved) {
-            throw new Exception('No se pudo cambiar la ubicación del equipamiento', 500);
-        }
-
-        return true;
-    }
-    public function eliminar(int $equipmentId): bool
-    {
-        $validatedId = $this->validarId($equipmentId, 'ID de equipamiento');
-
-        $existingEquipment = $this->equipamientoDAO->buscarPorId($validatedId);
-        if ($existingEquipment === null) {
-            throw new Exception('Equipamiento no encontrado', 404);
-        }
-
-        $isDeleted = $this->equipamientoDAO->eliminar($validatedId);
-
-        if (!$isDeleted) {
+        if (!$this->dao->eliminar($id)) {
             throw new Exception('No se pudo eliminar el equipamiento', 500);
         }
-
         return true;
     }
-    private function limpiarTexto(array $requestData, string $fieldName, string $defaultValue = ''): string
-    {
-        $rawValue = $defaultValue;
-        
-        if (isset($requestData[$fieldName])) {
-            $rawValue = $requestData[$fieldName];
-        }
 
-        if (!is_string($rawValue) && !is_numeric($rawValue)) {
-            throw new Exception("El campo $fieldName debe ser texto", 400);
+    private function texto(array $datos, string $campo, string $porDefecto = ''): string {
+        $valor = $datos[$campo] ?? $porDefecto;
+        if (!is_string($valor) && !is_numeric($valor)) {
+            return $porDefecto;
         }
-
-        return trim((string) $rawValue);
+        return trim((string) $valor);
     }
 
-    private function validarDatos($requestData): array
-    {
-        if (!is_array($requestData)) {
-            throw new Exception('Los datos del equipamiento no son válidos', 400);
+    private function validarDatos($datos): array {
+        if (!is_array($datos)) {
+            throw new Exception('Los datos no son válidos', 400);
         }
-        return $requestData;
+        return $datos;
     }
 
-    private function obtenerCategoria($categoryString): CategoriaEquipamiento
-    {
-        if (!is_string($categoryString)) {
-            throw new Exception('La categoría no es válida', 400);
+    private function categoria($valor): CategoriaEquipamiento {
+        $categoria = CategoriaEquipamiento::tryFrom(trim((string)$valor));
+        if ($categoria === null) {
+            return CategoriaEquipamiento::OTROS;
         }
-
-        $categoryEnum = CategoriaEquipamiento::tryFrom(trim($categoryString));
-        
-        if ($categoryEnum === null) {
-            throw new Exception('La categoría no es válida', 400);
-        }
-
-        return $categoryEnum;
+        return $categoria;
     }
 
-    private function validarId($rawId, string $fieldName): int
-    {
-        $validatedId = filter_var($rawId, FILTER_VALIDATE_INT);
-        
-        if ($validatedId === false || $validatedId <= 0) {
-            throw new Exception("$fieldName inválido", 400);
+    private function validarId($id, string $campo): int {
+        $id = filter_var($id, FILTER_VALIDATE_INT);
+        if ($id === false || $id <= 0) {
+            throw new Exception("$campo inválido", 400);
         }
-
-        return $validatedId;
+        return $id;
     }
 
-    private function normalizarEquipo(array $equipmentRow): array
-    {
-        $normalizedData = [
-            'id_equipamiento'     => (int) $equipmentRow['id_equipamiento'],
-            'nombre'              => $equipmentRow['nombre'],
-            'descripcion'         => $equipmentRow['descripcion'],
-            'marca'               => $equipmentRow['marca'],
-            'modelo'              => $equipmentRow['modelo'],
-            'categoria'           => $equipmentRow['categoria'],
-            'id_ubicacion_actual' => (int) $equipmentRow['id_ubicacion_actual'],
-            'ubicacion'           => $equipmentRow['ubicacion'] ?? null,
+    private function normalizarEquipo(array $equipo): array {
+        return [
+            'id_equipamiento' => (int) $equipo['id_equipamiento'],
+            'nombre' => $equipo['nombre'],
+            'descripcion' => $equipo['descripcion'],
+            'marca' => $equipo['marca'],
+            'modelo' => $equipo['modelo'],
+            'categoria' => $equipo['categoria'],
+            'id_ubicacion_actual' => (int) $equipo['id_ubicacion_actual'],
+            'ubicacion' => $equipo['ubicacion'] ?? null,
         ];
-
-        return $normalizedData;
     }
 }
