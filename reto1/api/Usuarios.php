@@ -1,181 +1,301 @@
 <?php
-require_once __DIR__ . '/../model/Usuarios.php';
 
-class UsuariosDAO
+header('Content-Type: application/json; charset=utf-8');
+
+// Envía una respuesta JSON y establece el código de estado HTTP.
+function responderUsuarios(array $datos, int $estado = 200): void
 {
-    private string $apiBaseUrl;
-
-    public function __construct(string $apiBaseUrl){
-        $this->apiBaseUrl = rtrim($apiBaseUrl, '/');
-    }
-
-    private function enviarPeticionApi(string $metodo, string $ruta, ?array $datos = null): mixed
-    {
-        $url = $this->apiBaseUrl . '/api/' . ltrim($ruta, '/');
-        $curl = curl_init($url);
-        if ($curl === false) {
-            throw new RuntimeException('No se pudo iniciar la petición a la API.');
-        }
-
-        $opciones = [
-            CURLOPT_CUSTOMREQUEST => $metodo,
-            CURLOPT_HTTPHEADER => [
-                'Content-Type: application/json',
-                'Accept: application/json'
-            ],
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_TIMEOUT => 10
-        ];
-
-        if ($datos !== null) {
-            $opciones[CURLOPT_POSTFIELDS] = json_encode($datos, JSON_THROW_ON_ERROR);
-        }
-
-        if (!curl_setopt_array($curl, $opciones)) {
-            $error = curl_error($curl);
-            curl_close($curl);
-            throw new RuntimeException('No se pudo configurar la petición a la API: ' . $error);
-        }
-
-        $respuesta = curl_exec($curl);
-        $estadoHttp = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-
-        if ($respuesta === false) {
-            $error = curl_error($curl);
-            curl_close($curl);
-            throw new RuntimeException('Error al conectar con la API: ' . $error);
-        }
-
-        curl_close($curl);
-
-        if ($estadoHttp < 200 || $estadoHttp >= 300) {
-            throw new RuntimeException('La API respondió con el estado HTTP ' . $estadoHttp . '.', $estadoHttp);
-        }
-
-        return json_decode($respuesta, true, 512, JSON_THROW_ON_ERROR);
-    }
-
-    private function normalizarUsuarioPublico(mixed $usuario): array
-    {
-        $idUsuario = is_array($usuario) && array_key_exists('id_usuario', $usuario)
-            ? filter_var($usuario['id_usuario'], FILTER_VALIDATE_INT)
-            : false;
-
-        if (
-            !is_array($usuario)
-            || $idUsuario === false
-            || !isset($usuario['nombre']) || !is_string($usuario['nombre'])
-            || !isset($usuario['apellidos']) || !is_string($usuario['apellidos'])
-            || !isset($usuario['nombre_usuario']) || !is_string($usuario['nombre_usuario'])
-        ) {
-            throw new UnexpectedValueException('La respuesta de la API no contiene los datos públicos esperados del usuario.');
-        }
-
-        return [
-            'id_usuario' => $idUsuario,
-            'nombre' => $usuario['nombre'],
-            'apellidos' => $usuario['apellidos'],
-            'nombre_usuario' => $usuario['nombre_usuario']
-        ];
-    }
-
-    private function validarRespuestaExito(mixed $respuesta): bool
-    {
-        if (!is_array($respuesta) || !isset($respuesta['exito']) || !is_bool($respuesta['exito'])) {
-            throw new UnexpectedValueException('La respuesta de la API no contiene un campo exito válido.');
-        }
-
-        return $respuesta['exito'];
-    }
-
-    public function login(string $nombre_usuario, string $password): bool
-    {
-        $resultado = $this->enviarPeticionApi('POST', 'usuarios/login', [
-            'nombre_usuario' => $nombre_usuario,
-            'password' => $password
-        ]);
-        if (!is_array($resultado) || !isset($resultado['autenticado']) || !is_bool($resultado['autenticado'])) {
-            throw new UnexpectedValueException('La respuesta de la API no contiene un campo autenticado válido.');
-        }
-
-        return $resultado['autenticado'];
-    }
-
-    public function buscarPorId(int $id): ?array
-    {
-        try {
-            $usuario = $this->enviarPeticionApi('GET', 'usuarios/' . $id);
-        } catch (RuntimeException $error) {
-            if ($error->getCode() === 404) {
-                return null;
-            }
-            throw $error;
-        }
-
-        return $this->normalizarUsuarioPublico($usuario);
-    }
-
-    public function buscarTodos(): array
-    {
-        $respuesta = $this->enviarPeticionApi('GET', 'usuarios');
-        if (!is_array($respuesta) || !array_is_list($respuesta)) {
-            throw new UnexpectedValueException('La API debe responder con una lista JSON de usuarios.');
-        }
-
-        $usuarios = [];
-        foreach ($respuesta as $usuario) {
-            $usuarios[] = $this->normalizarUsuarioPublico($usuario);
-        }
-
-        return $usuarios;
-    }
-
-    public function crear(Usuarios $usuario): bool
-    {
-        $respuesta = $this->enviarPeticionApi('POST', 'usuarios', [
-            'nombre' => $usuario->getNombre(),
-            'apellidos' => $usuario->getApellidos(),
-            'nombre_usuario' => $usuario->getNombreUsuario(),
-            'password_hash' => $usuario->getPasswordHash()
-        ]);
-
-        return $this->validarRespuestaExito($respuesta);
-    }
-
-    public function actualizar(Usuarios $usuario): bool
-    {
-        $respuesta = $this->enviarPeticionApi('PUT', 'usuarios/' . $usuario->getIdUsuario(), [
-            'nombre' => $usuario->getNombre(),
-            'apellidos' => $usuario->getApellidos(),
-            'nombre_usuario' => $usuario->getNombreUsuario(),
-            'password_hash' => $usuario->getPasswordHash()
-        ]);
-
-        return $this->validarRespuestaExito($respuesta);
-    }
-
-    public function actualizar_password(Usuarios $usuario, string $nuevaPassword): bool
-    {
-        $respuesta = $this->enviarPeticionApi(
-            'PATCH',
-            'usuarios/' . $usuario->getIdUsuario() . '/password',
-            ['password' => $nuevaPassword]
-        );
-
-        return $this->validarRespuestaExito($respuesta);
-    }
-
-    public function borrar(int $id): bool
-    {
-        try {
-            $respuesta = $this->enviarPeticionApi('DELETE', 'usuarios/' . $id);
-        } catch (RuntimeException $error) {
-            if ($error->getCode() === 404) {
-                return false;
-            }
-            throw $error;
-        }
-
-        return $this->validarRespuestaExito($respuesta);
-    }
+    http_response_code($estado);
+    echo json_encode($datos, JSON_UNESCAPED_UNICODE);
 }
+
+// Lee y valida que el cuerpo de la solicitud sea un objeto JSON.
+function leerJsonUsuarios(): ?array
+{
+    $contenido = file_get_contents('php://input');
+    $datos = json_decode($contenido === false ? '' : $contenido, true);
+
+    if (!is_array($datos)) {
+        responderUsuarios(['error' => 'El cuerpo debe ser un objeto JSON válido.'], 400);
+        return null;
+    }
+
+    return $datos;
+}
+
+// Comprueba que los campos indicados existan, sean texto y no estén vacíos.
+function tieneCamposTextoUsuarios(array $datos, array $campos): bool
+{
+    foreach ($campos as $campo) {
+        if (!isset($datos[$campo]) || !is_string($datos[$campo]) || trim($datos[$campo]) === '') {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+// Indica si existe un usuario con el identificador proporcionado.
+function existeUsuario(PDO $conexion, int $id): bool
+{
+    $consulta = $conexion->prepare('SELECT 1 FROM usuarios WHERE id_usuario = :id_usuario');
+    $consulta->execute(['id_usuario' => $id]);
+
+    return $consulta->fetchColumn() !== false;
+}
+
+// Obtiene el ID de usuario desde el parámetro de consulta o la ruta.
+function obtenerIdUsuarioApi(array $ruta): ?int
+{
+    if (isset($_GET['id'])) {
+        return filter_var($_GET['id'], FILTER_VALIDATE_INT) ?: null;
+    }
+
+    if (isset($ruta[0]) && ctype_digit($ruta[0])) {
+        return (int) $ruta[0];
+    }
+
+    return null;
+}
+
+// Determina los segmentos de ruta posteriores a "usuarios".
+function obtenerRutaUsuarioApi(): array
+{
+    $ruta = $_SERVER['PATH_INFO'] ?? '';
+    if ($ruta === '') {
+        $ruta = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: '';
+        $segmentos = array_values(array_filter(explode('/', trim($ruta, '/')), 'strlen'));
+        $indiceUsuarios = null;
+
+        foreach ($segmentos as $indice => $segmento) {
+            if (strtolower($segmento) === 'usuarios' || strtolower($segmento) === 'usuarios.php') {
+                $indiceUsuarios = $indice;
+            }
+        }
+
+        $ruta = $indiceUsuarios === null ? '' : implode('/', array_slice($segmentos, $indiceUsuarios + 1));
+    }
+
+    return array_values(array_filter(explode('/', trim($ruta, '/')), 'strlen'));
+}
+
+// Abre la conexión con la base de datos; ante un error, responde y termina.
+try {
+    $conexion = new PDO(
+        'mysql:host=localhost;dbname=reto_2daw;charset=utf8',
+        'root',
+        '',
+        [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
+    );
+} catch (PDOException $error) {
+    error_log('No se pudo conectar a la base de datos para la API de usuarios: ' . $error->getMessage());
+    responderUsuarios(['error' => 'No se pudo conectar con la base de datos.'], 500);
+    exit;
+}
+
+$metodo = $_SERVER['REQUEST_METHOD'] ?? 'GET';
+$ruta = obtenerRutaUsuarioApi();
+$id = obtenerIdUsuarioApi($ruta);
+
+try {
+    switch ($metodo) {
+        case 'GET':
+            // Devuelve un usuario concreto si hay ID, o la lista completa en caso contrario.
+            if ($ruta !== [] && (count($ruta) !== 1 || !ctype_digit($ruta[0]))) {
+                responderUsuarios(['error' => 'Ruta no encontrada.'], 404);
+                break;
+            }
+
+            if ($id !== null) {
+                if ($id < 1) {
+                    responderUsuarios(['error' => 'El ID debe ser un entero positivo.'], 400);
+                    break;
+                }
+
+                $consulta = $conexion->prepare(
+                    'SELECT id_usuario, nombre, apellidos, nombre_usuario
+                     FROM usuarios WHERE id_usuario = :id_usuario'
+                );
+                $consulta->execute(['id_usuario' => $id]);
+                $usuario = $consulta->fetch(PDO::FETCH_ASSOC);
+
+                if ($usuario === false) {
+                    responderUsuarios(['error' => 'No se encontró el usuario.'], 404);
+                    break;
+                }
+
+                responderUsuarios($usuario);
+                break;
+            }
+
+            $consulta = $conexion->query(
+                'SELECT id_usuario, nombre, apellidos, nombre_usuario FROM usuarios'
+            );
+            responderUsuarios($consulta->fetchAll(PDO::FETCH_ASSOC));
+            break;
+
+        case 'POST':
+            // Autentica al usuario cuando la ruta o el parámetro de acción indican login.
+            if (($ruta === ['login']) || ($_GET['accion'] ?? '') === 'login') {
+                $datos = leerJsonUsuarios();
+                if ($datos === null) {
+                    break;
+                }
+                if (!tieneCamposTextoUsuarios($datos, ['nombre_usuario', 'password'])) {
+                    responderUsuarios(['error' => 'Se requieren nombre_usuario y password.'], 400);
+                    break;
+                }
+
+                $consulta = $conexion->prepare(
+                    'SELECT password_hash FROM usuarios WHERE nombre_usuario = :nombre_usuario LIMIT 1'
+                );
+                $consulta->execute(['nombre_usuario' => $datos['nombre_usuario']]);
+                $passwordHash = $consulta->fetchColumn();
+
+                responderUsuarios([
+                    'autenticado' => $passwordHash !== false && password_verify($datos['password'], $passwordHash)
+                ]);
+                break;
+            }
+
+            // Crea un usuario nuevo y guarda la contraseña como hash.
+            if ($ruta !== []) {
+                responderUsuarios(['error' => 'Ruta no encontrada.'], 404);
+                break;
+            }
+
+            $datos = leerJsonUsuarios();
+            if ($datos === null) {
+                break;
+            }
+            if (!tieneCamposTextoUsuarios($datos, ['nombre', 'apellidos', 'nombre_usuario'])) {
+                responderUsuarios(['error' => 'Se requieren nombre, apellidos y nombre_usuario.'], 400);
+                break;
+            }
+
+            $password = $datos['password'] ?? null;
+            $passwordHash = $datos['password_hash'] ?? null;
+            if (is_string($password) && $password !== '') {
+                $passwordHash = password_hash($password, PASSWORD_DEFAULT);
+            } elseif (!is_string($passwordHash) || $passwordHash === '') {
+                responderUsuarios(['error' => 'Se requiere una contraseña válida.'], 400);
+                break;
+            }
+
+            $consulta = $conexion->prepare(
+                'INSERT INTO usuarios (nombre, apellidos, nombre_usuario, password_hash)
+                 VALUES (:nombre, :apellidos, :nombre_usuario, :password_hash)'
+            );
+            $consulta->execute([
+                'nombre' => trim($datos['nombre']),
+                'apellidos' => trim($datos['apellidos']),
+                'nombre_usuario' => trim($datos['nombre_usuario']),
+                'password_hash' => $passwordHash
+            ]);
+
+            responderUsuarios([
+                'exito' => true,
+                'id_usuario' => (int) $conexion->lastInsertId()
+            ], 201);
+            break;
+
+        case 'PUT':
+            // Actualiza los datos de perfil del usuario identificado por ID.
+            if (($ruta !== [] && (count($ruta) !== 1 || !ctype_digit($ruta[0])))
+                || $id === null || $id < 1) {
+                responderUsuarios(['error' => 'Se requiere un ID de usuario válido.'], 400);
+                break;
+            }
+
+            $datos = leerJsonUsuarios();
+            if ($datos === null) {
+                break;
+            }
+            if (!tieneCamposTextoUsuarios($datos, ['nombre', 'apellidos', 'nombre_usuario'])) {
+                responderUsuarios(['error' => 'Se requieren nombre, apellidos y nombre_usuario.'], 400);
+                break;
+            }
+
+            $consulta = $conexion->prepare(
+                'UPDATE usuarios
+                 SET nombre = :nombre, apellidos = :apellidos, nombre_usuario = :nombre_usuario
+                 WHERE id_usuario = :id_usuario'
+            );
+            $consulta->execute([
+                'nombre' => trim($datos['nombre']),
+                'apellidos' => trim($datos['apellidos']),
+                'nombre_usuario' => trim($datos['nombre_usuario']),
+                'id_usuario' => $id
+            ]);
+
+            if ($consulta->rowCount() === 0 && !existeUsuario($conexion, $id)) {
+                responderUsuarios(['error' => 'No se encontró el usuario.'], 404);
+                break;
+            }
+
+            responderUsuarios(['exito' => true]);
+            break;
+
+        case 'PATCH':
+            // Cambia únicamente la contraseña del usuario indicado en la ruta.
+            if (count($ruta) !== 2 || !ctype_digit($ruta[0]) || $ruta[1] !== 'password'
+                || $id === null || $id < 1) {
+                responderUsuarios(['error' => 'Se requiere un ID y la ruta password.'], 400);
+                break;
+            }
+
+            $datos = leerJsonUsuarios();
+            if ($datos === null) {
+                break;
+            }
+            if (!tieneCamposTextoUsuarios($datos, ['password'])) {
+                responderUsuarios(['error' => 'Se requiere una contraseña válida.'], 400);
+                break;
+            }
+
+            $consulta = $conexion->prepare(
+                'UPDATE usuarios SET password_hash = :password_hash WHERE id_usuario = :id_usuario'
+            );
+            $consulta->execute([
+                'password_hash' => password_hash($datos['password'], PASSWORD_DEFAULT),
+                'id_usuario' => $id
+            ]);
+
+            if ($consulta->rowCount() === 0 && !existeUsuario($conexion, $id)) {
+                responderUsuarios(['error' => 'No se encontró el usuario.'], 404);
+                break;
+            }
+
+            responderUsuarios(['exito' => true]);
+            break;
+
+        case 'DELETE':
+            // Elimina el usuario identificado por ID.
+            if (($ruta !== [] && (count($ruta) !== 1 || !ctype_digit($ruta[0])))
+                || $id === null || $id < 1) {
+                responderUsuarios(['error' => 'Se requiere un ID de usuario válido.'], 400);
+                break;
+            }
+
+            $consulta = $conexion->prepare('DELETE FROM usuarios WHERE id_usuario = :id_usuario');
+            $consulta->execute(['id_usuario' => $id]);
+
+            if ($consulta->rowCount() === 0) {
+                responderUsuarios(['error' => 'No se encontró el usuario.'], 404);
+                break;
+            }
+
+            responderUsuarios(['exito' => true]);
+            break;
+
+        default:
+            // Informa cuando se solicita un método HTTP que esta API no admite.
+            responderUsuarios(['error' => 'Método HTTP no permitido.'], 405);
+            break;
+    }
+} catch (PDOException $error) {
+    error_log('Error de base de datos en la API de usuarios: ' . $error->getMessage());
+    responderUsuarios(['error' => 'Error al procesar la solicitud.'], 500);
+}
+
+exit;

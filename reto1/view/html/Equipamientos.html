@@ -1,0 +1,105 @@
+<div class="eq-header">
+    <h1 class="eq-title">Inventario de equipamientos</h1>
+</div>
+
+<div class="eq-stats-bar">
+    <div class="eq-stat">
+        <i class="fa-solid fa-box" style="color: #9ca3af;"></i>
+        <span class="stat-number" id="stat-total">0</span> Equipos registrados
+    </div>
+    <div class="eq-stat-divider"></div>
+    <div class="eq-stat">
+        <i class="fa-solid fa-layer-group" style="color: #9ca3af;"></i>
+        <span class="stat-number" id="stat-categories">0</span> Categorías
+    </div>
+    <div class="eq-stat-divider"></div>
+    <div class="eq-stat">
+        <i class="fa-solid fa-location-dot" style="color: #9ca3af;"></i>
+        <span class="stat-number" id="stat-locations">0</span> Ubicaciones
+    </div>
+</div>
+
+<div class="eq-filters-bar">
+    <div class="eq-search-box">
+        <i class="fa-solid fa-magnifying-glass" style="color: #9ca3af;"></i>
+        <input type="text" id="search-input" placeholder="Buscar por nombre, ID, marca o modelo...">
+    </div>
+    
+    <select id="filter-category" class="eq-select">
+        <option value="">Categoría: Todas</option>
+        <option value="PORTATIL">Portátil</option>
+        <option value="SOBREMESA">Sobremesa</option>
+        <option value="PERIFERICO">Periférico</option>
+        <option value="AUDIOVISUAL">Audiovisual</option>
+        <option value="OTROS">Otros</option>
+    </select>
+
+    <select id="filter-location" class="eq-select">
+        <option value="">Ubicación: Todas</option>
+    </select>
+
+    <button class="eq-btn-primary" id="btn-crear-equipamiento" onclick="abrirModalCrear()" style="display: none;">
+        <i class="fa-solid fa-plus"></i> Crear equipamiento
+    </button>
+</div>
+
+<div class="eq-table-container">
+    <table class="eq-table">
+        <thead>
+            <tr>
+                <th style="width: 60px;">ID</th>
+                <th>Nombre</th>
+                <th>Marca</th>
+                <th>Modelo</th>
+                <th>Categoría</th>
+                <th>Ubicación</th>
+                <th>Descripción</th>
+                <th style="text-align: right; width: 180px;">Acciones</th>
+            </tr>
+        </thead>
+        <tbody id="eq-table-body"></tbody>
+    </table>
+</div>
+
+<div class="eq-footer">
+    <span id="eq-showing-text">Mostrando 0 de 0 equipamientos</span>
+    <div class="eq-pagination">
+        <button class="eq-page-btn"><i class="fa-solid fa-chevron-left"></i></button>
+        <button class="eq-page-btn active">1</button>
+        <button class="eq-page-btn"><i class="fa-solid fa-chevron-right"></i></button>
+    </div>
+</div>
+
+<!-- MODAL CREAR -->
+<div id="modal-crear" class="eq-modal" style="display: none;">
+    <div class="eq-modal-content">
+        <h3>Nuevo Equipamiento</h3>
+        <form id="form-crear-eq">
+            <input type="text" id="new-nombre" placeholder="Nombre" required>
+            <input type="text" id="new-marca" placeholder="Marca" required>
+            <input type="text" id="new-modelo" placeholder="Modelo" required>
+            <input type="text" id="new-desc" placeholder="Descripción" required>
+            <select id="new-categoria">
+                <option value="PORTATIL">Portátil</option>
+                <option value="SOBREMESA">Sobremesa</option>
+                <option value="PERIFERICO">Periférico</option>
+                <option value="AUDIOVISUAL">Audiovisual</option>
+                <option value="OTROS">Otros</option>
+            </select>
+            <div class="eq-modal-actions">
+                <button type="button" class="eq-btn-secondary" onclick="cerrarModalCrear()">Cancelar</button>
+                <button type="submit" class="eq-btn-primary">Guardar</button>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- MODAL PARA VER LA DESCRIPCIÓN COMPLETA -->
+<div id="modal-desc" class="eq-modal" style="display: none;">
+    <div class="eq-modal-content">
+        <h3>Descripción del Equipamiento</h3>
+        <p id="desc-text-content" style="margin-bottom: 20px; line-height: 1.6; color: #374151; font-size: 15px;"></p>
+        <div class="eq-modal-actions">
+            <button type="button" class="eq-btn-secondary" onclick="cerrarModalDesc()">Cerrar</button>
+        </div>
+    </div>
+</div>

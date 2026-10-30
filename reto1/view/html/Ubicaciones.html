@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión - Ubicaciones</title>
+    
+    <!-- Fuentes e iconos de FontAwesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Enlace a tu archivo CSS -->
+    <link rel="stylesheet" href="../css/Ubicaciones.css">
+</head>
+<body>
+    <!-- CONTENIDO PRINCIPAL -->
+    <main>
+        <div class="header-ubi">
+            <h1 class="titulo-ubi">Gestión de Ubicaciones</h1>
+            <p class="subtitulo-ubi">Consulta y organiza los espacios y aulas del centro</p>
+        </div>
+
+        <!-- Tarjetas de estadísticas -->
+        <div class="ubi-barra-estadisticas">
+            <div class="ubi-estadisticas">
+                <i class="fa-solid fa-map-location-dot"></i> 
+                <span class="estadistica-numero" id="estadisticaTotal">0</span> 
+                <span class="estadistica-barra">espacios en total</span>
+            </div>
+            <div class="ubi-estadisticas-division"></div>
+            <div class="ubi-estadisticas">
+                <i class="fa-solid fa-chalkboard-user"></i>
+                <span class="estadistica-numero">3</span> 
+                <span class="estadistica-barra">aulas registradas</span>
+            </div>
+            <div class="ubi-estadisticas-division"></div>
+            <div class="ubi-estadisticas">
+                <i class="fa-solid fa-calendar-plus"></i>
+                <span class="estadistica-numero">5</span> 
+                <span class="estadistica-barra">nuevos este mes</span>
+            </div>
+        </div>
+
+        <!-- Buscador y botón de añadir -->
+        <div class="ubi-filtro-buscador">
+            <div class="ubi-buscador">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="buscarUbicacion" placeholder="Buscar aula o espacio...">
+            </div>
+            
+            <button class="ubi-boton-añadir" id="btnAñadir">
+                <i class="fa-solid fa-plus"></i> Añadir Ubicación
+            </button>
+        </div>
+
+        <!-- Contenedor blanco para las ubicaciones -->
+        <div class="ubi-contenedor-tabla">
+            
+            <details class="desplegable-planta">
+                <summary>
+                    <span class="titulo-alineado">
+                        <span class="nombre-aula">Almacén |</span>
+                        <span class="descripcion-aula">Ubicación inicial de todos los equipamientos</span>
+                    </span>
+                </summary>
+                <div class="contenido-desplegable">
+                    <a href="#" class="item-equipo">PC-01 (Profesor)</a>
+                    <a href="#" class="item-equipo">Proyector Epson</a>
+                    <a href="#" class="item-equipo">Switch 24 puertos</a>
+                </div>
+            </details>
+
+            <details class="desplegable-planta">
+                <summary>
+                    <span class="titulo-alineado">
+                        <span class="nombre-aula">Aula 101 |</span>
+                        <span class="descripcion-aula">Aula de informatica de primer curso</span>
+                    </span>
+                </summary>
+                <div class="contenido-desplegable">
+                    <span class="item-equipo">Sin equipos registrados</span>
+                </div>
+            </details>
+
+            <details class="desplegable-planta">
+                <summary>
+                    <span class="titulo-alineado">
+                        <span class="nombre-aula">Aula 102 |</span>
+                        <span class="descripcion-aula">Aula de informatica de segundo curso</span>
+                    </span>
+                </summary>
+                <div class="contenido-desplegable">
+                    <span class="item-equipo">Sin equipos registrados</span>
+                </div>
+            </details>
+
+            <details class="desplegable-planta">
+                <summary>
+                    <span class="titulo-alineado">
+                        <span class="nombre-aula">Aula 103 |</span>
+                        <span class="descripcion-aula">Aula de informatica para proyectos</span>
+                    </span>
+                </summary>
+                <div class="contenido-desplegable">
+                    <span class="item-equipo">Sin equipos registrados</span>
+                </div>
+            </details>
+
+            <details class="desplegable-planta">
+                <summary>
+                    <span class="titulo-alineado">
+                        <span class="nombre-aula">Sala Profesores |</span>
+                        <span class="descripcion-aula">Sala destinada al personal docente</span>
+                    </span>
+                </summary>
+                <div class="contenido-desplegable">
+                    <span class="item-equipo">Sin equipos registrados</span>
+                </div>
+            </details>
+
+            <details class="desplegable-planta">
+                <summary>
+                    <span class="titulo-alineado">
+                        <span class="nombre-aula">Despacho Dirección |</span>
+                        <span class="descripcion-aula">Despacho dirección</span>
+                    </span>
+                </summary>
+                <div class="contenido-desplegable">
+                    <span class="item-equipo">Sin equipos registrados</span>
+                </div>
+            </details>
+
+            <details class="desplegable-planta">
+                <summary>
+                    <span class="titulo-alineado">
+                        <span class="nombre-aula">Laboratorio |</span>
+                        <span class="descripcion-aula">Laboratorio de pruebas y sistemas</span>
+                    </span>
+                </summary>
+                <div class="contenido-desplegable">
+                    <span class="item-equipo">Sin equipos registrados</span>
+                </div>
+            </details>
+
+            <details class="desplegable-planta">
+                <summary>
+                    <span class="titulo-alineado">
+                        <span class="nombre-aula">Salón de Actos |</span>
+                        <span class="descripcion-aula">Espacio para presentación y eventos</span>
+                    </span>
+                </summary>
+                <div class="contenido-desplegable">
+                    <span class="item-equipo">Sin equipos registrados</span>
+                </div>
+            </details>
+
+        </div>
+    </main>
+
+</body>
+</html>

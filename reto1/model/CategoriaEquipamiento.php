@@ -3,11 +3,11 @@
     namespace enumCategoria;
 
     enum CategoriaEquipamiento: string {
-        case PORTATIL = 'Portatil';
-        case SOBREMESA = 'Sobremesa';
-        case PERIFERICO = 'Periferico';
-        case AUDIOVISUAL = 'Audiovisual';
-        case OTROS = 'Otros';
+        case PORTATIL = 'PORTATIL';
+        case SOBREMESA = 'SOBREMESA';
+        case PERIFERICO = 'PERIFERICO';
+        case AUDIOVISUAL = 'AUDIOVISUAL';
+        case OTROS = 'OTROS';
     }
 ?>
 

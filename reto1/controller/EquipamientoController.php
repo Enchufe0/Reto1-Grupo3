@@ -1,104 +1,91 @@
 <?php
 require_once __DIR__ . '/../dao/EquipamientoDAO.php';
-require_once __DIR__ . '/../dao/HistoricoDAO.php';
-require_once __DIR__ . '/../dao/UbicacionesDAO.php';
-require_once __DIR__ . '/../model/Equipamientos.php';
 require_once __DIR__ . '/../model/CategoriaEquipamiento.php';
 
 use enumCategoria\CategoriaEquipamiento;
 
 class EquipamientoController {
-
-    private EquipamientoDAO $equipamientoDAO;
-    private ?HistoricoDAO $historicoDAO;
-    private ?UbicacionesDAO $ubicacionesDAO;
+    private EquipamientoDAO $dao;
 
     public function __construct(PDO $db) {
-        $this->equipamientoDAO = new EquipamientoDAO($db);
-        // Si existen los DAOs de histórico y ubicaciones, los inicializamos
-        if (class_exists('HistoricoDAO')) {
-            $this->historicoDAO = new HistoricoDAO($db);
-        }
-        if (class_exists('UbicacionesDAO')) {
-            $this->ubicacionesDAO = new UbicacionesDAO($db);
-        }
+        $this->dao = new EquipamientoDAO($db);
     }
 
-    // 1. LISTAR TODOS LOS EQUIPOS
-    public function listar(): void {
-        $equipos = $this->equipamientoDAO->listarTodos();
-        $ubicaciones = $this->ubicacionesDAO ? $this->ubicacionesDAO->listarTodas() : [];
-        require __DIR__ . '/../view/equipamientos.php';
+    public function listar(): array {
+        return array_map([$this, 'normalizarEquipo'], $this->dao->listar());
     }
 
-    // 2. CREAR UN NUEVO EQUIPO
-    public function guardar(): void {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $nombre      = trim($_POST['nombre'] ?? '');
-            $descripcion = trim($_POST['descripcion'] ?? '');
-            $marca       = trim($_POST['marca'] ?? '');
-            $modelo      = trim($_POST['modelo'] ?? '');
-            $categoriaStr= $_POST['categoria'] ?? 'Otros';
-            $ubicacionId = (int) ($_POST['id_ubicacion'] ?? 1);
-
-            // Convertir el texto del formulario al Enum seguro
-            $categoriaEnum = CategoriaEquipamiento::tryFrom($categoriaStr) ?? CategoriaEquipamiento::OTROS;
-
-            $nuevoEquipo = new Equipamientos(
-                0, // ID 0 porque es autoincremental en la BD
-                $nombre,
-                $descripcion,
-                $marca,
-                $modelo,
-                $categoriaEnum,
-                $ubicacionId
-            );
-
-            $idGenerado = $this->equipamientoDAO->crear($nuevoEquipo);
-
-            // Redirigir al listado tras guardar
-            header('Location: index.php?page=equipamientos');
-            exit;
+    public function crear($datos): bool {
+        if (!is_array($datos)) {
+            throw new Exception('Los datos no son válidos', 400);
         }
+        
+        $nombre = trim($datos['nombre'] ?? '');
+        if ($nombre === '') {
+            throw new Exception('El nombre es obligatorio', 400);
+        }
+
+        $categoriaTexto = $datos['categoria'] ?? 'OTROS';
+        $categoriaEnum = CategoriaEquipamiento::tryFrom($categoriaTexto);
+        if ($categoriaEnum === null) {
+            throw new Exception('La categoría no es válida: ' . $categoriaTexto, 400);
+        }
+
+        $creado = $this->dao->crear(
+            $nombre,
+            trim($datos['descripcion'] ?? ''),
+            trim($datos['marca'] ?? ''),
+            trim($datos['modelo'] ?? ''),
+            $categoriaEnum->value
+        );
+
+        if (!$creado) {
+            throw new Exception('No se pudo crear el equipamiento en la base de datos', 500);
+        }
+        return true;
     }
 
-    // 3. EDITAR / ACTUALIZAR EQUIPO
-    public function actualizar(): void {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $id          = (int) ($_POST['id_equipamiento'] ?? 0);
-            $nombre      = trim($_POST['nombre'] ?? '');
-            $descripcion = trim($_POST['descripcion'] ?? '');
-            $marca       = trim($_POST['marca'] ?? '');
-            $modelo      = trim($_POST['modelo'] ?? '');
-            $categoriaStr= $_POST['categoria'] ?? 'Otros';
-            $ubicacionId = (int) ($_POST['id_ubicacion'] ?? 1);
+    public function actualizar($id, $datos): bool {
+        $id = (int)$id;
+        if ($id <= 0) throw new Exception('ID inválido', 400);
+        
+        $existente = $this->dao->buscarPorId($id);
+        if ($existente === null) throw new Exception('Equipamiento no encontrado', 404);
 
-            $categoriaEnum = CategoriaEquipamiento::tryFrom($categoriaStr) ?? CategoriaEquipamiento::OTROS;
+        $categoriaTexto = $datos['categoria'] ?? $existente['categoria'];
+        $categoriaEnum = CategoriaEquipamiento::tryFrom($categoriaTexto);
+        if ($categoriaEnum === null) $categoriaEnum = CategoriaEquipamiento::OTROS;
 
-            $equipo = new Equipamientos(
-                $id,
-                $nombre,
-                $descripcion,
-                $marca,
-                $modelo,
-                $categoriaEnum,
-                $ubicacionId
-            );
+        $actualizado = $this->dao->actualizar(
+            $id,
+            trim($datos['nombre'] ?? $existente['nombre']),
+            trim($datos['descripcion'] ?? $existente['descripcion']),
+            trim($datos['marca'] ?? $existente['marca']),
+            trim($datos['modelo'] ?? $existente['modelo']),
+            $categoriaEnum->value
+        );
 
-            $this->equipamientoDAO->actualizar($equipo);
-
-            header('Location: index.php?page=equipamientos');
-            exit;
-        }
+        if (!$actualizado) throw new Exception('No se pudo actualizar', 500);
+        return true;
     }
 
-    // 4. ELIMINAR EQUIPO
-    public function eliminar(): void {
-        $id = (int) ($_GET['id'] ?? 0);
-        if ($id > 0) {
-            $this->equipamientoDAO->eliminar($id);
-        }
-        header('Location: index.php?page=equipamientos');
-        exit;
+    public function eliminar($id): bool {
+        $id = (int)$id;
+        if ($id <= 0) throw new Exception('ID inválido', 400);
+        if (!$this->dao->eliminar($id)) throw new Exception('No se pudo eliminar', 500);
+        return true;
+    }
+
+    private function normalizarEquipo(array $e): array {
+        return [
+            'id_equipamiento' => (int) $e['id_equipamiento'],
+            'nombre' => $e['nombre'],
+            'descripcion' => $e['descripcion'],
+            'marca' => $e['marca'],
+            'modelo' => $e['modelo'],
+            'categoria' => $e['categoria'],
+            'id_ubicacion_actual' => (int) $e['id_ubicacion_actual'],
+            'ubicacion' => $e['ubicacion'] ?? null,
+        ];
     }
 }

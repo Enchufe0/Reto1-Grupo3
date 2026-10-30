@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión - Usuarios</title>
+    
+    <!-- Fuentes e iconos de FontAwesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    
+    <link rel="stylesheet" href="../css/Usuarios.css">
+</head>
+<body>
+    <!-- CONTENIDO PRINCIPAL -->
+    <main>
+        <!-- Titulo de la seccion -->
+        <div class="header-usu">
+            <h1 class="titulo-usu">Gestión de Usuarios</h1>
+            <p class="subtitulo-usu">Consulta y organiza los usuarios del sistema</p>
+        </div>
+
+        <!-- Tarjetas de estadísticas -->
+        <div class="usu-barra-estadisticas">
+            <div class="usu-estadisticas">
+                <i class="fa-solid fa-users"></i> 
+                <span class="estadistica-numero" id="estadisticaTotal">0</span> 
+                <span class="estadistica-barra">usuarios en total</span>
+            </div>
+            <div class="usu-estadisticas-division"></div>
+            <div class="usu-estadisticas">
+                <i class="fa-solid fa-user-tie"></i>
+                <span class="estadistica-numero">3</span> 
+                <span class="estadistica-barra">administradores</span>
+            </div>
+            <div class="usu-estadisticas-division"></div>
+            <div class="usu-estadisticas">
+                <i class="fa-solid fa-user-plus"></i>
+                <span class="estadistica-numero">5</span> 
+                <span class="estadistica-barra">nuevos este mes</span>
+            </div>
+        </div>
+
+        <!-- Buscador y botón de añadir -->
+        <div class="usu-filtro-buscador">
+            <div class="usu-buscador">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="buscarUsuario" placeholder="Buscar usuario por nombre o ID...">
+            </div>
+            
+            <button class="usu-boton-añadir" id="btnAñadir">
+                <i class="fa-solid fa-plus"></i> Añadir Usuario
+            </button>
+        </div>
+
+        <!-- Contenedor cuadricula para las tarjetas de usuarios -->
+        <div class="usu-contenedor-tarjetas">
+            
+            <!-- Tarjeta 1 -->
+            <article class="tarjeta-usu">
+                <div class="tarjeta-info">
+                    <p><strong>Nombre:</strong> Juan</p>
+                    <p><strong>Apellido:</strong> Pérez</p>
+                    <p><strong>Usuario:</strong> jperez</p>
+                </div>
+                <div class="tarjeta-accion">
+                    <button class="btn-editar"><i class="fa-solid fa-pen"></i> Editar</button>
+                    <button class="btn-eliminar"><i class="fa-solid fa-trash"></i> Borrar</button>
+                </div>
+            </article>
+
+            <!-- Tarjeta 2 -->
+            <article class="tarjeta-usu">
+                <div class="tarjeta-info">
+                    <p><strong>Nombre:</strong> Ana</p>
+                    <p><strong>Apellido:</strong> Pérez</p>
+                    <p><strong>Usuario:</strong> aperez</p>
+                </div>
+                <div class="tarjeta-accion">
+                    <button class="btn-editar"><i class="fa-solid fa-pen"></i> Editar</button>
+                    <button class="btn-eliminar"><i class="fa-solid fa-trash"></i> Borrar</button>
+                </div>
+            </article>
+
+        </div>
+    </main>
+
+    <!-- POP UP PARA AÑADIR/EDITAR -->
+    <dialog id="popupUsuario" class="popup">
+        <div class="popup-contenido">
+            <h2 id="popupTitulo">Nuevo Usuario</h2>
+            <form id="formularioUsuario">
+                <input type="hidden" id="userId">
+                
+                <div class="grupo-input">
+                    <label for="nombre">NOMBRE</label>
+                    <input type="text" id="nombre" required>
+                </div>
+                
+                <div class="grupo-input">
+                    <label for="apellido">APELLIDO</label>
+                    <input type="text" id="apellido" required>
+                </div>
+
+                <div class="grupo-input">
+                    <label for="username">USER NAME</label>
+                    <input type="text" id="username" required>
+                </div>
+
+                <div class="grupo-input">
+                    <label for="password">CONTRASEÑA</label>
+                    <input type="password" id="password" required>
+                </div>
+
+                <div class="botones-popup">
+                    <button type="button" class="btn-cancelar" id="btnCerrarPopUp">CANCELAR</button>
+                    <button type="submit" class="btn-aceptar">ACEPTAR</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+</body>
+</html>
