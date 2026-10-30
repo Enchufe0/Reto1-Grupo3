@@ -10,8 +10,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Enlace a tu archivo CSS -->
-    <link rel="stylesheet" href="../css/Ubicaciones.css">
 </head>
 <body>
     <!-- CONTENIDO PRINCIPAL -->
@@ -50,112 +48,72 @@
             </div>
             
             <button class="ubi-boton-añadir" id="btnAñadir">
-                <i class="fa-solid fa-plus"></i> Añadir Ubicación
+                Añadir Ubicación
+                <i class="fa-solid fa-plus"></i> 
             </button>
         </div>
 
         <!-- Contenedor blanco para las ubicaciones -->
-        <div class="ubi-contenedor-tabla">
-            
-            <details class="desplegable-planta">
-                <summary>
-                    <span class="titulo-alineado">
-                        <span class="nombre-aula">Almacén |</span>
-                        <span class="descripcion-aula">Ubicación inicial de todos los equipamientos</span>
-                    </span>
-                </summary>
-                <div class="contenido-desplegable">
-                    <a href="#" class="item-equipo">PC-01 (Profesor)</a>
-                    <a href="#" class="item-equipo">Proyector Epson</a>
-                    <a href="#" class="item-equipo">Switch 24 puertos</a>
-                </div>
-            </details>
-
-            <details class="desplegable-planta">
-                <summary>
-                    <span class="titulo-alineado">
-                        <span class="nombre-aula">Aula 101 |</span>
-                        <span class="descripcion-aula">Aula de informatica de primer curso</span>
-                    </span>
-                </summary>
-                <div class="contenido-desplegable">
-                    <span class="item-equipo">Sin equipos registrados</span>
-                </div>
-            </details>
-
-            <details class="desplegable-planta">
-                <summary>
-                    <span class="titulo-alineado">
-                        <span class="nombre-aula">Aula 102 |</span>
-                        <span class="descripcion-aula">Aula de informatica de segundo curso</span>
-                    </span>
-                </summary>
-                <div class="contenido-desplegable">
-                    <span class="item-equipo">Sin equipos registrados</span>
-                </div>
-            </details>
-
-            <details class="desplegable-planta">
-                <summary>
-                    <span class="titulo-alineado">
-                        <span class="nombre-aula">Aula 103 |</span>
-                        <span class="descripcion-aula">Aula de informatica para proyectos</span>
-                    </span>
-                </summary>
-                <div class="contenido-desplegable">
-                    <span class="item-equipo">Sin equipos registrados</span>
-                </div>
-            </details>
-
-            <details class="desplegable-planta">
-                <summary>
-                    <span class="titulo-alineado">
-                        <span class="nombre-aula">Sala Profesores |</span>
-                        <span class="descripcion-aula">Sala destinada al personal docente</span>
-                    </span>
-                </summary>
-                <div class="contenido-desplegable">
-                    <span class="item-equipo">Sin equipos registrados</span>
-                </div>
-            </details>
-
-            <details class="desplegable-planta">
-                <summary>
-                    <span class="titulo-alineado">
-                        <span class="nombre-aula">Despacho Dirección |</span>
-                        <span class="descripcion-aula">Despacho dirección</span>
-                    </span>
-                </summary>
-                <div class="contenido-desplegable">
-                    <span class="item-equipo">Sin equipos registrados</span>
-                </div>
-            </details>
-
-            <details class="desplegable-planta">
-                <summary>
-                    <span class="titulo-alineado">
-                        <span class="nombre-aula">Laboratorio |</span>
-                        <span class="descripcion-aula">Laboratorio de pruebas y sistemas</span>
-                    </span>
-                </summary>
-                <div class="contenido-desplegable">
-                    <span class="item-equipo">Sin equipos registrados</span>
-                </div>
-            </details>
-
-            <details class="desplegable-planta">
-                <summary>
-                    <span class="titulo-alineado">
-                        <span class="nombre-aula">Salón de Actos |</span>
-                        <span class="descripcion-aula">Espacio para presentación y eventos</span>
-                    </span>
-                </summary>
-                <div class="contenido-desplegable">
-                    <span class="item-equipo">Sin equipos registrados</span>
-                </div>
-            </details>
-
+        <div class="ubi-contenedor-tabla" id="contenedorUbicaciones">
+            <!--Aqui se meten las ubicaciones-->
         </div>
+
+        <!-- 1. POP-UP AÑADIR -->
+        <div id="modalAnadir" class="ubi-modal" style="display: none;">
+            <div class="ubi-modal-contenido">
+                <h3>Añadir Nueva Ubicación</h3>
+                <form id="formAnadir">
+                    <div class="ubi-form-grupo">
+                        <label for="nuevoNombre">Nombre</label>
+                        <input type="text" id="nuevoNombre" required>
+                    </div>
+                    <div class="ubi-form-grupo">
+                        <label for="nuevaDesc">Descripción</label>
+                        <input type="text" id="nuevaDesc" required>
+                    </div>
+                    <div class="ubi-modal-acciones">
+                        <button type="button" class="ubi-btn-cancelar" id="btnCancelarAnadir">Cancelar</button>
+                        <button type="submit" class="ubi-btn-guardar">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- 2. POP-UP EDITAR -->
+        <div id="modalEditar" class="ubi-modal" style="display: none;">
+            <div class="ubi-modal-contenido">
+                <h3>Editar Ubicación</h3>
+                <form id="formEditar">
+                    <input type="hidden" id="editarId"> 
+                    <div class="ubi-form-grupo">
+                        <label for="editarNombre">Nombre</label>
+                        <input type="text" id="editarNombre" required>
+                    </div>
+                    <div class="ubi-form-grupo">
+                        <label for="editarDesc">Descripción</label>
+                        <input type="text" id="editarDesc" required>
+                    </div>
+                    <div class="ubi-modal-acciones">
+                        <button type="button" class="ubi-btn-cancelar" id="btnCancelarEditar">Cancelar</button>
+                        <button type="submit" class="ubi-btn-guardar">Guardar Cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- 3. POP-UP ELIMINAR -->
+        <div id="modalEliminar" class="ubi-modal" style="display: none;">
+            <div class="ubi-modal-contenido">
+                <h3>¿Eliminar Ubicación?</h3>
+                <p class="ubi-texto-eliminar">¿Estás seguro de que quieres eliminar esta ubicación? Esta acción no se puede deshacer.</p>
+                <input type="hidden" id="eliminarId">
+                <div class="ubi-modal-acciones">
+                    <button type="button" class="ubi-btn-cancelar" id="btnCancelarEliminar">Cancelar</button>
+                    <button type="button" class="ubi-btn-peligro" id="btnConfirmarEliminar">Eliminar</button>
+                </div>
+            </div>
+        </div>
+
     </main>
 
 </body>
