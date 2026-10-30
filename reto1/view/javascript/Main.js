@@ -1,3 +1,5 @@
+const appCssBaseUrl = new URL('../css/', document.currentScript.src);
+
 document.addEventListener("DOMContentLoaded", async () => {
     // index.html?page=equipamientos)
     const urlParams = new URLSearchParams(window.location.search);
@@ -83,6 +85,7 @@ async function loadView(pageName, role) {
     } 
     else if (pageName === 'ubicaciones') {
         htmlFile = 'Ubicaciones'; // HTML - ADRIAN
+        cssFile = 'Ubicaciones';
         jsFile = 'Ubicaciones'; // JS - ADRIAN
     } 
     else if (pageName === 'notificaciones') {
@@ -123,7 +126,7 @@ function loadPageCSS(cssFileName) {
         const link = document.createElement('link');
         link.id = 'dynamic-css';
         link.rel = 'stylesheet';
-        link.href = `view/css/${cssFileName}.css`;
+        link.href = new URL(`${cssFileName}.css`, appCssBaseUrl).href;
         document.head.appendChild(link);
     }
 }

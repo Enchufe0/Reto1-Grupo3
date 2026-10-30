@@ -2,7 +2,7 @@
 // 1. CONSTANTES Y ELEMENTOS DEL DOM
 // =========================================================
 
-const urlAPI = 'http://localhost/Reto1-Grupo3/reto1/api/Ubicaciones.php';
+const urlAPI = new URL('../../api/Ubicaciones.php', document.currentScript.src);
 const contenedor = document.getElementById('contenedorUbicaciones');
 
 // Botón principal
@@ -191,6 +191,6 @@ btnConfirmarEliminar.addEventListener('click', async () => {
 
 
 // =========================================================
-// INICIO: Arrancar al cargar la página
+// La vista se inserta dinámicamente después de que DOMContentLoaded haya ocurrido.
 // =========================================================
-document.addEventListener('DOMContentLoaded', cargarUbicaciones);
+cargarUbicaciones();
