@@ -51,8 +51,24 @@
         </div>
         <!-----NOTIF, AVATAR, MENU---->
         <div class="nav-profile">
-            <i class="fa-regular fa-bell bell"></i>      <!--Cocina Victor-->
-
+            <!--NOTIFICACIONES-->
+            <div class="dropdown-container" id="notificationDropdown">
+                <button type="button" class="notification-toggle" id="notificationToggle"
+                    onclick="toggleNotifications(event)" aria-label="Notificaciones" aria-expanded="false"
+                    aria-controls="notificationMenu">
+                    <i class="fa-regular fa-bell bell" aria-hidden="true"></i>
+                    <span class="notification-badge" id="notificationBadge" hidden></span>
+                </button>
+                <div class="dropdown-menu notification-menu" id="notificationMenu">
+                    <h2 class="notification-menu__title">Notificaciones</h2>
+                    <div class="notification-menu__list" id="notificationList" aria-live="polite">
+                        <p class="notification-menu__message">Cargando notificaciones...</p>
+                    </div>
+                    <a class="notification-menu__footer" href="index.html?page=notificaciones&amp;vista=lista">
+                        Ver todas las notificaciones
+                    </a>
+                </div>
+            </div>
             <!--AVATAR-->
             <div class="user-avatar" id="nav-avatar">AD</div>
 

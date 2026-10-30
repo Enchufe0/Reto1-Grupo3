@@ -53,7 +53,7 @@
 
 .notificaciones-lista table {
     width: 100%;
-    min-width: 600px;
+    min-width: 720px;
     border-collapse: collapse;
     text-align: left;
 }
@@ -81,6 +81,20 @@
 
 .notificaciones-lista tbody tr:hover {
     background: #fffbea;
+}
+
+.notificaciones-lista tbody tr.notificacion-no-leida {
+    background: #fffbea;
+    font-weight: 600;
+}
+
+.notificaciones-lista__mensaje {
+    color: #6b7280;
+    text-align: center;
+}
+
+.notificaciones-lista__mensaje--error {
+    color: #dc2626;
 }
 
 .notificaciones-admin {
