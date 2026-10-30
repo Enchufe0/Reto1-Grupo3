@@ -1,5 +1,23 @@
 let todosLosEquipos = [];
 
+// ============== Iconos, tildes etc..==============//
+
+// Quitar tildes en la busqueda
+function normalizarTexto(texto) {
+    if (!texto) return '';
+    return texto.toString()
+        .toLowerCase()
+        .normalize("NFD") 
+        .replace(/[\u0300-\u036f]/g, ""); // Elimina las tildes
+}
+// Obtener el icono segun la categoría
+function obtenerIconoHTML(categoria) {
+    if (categoria === 'PORTATIL' || categoria === 'SOBREMESA') return '<i class="fa-solid fa-laptop"></i>';
+    if (categoria === 'PERIFERICO') return '<i class="fa-solid fa-computer-mouse"></i>';
+    if (categoria === 'AUDIOVISUAL') return '<i class="fa-solid fa-video"></i>';
+    return '<i class="fa-solid fa-box"></i>';
+}
+
 if (window.ROL === 'ADMIN') {
     const btnCreate = document.getElementById('btn-crear-equipamiento');
     if (btnCreate) btnCreate.style.display = 'flex';
@@ -35,15 +53,16 @@ function renderizarTabla() {
     const tbody = document.getElementById('eq-table-body');
     if (!tbody) return;
 
-    const search = document.getElementById('search-input').value.toLowerCase();
+    // 3. Usar el normalizador en la búsqueda
+    const search = normalizarTexto(document.getElementById('search-input').value);
     const filterCat = document.getElementById('filter-category').value;
     const filterLoc = document.getElementById('filter-location').value;
 
     const filtrados = todosLosEquipos.filter(e => {
-        const matchSearch = e.nombre.toLowerCase().includes(search) || 
-                            e.marca.toLowerCase().includes(search) || 
-                            e.modelo.toLowerCase().includes(search) ||
-                            e.id_equipamiento.toString().includes(search);
+        const matchSearch = normalizarTexto(e.nombre).includes(search) || 
+                            normalizarTexto(e.marca).includes(search) || 
+                            normalizarTexto(e.modelo).includes(search) ||
+                            normalizarTexto(e.id_equipamiento).includes(search);
         
         const matchCat = filterCat === '' || e.categoria === filterCat;
         const matchLoc = filterLoc === '' || e.ubicacion === filterLoc;
@@ -60,11 +79,6 @@ function renderizarTabla() {
 
     let html = '';
     filtrados.forEach(e => {
-        let icon = '<i class="fa-solid fa-box"></i>';
-        if (e.categoria === 'PORTATIL' || e.categoria === 'SOBREMESA') icon = '<i class="fa-solid fa-laptop"></i>';
-        if (e.categoria === 'PERIFERICO') icon = '<i class="fa-solid fa-computer-mouse"></i>';
-        if (e.categoria === 'AUDIOVISUAL') icon = '<i class="fa-solid fa-video"></i>';
-
         let btns = `<div class="eq-actions-wrapper" id="actions-${e.id_equipamiento}">`;
         if (window.ROL === 'ADMIN') {
             btns += `<button class="eq-action-btn eq-btn-edit" onclick="toggleEdit(${e.id_equipamiento})"><i class="fa-solid fa-pen"></i> Editar</button>`;
@@ -72,15 +86,17 @@ function renderizarTabla() {
         }
         btns += '</div>';
 
-        // Escape quotes in description to prevent JS errors
         const safeDesc = (e.descripcion || 'Sin descripción').replace(/'/g, "\\'");
+        
+        // 4. Usar el helper del icono
+        const iconHTML = obtenerIconoHTML(e.categoria);
 
         html += `
             <tr id="row-${e.id_equipamiento}">
                 <td>${e.id_equipamiento}</td>
                 <td>
                     <div class="eq-item-name">
-                        <span class="eq-item-icon">${icon}</span>
+                        <span class="eq-item-icon" id="icon-${e.id_equipamiento}">${iconHTML}</span>
                         <input type="text" id="edit-nombre-${e.id_equipamiento}" class="inline-edit" value="${e.nombre}" disabled>
                     </div>
                 </td>
@@ -101,9 +117,10 @@ function renderizarTabla() {
                     </div>
                 </td>
                 <td>
-                    <div class="desc-truncate" onclick="verDescripcion('${safeDesc}')">
+                    <div class="desc-truncate" id="desc-div-${e.id_equipamiento}" onclick="verDescripcion('${safeDesc}')">
                         ${e.descripcion || 'Sin descripción'}
                     </div>
+                    <input type="text" id="edit-desc-${e.id_equipamiento}" class="inline-edit" value="${e.descripcion || ''}" disabled style="display: none;">
                 </td>
                 <td>${btns}</td>
             </tr>
@@ -138,6 +155,8 @@ function toggleEdit(id) {
     const marcaInput = document.getElementById(`edit-marca-${id}`);
     const modeloInput = document.getElementById(`edit-modelo-${id}`);
     const catSelect = document.getElementById(`edit-cat-${id}`);
+    const descDiv = document.getElementById(`desc-div-${id}`);
+    const descInput = document.getElementById(`edit-desc-${id}`);
     const actionsWrapper = document.getElementById(`actions-${id}`);
 
     nombreInput.disabled = false;
@@ -145,6 +164,10 @@ function toggleEdit(id) {
     modeloInput.disabled = false;
     catSelect.disabled = false;
     catSelect.classList.add('is-editing');
+    
+    descDiv.style.display = 'none';
+    descInput.style.display = 'block';
+    descInput.disabled = false;
     
     row.classList.add('row-editing'); 
     
@@ -157,12 +180,15 @@ function toggleEdit(id) {
 }
 
 async function guardarEdicion(id) {
+    const row = document.getElementById(`row-${id}`);
     const nombreInput = document.getElementById(`edit-nombre-${id}`);
     const marcaInput = document.getElementById(`edit-marca-${id}`);
     const modeloInput = document.getElementById(`edit-modelo-${id}`);
     const catSelect = document.getElementById(`edit-cat-${id}`);
+    const descDiv = document.getElementById(`desc-div-${id}`);
+    const descInput = document.getElementById(`edit-desc-${id}`);
     const actionsWrapper = document.getElementById(`actions-${id}`);
-    const row = document.getElementById(`row-${id}`);
+    const iconSpan = document.getElementById(`icon-${id}`); // 👈 Referencia al icono
 
     if (nombreInput.value.trim() === '') {
         alert("El nombre no puede estar vacío");
@@ -178,7 +204,7 @@ async function guardarEdicion(id) {
         marca: marcaInput.value,
         modelo: modeloInput.value,
         categoria: catSelect.value || 'OTROS',
-        descripcion: equipoOriginal.descripcion 
+        descripcion: descInput.value
     };
 
     try {
@@ -190,16 +216,31 @@ async function guardarEdicion(id) {
 
         if (!res.ok) throw new Error("Error al guardar");
 
+        // Actualizar array local
         equipoOriginal.nombre = body.nombre;
         equipoOriginal.marca = body.marca;
         equipoOriginal.modelo = body.modelo;
         equipoOriginal.categoria = body.categoria;
+        equipoOriginal.descripcion = body.descripcion;
 
+        // Desactivar inputs
         nombreInput.disabled = true;
         marcaInput.disabled = true;
         modeloInput.disabled = true;
         catSelect.disabled = true;
         catSelect.classList.remove('is-editing');
+        
+        descInput.disabled = true;
+        descInput.style.display = 'none';
+        descDiv.style.display = 'block';
+        descDiv.textContent = body.descripcion || 'Sin descripción';
+        
+        const newSafeDesc = (body.descripcion || 'Sin descripción').replace(/'/g, "\\'");
+        descDiv.setAttribute('onclick', `verDescripcion('${newSafeDesc}')`);
+
+        // 👇 5. CAMBIAR EL ICONO DINÁMICAMENTE 👇
+        iconSpan.innerHTML = obtenerIconoHTML(body.categoria);
+
         row.classList.remove('row-editing'); 
         
         actionsWrapper.innerHTML = `
@@ -214,24 +255,33 @@ async function guardarEdicion(id) {
 }
 
 function cancelarEdicion(id) {
+    const row = document.getElementById(`row-${id}`);
     const nombreInput = document.getElementById(`edit-nombre-${id}`);
     const marcaInput = document.getElementById(`edit-marca-${id}`);
     const modeloInput = document.getElementById(`edit-modelo-${id}`);
     const catSelect = document.getElementById(`edit-cat-${id}`);
+    const descDiv = document.getElementById(`desc-div-${id}`);
+    const descInput = document.getElementById(`edit-desc-${id}`);
     const actionsWrapper = document.getElementById(`actions-${id}`);
-    const row = document.getElementById(`row-${id}`);
 
     const equipoOriginal = todosLosEquipos.find(e => e.id_equipamiento == id);
+    
     nombreInput.value = equipoOriginal.nombre;
     marcaInput.value = equipoOriginal.marca;
     modeloInput.value = equipoOriginal.modelo;
     catSelect.value = equipoOriginal.categoria;
+    descInput.value = equipoOriginal.descripcion || '';
 
     nombreInput.disabled = true;
     marcaInput.disabled = true;
     modeloInput.disabled = true;
     catSelect.disabled = true;
     catSelect.classList.remove('is-editing');
+    
+    descInput.disabled = true;
+    descInput.style.display = 'none';
+    descDiv.style.display = 'block';
+
     row.classList.remove('row-editing');
 
     actionsWrapper.innerHTML = `
@@ -271,7 +321,6 @@ if (formCrear) {
                 body: JSON.stringify(body)
             });
 
-            // 👇 THIS WILL SHOW THE EXACT ERROR IN AN ALERT BOX 👇
             if (!res.ok) {
                 const text = await res.text();
                 try {
@@ -283,7 +332,6 @@ if (formCrear) {
                 return;
             }
 
-            // If everything is OK
             cerrarModalCrear();
             location.reload();
 
