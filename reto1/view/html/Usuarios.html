@@ -90,10 +90,23 @@
                 </div>
 
                 <div class="botones-popup">
-                    <button type="button" class="btn-cancelar" id="btnCerrarPopUp">CANCELAR</button>
-                    <button type="submit" class="btn-aceptar">ACEPTAR</button>
+                    <button type="button" class="btn-cancelar" id="btnCerrarPopUp">Cancelar</button>
+                    <button type="submit" class="btn-aceptar">Aceptar</button>
                 </div>
             </form>
+        </div>
+    </dialog>
+
+    <!-- Pop-up para Eliminar -->
+    <dialog id="popupEliminar" class="ubi-modal">
+        <div class="ubi-modal-contenido">
+            <h3>¿Eliminar Ubicación?</h3>
+            <p class="ubi-texto-eliminar">¿Estás seguro de que quieres borrar esta ubicación? Esta acción no se puede deshacer.</p>
+            <input type="hidden" id="eliminarUbiId">
+            <div class="ubi-modal-acciones">
+                <button type="button" class="ubi-btn-cancelar" id="btnCancelarEliminar">Cancelar</button>
+                <button type="button" class="ubi-btn-peligro" id="btnConfirmarEliminar">Eliminar</button>
+            </div>
         </div>
     </dialog>
 

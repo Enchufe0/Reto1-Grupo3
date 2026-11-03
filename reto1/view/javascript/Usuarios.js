@@ -7,6 +7,7 @@ const dialogPopup = document.getElementById('popupUsuario');
 const formUsuario = document.getElementById('formularioUsuario');
 const btnCerrarPopup = document.getElementById('btnCerrarPopUp');
 const tituloPopup = document.getElementById('popupTitulo');
+const estadisticaTotal = document.getElementById('estadisticaTotal');
 
 // GET
 async function cargarUsuarios() {
@@ -14,10 +15,14 @@ async function cargarUsuarios() {
         const respuesta = await fetch(apiUrl);
         const usuarios = await respuesta.json();
         
-        contenedorTarjetas.innerHTML = ''; // Limpiamos las tarjetas de ejemplo
+        contenedorTarjetas.innerHTML = ''; 
+        if (estadisticaTotal) estadisticaTotal.textContent = usuarios.length; // Actualiza el contador
 
         usuarios.forEach(usuario => {
             const article = document.createElement('article');
+            article.className = 'tarjeta-usu';
+            
+            
             article.innerHTML = `
                 <div class="tarjetaInfo">
                     <p><strong>Nombre:</strong> ${usuario.nombre}</p>
@@ -40,6 +45,7 @@ async function cargarUsuarios() {
 btnAnadir.addEventListener('click', () => {
     formUsuario.reset();
     document.getElementById('userId').value = '';
+    document.getElementById('password').setAttribute('required', 'true'); 
     tituloPopup.textContent = 'AÑADIR USUARIO';
     dialogPopup.showModal();
 });
@@ -50,8 +56,7 @@ window.abrirEditar = function(id, nombre, apellido, username) {
     document.getElementById('nombre').value = nombre;
     document.getElementById('apellido').value = apellido;
     document.getElementById('username').value = username;
-    document.getElementById('password').removeAttribute('required'); // La contraseña es opcional al editar
-    document.getElementById('statTotal').textContent = usuarios.length;
+    document.getElementById('password').removeAttribute('required'); 
     
     tituloPopup.textContent = 'EDITAR USUARIO';
     dialogPopup.showModal();
@@ -95,16 +100,27 @@ formUsuario.addEventListener('submit', async (evento) => {
     }
 });
 
-// DELETE
-window.borrarUsuario = async function(id) {
-    if (confirm("¿Seguro que quieres borrar este usuario?")) {
-        try {
-            const respuesta = await fetch(`${apiUrl}?id=${id}`, { method: 'DELETE' });
-            if (respuesta.ok) cargarUsuarios();
-        } catch (error) {
-            console.error("Error al borrar:", error);
-        }
-    }
+// DELETE 
+window.borrarUsuario = function(id) {
+    inputEliminarId.value = id;
+    dialogEliminar.showModal();
 }
+
+btnConfirmarEliminar.addEventListener('click', async () => {
+    const id = inputEliminarId.value;
+    
+    try {
+        const respuesta = await fetch(`${apiUrl}?id=${id}`, { method: 'DELETE' });
+        
+        if (respuesta.ok) {
+            dialogEliminar.close(); // Cerramos la ventana si ha ido bien
+            cargarUsuarios();    // Refrescamos la tabla
+        } else {
+            console.error("Error al borrar en la base de datos.");
+        }
+    } catch (error) {
+        console.error("Fallo de conexión al borrar:", error);
+    }
+});
 
 document.addEventListener('DOMContentLoaded', cargarUsuarios);
