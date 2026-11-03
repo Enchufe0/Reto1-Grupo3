@@ -73,17 +73,18 @@ formUsuario.addEventListener('submit', async (evento) => {
 
     const id = document.getElementById('userId').value;
     const metodo = id ? 'PUT' : 'POST';
+    
+    const urlPeticion = id ? `${apiUrl}?id=${id}` : apiUrl;
+
     const datos = {
         nombre: document.getElementById('nombre').value,
         apellidos: document.getElementById('apellido').value,
         nombre_usuario: document.getElementById('username').value,
-        password_hash: document.getElementById('password').value
+        password: document.getElementById('password').value 
     };
 
-    if (id) datos.id_usuario = id;
-
     try {
-        const respuesta = await fetch(apiUrl, {
+        const respuesta = await fetch(urlPeticion, { 
             method: metodo,
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(datos)
@@ -93,10 +94,11 @@ formUsuario.addEventListener('submit', async (evento) => {
             dialogPopup.close();
             cargarUsuarios();
         } else {
-            alert("Error al guardar el usuario.");
+            console.error("El servidor devolvió un error de validación.");
+            alert("Error al guardar el usuario. Revisa la consola.");
         }
     } catch (error) {
-        console.error("Error al guardar:", error);
+        console.error("Error al comunicarse con la API:", error);
     }
 });
 
