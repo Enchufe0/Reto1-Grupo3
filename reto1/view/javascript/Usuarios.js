@@ -1,14 +1,14 @@
 const apiUrl = 'http://localhost/Reto1-Grupo3/reto1/api/Usuarios.php';
 
 // Referencias al DOM
-const contenedorTarjetas = document.querySelector('.tarjetaUsuario');
-const btnAnadir = document.getElementById('btnAñadir');
+const contenedorTarjetas = document.getElementById('contenedorUsuarios');
+const btnAnadir = document.getElementById('btnAnadir');
 const dialogPopup = document.getElementById('popupUsuario');
 const formUsuario = document.getElementById('formularioUsuario');
 const btnCerrarPopup = document.getElementById('btnCerrarPopUp');
 const tituloPopup = document.getElementById('popupTitulo');
 
-// 1. CARGAR USUARIOS (GET)
+// GET
 async function cargarUsuarios() {
     try {
         const respuesta = await fetch(apiUrl);
@@ -36,7 +36,7 @@ async function cargarUsuarios() {
     }
 }
 
-// 2. ABRIR POPUP PARA CREAR
+// POPUP CREAR
 btnAnadir.addEventListener('click', () => {
     formUsuario.reset();
     document.getElementById('userId').value = '';
@@ -44,7 +44,7 @@ btnAnadir.addEventListener('click', () => {
     dialogPopup.showModal();
 });
 
-// 3. ABRIR POPUP PARA EDITAR
+// POPUP EDITAR
 window.abrirEditar = function(id, nombre, apellido, username) {
     document.getElementById('userId').value = id;
     document.getElementById('nombre').value = nombre;
@@ -57,14 +57,14 @@ window.abrirEditar = function(id, nombre, apellido, username) {
     dialogPopup.showModal();
 }
 
-// 4. CERRAR POPUP
+// CERRAR POPUP
 btnCerrarPopup.addEventListener('click', () => {
     dialogPopup.close();
 });
 
-// 5. GUARDAR O ACTUALIZAR (POST / PUT)
-formUsuario.addEventListener('submit', async (e) => {
-    e.preventDefault();
+// POST - PUT
+formUsuario.addEventListener('submit', async (evento) => {
+    evento.preventDefault();
 
     const id = document.getElementById('userId').value;
     const metodo = id ? 'PUT' : 'POST';
@@ -95,7 +95,7 @@ formUsuario.addEventListener('submit', async (e) => {
     }
 });
 
-// 6. BORRAR USUARIO (DELETE)
+// DELETE
 window.borrarUsuario = async function(id) {
     if (confirm("¿Seguro que quieres borrar este usuario?")) {
         try {
@@ -107,5 +107,4 @@ window.borrarUsuario = async function(id) {
     }
 }
 
-// Iniciar cargando la lista
 document.addEventListener('DOMContentLoaded', cargarUsuarios);

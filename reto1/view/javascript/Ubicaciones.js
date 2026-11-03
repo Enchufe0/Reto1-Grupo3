@@ -12,7 +12,7 @@ const btnCancelarEliminar = document.getElementById('btnCancelarEliminar');
 const btnConfirmarEliminar = document.getElementById('btnConfirmarEliminar');
 const inputEliminarId = document.getElementById('eliminarUbiId');
 
-// 1. GET
+// GET
 async function cargarUbicaciones() {
     try {
         const respuesta = await fetch(apiUrl);
@@ -46,7 +46,7 @@ async function cargarUbicaciones() {
     }
 }
 
-// 2. ABRIR POPUP PARA CREAR
+// ABRIR POPUP PARA CREAR
 if (btnAnadir) {
     btnAnadir.addEventListener('click', () => {
         formUbicacion.reset();
@@ -57,7 +57,6 @@ if (btnAnadir) {
 } else {
     console.error("No se encontró el botón btnAnadir en el HTML.");
 }
-// --- NUEVOS EVENTOS PARA CERRAR LOS POP-UPS ---
 btnCancelarUbicacion.addEventListener('click', () => {
     dialogPopup.close(); // Cierra el pop-up de añadir/editar
 });
@@ -68,7 +67,7 @@ btnCancelarEliminar.addEventListener('click', () => {
 
 
 
-// 3. ABRIR POPUP PARA EDITAR
+// ABRIR POPUP PARA EDITAR
 window.abrirEditar = function(id, nombre, descripcion) {
     document.getElementById('ubiId').value = id;
     document.getElementById('nombre').value = nombre;
@@ -77,7 +76,7 @@ window.abrirEditar = function(id, nombre, descripcion) {
     dialogPopup.showModal();
 }
 
-// 4. POST - PUT
+// POST - PUT
 formUbicacion.addEventListener('submit', async (evento) => {
     evento.preventDefault();
 
@@ -109,7 +108,7 @@ formUbicacion.addEventListener('submit', async (evento) => {
     }
 });
 
-// 5. DELETE
+// DELETE
 window.borrarUbicacion = function(id) {
     inputEliminarId.value = id;
     dialogEliminar.showModal();
