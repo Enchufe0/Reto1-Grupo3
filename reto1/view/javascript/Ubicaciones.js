@@ -6,6 +6,11 @@ const btnAnadir = document.getElementById('btnAnadir'); // ID sin 'ñ'
 const dialogPopup = document.getElementById('popupUbicacion');
 const formUbicacion = document.getElementById('formularioUbicacion');
 const tituloPopup = document.getElementById('popupTitulo');
+const btnCancelarUbicacion = document.getElementById('btnCancelarUbicacion');
+const dialogEliminar = document.getElementById('popupEliminar');
+const btnCancelarEliminar = document.getElementById('btnCancelarEliminar');
+const btnConfirmarEliminar = document.getElementById('btnConfirmarEliminar');
+const inputEliminarId = document.getElementById('eliminarUbiId');
 
 // 1. GET
 async function cargarUbicaciones() {
@@ -52,6 +57,16 @@ if (btnAnadir) {
 } else {
     console.error("No se encontró el botón btnAnadir en el HTML.");
 }
+// --- NUEVOS EVENTOS PARA CERRAR LOS POP-UPS ---
+btnCancelarUbicacion.addEventListener('click', () => {
+    dialogPopup.close(); // Cierra el pop-up de añadir/editar
+});
+
+btnCancelarEliminar.addEventListener('click', () => {
+    dialogEliminar.close(); // Cierra el pop-up de eliminar
+});
+
+
 
 // 3. ABRIR POPUP PARA EDITAR
 window.abrirEditar = function(id, nombre, descripcion) {
@@ -95,15 +110,26 @@ formUbicacion.addEventListener('submit', async (evento) => {
 });
 
 // 5. DELETE
-window.borrarUbicacion = async function(id) {
-    if (confirm("¿Seguro que quieres borrar esta ubicación? Esta acción no se puede deshacer.")) {
-        try {
-            const respuesta = await fetch(`${apiUrl}?id=${id}`, { method: 'DELETE' });
-            if (respuesta.ok) cargarUbicaciones();
-        } catch (error) {
-            console.error("Error al intentar borrar:", error);
-        }
-    }
+window.borrarUbicacion = function(id) {
+    inputEliminarId.value = id;
+    dialogEliminar.showModal();
 }
+
+btnConfirmarEliminar.addEventListener('click', async () => {
+    const id = inputEliminarId.value;
+    
+    try {
+        const respuesta = await fetch(`${apiUrl}?id=${id}`, { method: 'DELETE' });
+        
+        if (respuesta.ok) {
+            dialogEliminar.close(); // Cerramos la ventana si ha ido bien
+            cargarUbicaciones();    // Refrescamos la tabla
+        } else {
+            console.error("Error al borrar en la base de datos.");
+        }
+    } catch (error) {
+        console.error("Fallo de conexión al borrar:", error);
+    }
+});
 
 document.addEventListener('DOMContentLoaded', cargarUbicaciones);
