@@ -67,6 +67,27 @@ use enumNotificaciones\EstadoNotificaciones;
             return $listaNotificaciones;
         }
 
+        public function obtenerPorUsuario(int $idUsuario): array {
+            $sql = "SELECT * FROM notificaciones WHERE id_usuario = :id_usuario ORDER BY fecha_creacion DESC";
+            $stmt = $this->conexion->prepare($sql);
+            $stmt->bindValue(':id_usuario', $idUsuario, PDO::PARAM_INT);
+            $stmt->execute();
+
+            $listaNotificaciones = [];
+            while ($fila = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $listaNotificaciones[] = new Notificaciones(
+                    $fila['id_notificacion'],
+                    $fila['titulo'],
+                    $fila['descripcion'],
+                    $fila['fecha_creacion'],
+                    EstadoNotificaciones::from($fila['estado']),
+                    $fila['id_usuario']
+                );
+            }
+
+            return $listaNotificaciones;
+        }
+
         //READ POR ID importante el ?
         public function obtenerPorId(int $id): ?Notificaciones{
 
