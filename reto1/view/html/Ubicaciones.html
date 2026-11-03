@@ -42,14 +42,14 @@
             </div>
         </div>
 
-        <!-- Buscador y botón de añadir -->
+        <!-- Buscador y boton de añadir -->
         <div class="ubi-filtro-buscador">
             <div class="ubi-buscador">
                 <i class="fa-solid fa-magnifying-glass"></i>
                 <input type="text" id="buscarUbicacion" placeholder="Buscar aula o espacio...">
             </div>
             
-            <button class="ubi-boton-añadir" id="btnAñadir">
+            <button class="ubi-boton-añadir" id="btnAnadir">
                 Añadir Ubicación
                 <i class="fa-solid fa-plus"></i> 
             </button>
@@ -62,7 +62,7 @@
 
     </main>
 
-    <!-- POP UP UNIFICADO PARA AÑADIR/EDITAR (Basado en Usuarios) -->
+    <!-- POP UP UNIFICADO PARA AÑADIR/EDITAR -->
     <dialog id="popupUbicacion" class="ubi-modal">
         <div class="ubi-modal-contenido">
             <h3 id="popupTitulo">Nueva Ubicación</h3>
@@ -80,7 +80,8 @@
                 </div>
 
                 <div class="ubi-modal-acciones">
-                    <button type="button" class="ubi-btn-cancelar" id="btnCerrarPopUp">Cancelar</button>
+                    <!-- Cierre directo y nativo del dialog -->
+                    <button type="button" class="ubi-btn-cancelar" onclick="document.getElementById('popupUbicacion').close()">Cancelar</button>
                     <button type="submit" class="ubi-btn-guardar">Guardar</button>
                 </div>
             </form>
