@@ -1,7 +1,7 @@
 const apiUrl = 'http://localhost/Reto1-Grupo3/reto1/api/Usuarios.php';
 
 // Referencias al DOM
-const contenedorTarjetas = document.querySelector('.tarjetaUsuario');
+const contenedorTarjetas = document.getElementById('contenedorUsuarios');
 const btnAnadir = document.getElementById('btnAñadir');
 const dialogPopup = document.getElementById('popupUsuario');
 const formUsuario = document.getElementById('formularioUsuario');
