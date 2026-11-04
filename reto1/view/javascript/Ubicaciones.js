@@ -36,8 +36,8 @@ async function cargarUbicaciones() {
                         <button class="ubi-boton-eliminar" onclick="borrarUbicacion(${ubicacion.id_ubicacion})">Eliminar</button>
                     </div>
                 </summary>
-                <div class="contenido-desplegable">
-                    <p>Aquí irán los equipos en el futuro...</p>
+                <div class="contenido-desplegable" id="lista-equipos-${ubicacion.id_ubicacion}" data-cargado="false">
+                    <p class="ubi-mensaje-cargando">Cargando equipos...</p>
                 </div>
             `;
             contenedorUbicaciones.appendChild(details);
@@ -158,6 +158,48 @@ inputBuscador.addEventListener('input', (evento) => {
         });
     }
 });
+
+// EQUIPOS DENTRO DE UBIS
+async function cargarEquiposUbicacion(idUbicacion) {
+    const contenedorEquipos = document.getElementById(`lista-equipos-${idUbicacion}`);
+    
+    // si ya los hemos cargado antes, no volvemos a hacer la petición a la base de datos
+    if (contenedorEquipos.getAttribute('data-cargado') === 'true') return;
+
+    try {
+        
+        const respuesta = await fetch(`api/Equipamiento.php?id_ubicacion=${idUbicacion}`);
+        
+        if (!respuesta.ok) throw new Error("Error al traer equipos");
+        
+        const equipos = await respuesta.json();
+        
+        // Limpiamos el texto de "Cargando..."
+        contenedorEquipos.innerHTML = '';
+
+        if (equipos.length === 0) {
+            contenedorEquipos.innerHTML = '<p class="ubi-mensaje-vacio">No hay equipos registrados en esta ubicación.</p>';
+        } else {
+            // Dibujamos cada equipo encontrado
+            equipos.forEach(equipo => {
+                
+                contenedorEquipos.innerHTML += `
+                    <div class="item-equipo">
+                        <span class="nombre-equipo"><strong>${equipo.nombre}</strong></span>
+                        <span class="ubi-estado-equipo">${equipo.estado || ''}</span>
+                    </div>
+                `;
+            });
+        }
+
+        // Marcamos como cargado para que si el usuario cierra y abre el desplegable no vuelva a cargar
+        contenedorEquipos.setAttribute('data-cargado', 'true');
+
+    } catch (error) {
+        console.error("Error cargando equipos:", error);
+        contenedorEquipos.innerHTML = '<p class="ubi-mensaje-error">Error al cargar los equipos.</p>';
+    }
+}
 
 
 if (document.readyState === 'loading') {

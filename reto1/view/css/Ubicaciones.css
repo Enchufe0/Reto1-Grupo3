@@ -446,7 +446,7 @@ summary::-webkit-details-marker {
 }
 
 .ubi-btn-guardar {
-    background: #0f172a; /* Azul oscuro como el botón de Añadir principal */
+    background: #0f172a; /* Azul oscuro como el boton de Añadir principal */
     color: white;
     border: none;
     padding: 10px 20px;
@@ -459,5 +459,46 @@ summary::-webkit-details-marker {
     background: #1e293b; 
 }
 
+/* LISTA DE EQUIPOS EN EL DESPLEGABLE */
+.ubi-lista-equipos {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-top: 10px;
+}
 
+.ubi-item-equipo {
+    padding: 8px 0;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    align-items: center;
+}
+
+/* quita la lineadel final */
+.ubi-item-equipo:last-child {
+    border-bottom: none;
+}
+
+.ubi-nombre-equipo {
+    color: #1f2937;
+}
+
+.ubi-estado-equipo {
+    margin-left: 12px;
+    font-size: 13px;
+    color: #6b7280;
+}
+
+/* MENSAJES DE ESTADO */
+.ubi-mensaje-cargando {
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.ubi-mensaje-vacio, 
+.ubi-mensaje-error {
+    color: #ef4444;
+    font-size: 14px;
+    font-weight: 500;
+}
 
