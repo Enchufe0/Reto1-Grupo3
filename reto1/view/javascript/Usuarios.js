@@ -8,6 +8,9 @@ const formUsuario = document.getElementById('formularioUsuario');
 const btnCerrarPopup = document.getElementById('btnCerrarPopUp');
 const tituloPopup = document.getElementById('popupTitulo');
 const estadisticaTotal = document.getElementById('estadisticaTotal');
+const dialogEliminar = document.getElementById('popupEliminarUsuario');
+const inputEliminarId = document.getElementById('eliminarUserId'); 
+const btnConfirmarEliminar = document.getElementById('btnConfirmarEliminar');
 
 // GET
 async function cargarUsuarios() {
