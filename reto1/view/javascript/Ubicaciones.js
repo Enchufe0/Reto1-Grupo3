@@ -1,4 +1,4 @@
-const apiUrl = 'http://localhost/Reto1-Grupo3/reto1/api/UbicacionesAPI.php';
+const apiUrl = 'api/UbicacionesAPI.php';
 
 // Referencias al DOM
 const contenedorUbicaciones = document.getElementById('contenedorUbicaciones');
@@ -11,6 +11,7 @@ const dialogEliminar = document.getElementById('popupEliminar');
 const btnCancelarEliminar = document.getElementById('btnCancelarEliminar');
 const btnConfirmarEliminar = document.getElementById('btnConfirmarEliminar');
 const inputEliminarId = document.getElementById('eliminarUbiId');
+const inputBuscador = document.getElementById('buscarUbicacion');
 
 // GET
 async function cargarUbicaciones() {
@@ -130,6 +131,34 @@ btnConfirmarEliminar.addEventListener('click', async () => {
         console.error("Fallo de conexión al borrar:", error);
     }
 });
+
+// BUSCADOR
+inputBuscador.addEventListener('input', (evento) => {
+    // Comprobamos si el usuario está escribiendo exactamente en nuestra barra de búsqueda
+    if (evento.target.id === 'buscarUbicacion') {
+        const textoBuscado = evento.target.value.toLowerCase();
+        const contenedor = document.getElementById('contenedorUbicaciones');
+
+        if (!contenedor) return; // Si no encontramos el contenedor, salimos de la función
+    
+        //buscamos todas las cajas que estan dentro del contenedor de ubicaciones
+        const cajasUbicaciones = contenedor.querySelectorAll('.desplegable-planta');
+
+        //revisamos una por una
+        cajasUbicaciones.forEach(caja => {
+            //extraemos el nombre del aula y usamos trim para quitar los espacios en blanco
+            const nombreAula = caja.querySelector('.nombre-aula').textContent.trim().toLowerCase();
+
+            //comprobamos si el nombre empieza por lo que se ha escrito en el buscador
+            if (nombreAula.startsWith(textoBuscado)) { //si luego en el futuro queremos que busque en cualquier parte del nombre, podemos cambiar startsWith por includes
+                caja.style.display = ''; //mostramos la caja
+            } else {
+                caja.style.display = 'none'; //ocultamos la caja
+            }
+        });
+    }
+});
+
 
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', cargarUbicaciones, { once: true });

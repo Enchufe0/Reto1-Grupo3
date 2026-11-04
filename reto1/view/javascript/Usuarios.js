@@ -1,4 +1,4 @@
-(() => {
+
 const apiUrl = new URL('../../api/UsuariosAPI.php', document.currentScript.src).href;
 
 // Referencias al DOM
@@ -37,7 +37,7 @@ async function cargarUsuarios() {
                 </div>
                 <div class="tarjetaAccion">
                     <button class="btnEditar" onclick="abrirEditar(${usuario.id_usuario}, '${usuario.nombre}', '${usuario.apellidos}', '${usuario.nombre_usuario}')">Editar</button>
-                    <button class="btnEliminar" aria-label="Borrar" onclick="borrarUsuario(${usuario.id_usuario})">❌</button>
+                    <button class="btnEliminar" aria-label="Borrar" onclick="borrarUsuario(${usuario.id_usuario})"></button>
                 </div>
             `;
             contenedorTarjetas.appendChild(article);
@@ -148,4 +148,3 @@ if (document.readyState === 'loading') {
 } else {
     cargarUsuarios();
 }
-})();

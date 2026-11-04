@@ -144,49 +144,6 @@ main {
     letter-spacing: -0.5px; 
 }
 
-/* La fila donde van las tres estadisticas */
-.ubi-barra-estadisticas { 
-    display: flex; 
-    align-items: center; 
-    gap: 20px; 
-    margin-bottom: 32px; 
-    font-size: 15px; 
-    color: #6b7280; 
-}
-/* Estilo del texto pequeño bajo el título principal */
-.subtitulo-ubi {
-    color: #6b7280; 
-    margin-top: 8px; 
-    font-size: 15px;
-}
-
-/* Etiqueta para el texto que acompaña al número */
-.estadistica-barra {
-    display: inline-block;
-    color: #6b7280;
-}
-
-.ubi-estadisticas { 
-    display: flex; 
-    align-items: center; 
-    gap: 8px; 
-}
-
-/* El numero de la estadistica */
-.estadistica-numero { 
-    color: #6b7280; 
-    font-size: 15px; 
-    font-weight: 500; 
-}
-
-/* El palito gris que separa una estadistica de la otra */
-.ubi-estadisticas-division { 
-    width: 1.5px; 
-    height: 24px; 
-    background-color: #e5e7eb; 
-}
-
-
 /*--------------------------- 
     BUSCADOR Y BOTON AÑADIR
 -----------------------------*/
@@ -498,8 +455,9 @@ summary::-webkit-details-marker {
     font-weight: 500;
     transition: 0.2s;
 }
-.ubi-btn-guardar:hover { background: #1e293b; }
-
+.ubi-btn-guardar:hover { 
+    background: #1e293b; 
+}
 
 
 
