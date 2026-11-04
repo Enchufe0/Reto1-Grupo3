@@ -1,231 +1,143 @@
 let todosLosEquipos = [];
+let currentCategoryFilter = ""; // Track active tab
 
-// 1. Show "Crear" button if user is ADMIN
 if (window.ROL === 'ADMIN') {
     const btnCreate = document.getElementById('btn-crear-equipamiento');
     if (btnCreate) btnCreate.style.display = 'flex';
 }
 
-// 2. Fetch data immediately
+function normalizarTexto(texto) {
+    if (!texto) return '';
+    return texto.toString().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
+function obtenerIconoHTML(categoria) {
+    if (categoria === 'PORTATIL' || categoria === 'SOBREMESA') return '<i class="fa-solid fa-laptop"></i>';
+    if (categoria === 'PERIFERICO') return '<i class="fa-solid fa-computer-mouse"></i>';
+    if (categoria === 'AUDIOVISUAL') return '<i class="fa-solid fa-video"></i>';
+    return '<i class="fa-solid fa-box"></i>';
+}
+
 fetch('api/Equipamiento.php')
     .then(res => res.json())
     .then(data => {
-        const tbody = document.getElementById('eq-table-body');
-        if (!tbody) return; 
-        
-        if (data.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding: 20px;">No hay equipos.</td></tr>';
-            return;
-        }
-
+        if (!document.getElementById('eq-table-body')) return; 
         todosLosEquipos = data;
-
-        // Update Stats
-        document.getElementById('stat-total').textContent = data.length;
-        const categoriasUnicas = new Set(data.map(e => e.categoria));
-        document.getElementById('stat-categories').textContent = categoriasUnicas.size;
-        const ubicacionesUnicas = new Set(data.map(e => e.ubicacion));
-        document.getElementById('stat-locations').textContent = ubicacionesUnicas.size;
-
-        // Draw Table
-        let html = '';
-        data.forEach(e => {
-            let icon = '<i class="fa-solid fa-box"></i>';
-            if (e.categoria === 'PORTATIL' || e.categoria === 'SOBREMESA') icon = '<i class="fa-solid fa-laptop"></i>';
-            if (e.categoria === 'PERIFERICO') icon = '<i class="fa-solid fa-computer-mouse"></i>';
-            if (e.categoria === 'AUDIOVISUAL') icon = '<i class="fa-solid fa-video"></i>';
-
-            // Actions Wrapper
-            let btns = `<div class="eq-actions-wrapper" id="actions-${e.id_equipamiento}">`;
-            if (window.ROL === 'ADMIN') {
-                btns += `<button class="eq-action-btn eq-btn-edit" onclick="toggleEdit(${e.id_equipamiento})"><i class="fa-solid fa-pen"></i> Editar</button>`;
-                btns += `<button class="eq-action-btn eq-btn-delete" onclick="borrarEquipo(${e.id_equipamiento})"><i class="fa-regular fa-trash-can"></i> Eliminar</button>`;
-            }
-            btns += '</div>';
-
-            // 👇 HERE IS THE TABLE ROW WITH THE MODELO COLUMN 👇
-            html += `
-                <tr id="row-${e.id_equipamiento}">
-                    <td><input type="checkbox"></td>
-                    <td>${e.id_equipamiento}</td>
-                    <td>
-                        <div class="eq-item-name">
-                            <span class="eq-item-icon">${icon}</span>
-                            <input type="text" id="edit-nombre-${e.id_equipamiento}" class="inline-edit" value="${e.nombre}" disabled>
-                        </div>
-                    </td>
-                    <td><input type="text" id="edit-marca-${e.id_equipamiento}" class="inline-edit" value="${e.marca}" disabled></td>
-                    
-                    <!-- 👇 NEW MODELO CELL 👇 -->
-                    <td><input type="text" id="edit-modelo-${e.id_equipamiento}" class="inline-edit" value="${e.modelo}" disabled></td>
-                    
-                    <td>
-                        <select id="edit-cat-${e.id_equipamiento}" class="inline-edit eq-badge" disabled style="border: none; background: transparent;">
-                            <option value="PORTATIL" ${e.categoria === 'PORTATIL' ? 'selected' : ''}>Portátil</option>
-                            <option value="SOBREMESA" ${e.categoria === 'SOBREMESA' ? 'selected' : ''}>Sobremesa</option>
-                            <option value="PERIFERICO" ${e.categoria === 'PERIFERICO' ? 'selected' : ''}>Periférico</option>
-                            <option value="AUDIOVISUAL" ${e.categoria === 'AUDIOVISUAL' ? 'selected' : ''}>Audiovisual</option>
-                            <option value="OTROS" ${e.categoria === 'OTROS' ? 'selected' : ''}>Otros</option>
-                        </select>
-                    </td>
-                    <td>
-                        <div class="eq-location">
-                            <i class="fa-solid fa-location-dot"></i> ${e.ubicacion || 'Almacén'}
-                        </div>
-                    </td>
-                    <td>${btns}</td>
-                </tr>
-            `;
-        });
-        
-        tbody.innerHTML = html;
-        document.getElementById('eq-showing-text').textContent = `Mostrando ${data.length} de ${data.length} equipamientos`;
+        actualizarEstadisticas();
+        renderizarTabla(); 
     })
-    .catch(err => {
-        const tbody = document.getElementById('eq-table-body');
-        if (tbody) tbody.innerHTML = `<tr><td colspan="8" style="color:red; text-align:center;">Error al cargar datos</td></tr>`;
-        console.error(err);
-    });
+    .catch(err => console.error(err));
 
-// ==========================================
-// 3. INLINE EDIT LOGIC
-// ==========================================
-function toggleEdit(id) {
-    const row = document.getElementById(`row-${id}`);
-    const nombreInput = document.getElementById(`edit-nombre-${id}`);
-    const marcaInput = document.getElementById(`edit-marca-${id}`);
-    const modeloInput = document.getElementById(`edit-modelo-${id}`);
-    const catSelect = document.getElementById(`edit-cat-${id}`);
-    const actionsWrapper = document.getElementById(`actions-${id}`);
+function actualizarEstadisticas() {
+    document.getElementById('stat-total').textContent = todosLosEquipos.length;
+    const categoriasUnicas = new Set(todosLosEquipos.map(e => e.categoria));
+    document.getElementById('stat-categories').textContent = categoriasUnicas.size;
+    const ubicacionesUnicas = new Set(todosLosEquipos.map(e => e.ubicacion));
+    document.getElementById('stat-locations').textContent = ubicacionesUnicas.size;
 
-    // Enable inputs
-    nombreInput.disabled = false;
-    marcaInput.disabled = false;
-    modeloInput.disabled = false;
-    catSelect.disabled = false;
-    
-    row.classList.add('row-editing'); 
-    
-    // 👇 SWAP BUTTONS TO GUARDAR AND CANCELAR 👇
-    actionsWrapper.innerHTML = `
-        <button class="eq-action-btn eq-btn-save" onclick="guardarEdicion(${id})"><i class="fa-solid fa-check"></i> Guardar</button>
-        <button class="eq-action-btn eq-btn-cancel" onclick="cancelarEdicion(${id})"><i class="fa-solid fa-xmark"></i> Cancelar</button>
-    `;
-    
-    nombreInput.focus();
+    const locSelect = document.getElementById('filter-location');
+    if(locSelect) {
+        locSelect.innerHTML = '<option value="">Ubicación: Todas</option>';
+        ubicacionesUnicas.forEach(loc => {
+            if(loc) locSelect.innerHTML += `<option value="${loc}">${loc}</option>`;
+        });
+    }
 }
 
-async function guardarEdicion(id) {
-    const nombreInput = document.getElementById(`edit-nombre-${id}`);
-    const marcaInput = document.getElementById(`edit-marca-${id}`);
-    const modeloInput = document.getElementById(`edit-modelo-${id}`);
-    const catSelect = document.getElementById(`edit-cat-${id}`);
-    const actionsWrapper = document.getElementById(`actions-${id}`);
-    const row = document.getElementById(`row-${id}`);
+// 👇 Tab Click Listener
+document.querySelectorAll('.eq-tab').forEach(tab => {
+    tab.addEventListener('click', (e) => {
+        // Update active class
+        document.querySelectorAll('.eq-tab').forEach(t => t.classList.remove('active'));
+        e.target.classList.add('active');
 
-    if (nombreInput.value.trim() === '') {
-        alert("El nombre no puede estar vacío");
+        // Update filter and render
+        currentCategoryFilter = e.target.getAttribute('data-category');
+        renderizarTabla();
+    });
+});
+
+function renderizarTabla() {
+    const tbody = document.getElementById('eq-table-body');
+    if (!tbody) return;
+
+    const search = normalizarTexto(document.getElementById('search-input').value);
+    const filterLoc = document.getElementById('filter-location').value;
+
+    const filtrados = todosLosEquipos.filter(e => {
+        const matchSearch = normalizarTexto(e.nombre).includes(search) || 
+                            normalizarTexto(e.marca).includes(search) || 
+                            normalizarTexto(e.modelo).includes(search) ||
+                            normalizarTexto(e.id_equipamiento).includes(search);
+        
+        const matchCat = currentCategoryFilter === '' || e.categoria === currentCategoryFilter;
+        const matchLoc = filterLoc === '' || e.ubicacion === filterLoc;
+
+        return matchSearch && matchCat && matchLoc;
+    });
+
+    document.getElementById('eq-showing-text').textContent = `Mostrando ${filtrados.length} de ${todosLosEquipos.length} equipamientos`;
+
+    if (filtrados.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding: 20px;">No se encontraron resultados.</td></tr>';
         return;
     }
 
-    actionsWrapper.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Guardando...';
+    let html = '';
+    filtrados.forEach(e => {
+        let btns = `<div class="eq-actions-wrapper" id="actions-${e.id_equipamiento}">`;
+        if (window.ROL === 'ADMIN') {
+            btns += `<button class="eq-action-btn eq-btn-edit" onclick="toggleEdit(${e.id_equipamiento})"><i class="fa-solid fa-pen"></i> Editar</button>`;
+            btns += `<button class="eq-action-btn eq-btn-delete" onclick="borrarEquipo(${e.id_equipamiento})"><i class="fa-regular fa-trash-can"></i> Eliminar</button>`;
+        }
+        btns += '</div>';
 
-    const equipoOriginal = todosLosEquipos.find(e => e.id_equipamiento == id);
-
-    const body = {
-        nombre: nombreInput.value,
-        marca: marcaInput.value,
-        modelo: modeloInput.value,
-        categoria: catSelect.value || 'OTROS',
-        descripcion: equipoOriginal.descripcion 
-    };
-
-    try {
-        const res = await fetch(`api/Equipamiento.php?id=${id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(body)
-        });
-
-        if (!res.ok) throw new Error("Error al guardar");
-
-        // Success! Revert to normal
-        nombreInput.disabled = true;
-        marcaInput.disabled = true;
-        modeloInput.disabled = true;
-        catSelect.disabled = true;
-        row.classList.remove('row-editing'); 
+        const safeDesc = (e.descripcion || 'Sin descripción').replace(/'/g, "\\'");
         
-        actionsWrapper.innerHTML = `
-            <button class="eq-action-btn eq-btn-edit" onclick="toggleEdit(${id})"><i class="fa-solid fa-pen"></i> Editar</button>
-            <button class="eq-action-btn eq-btn-delete" onclick="borrarEquipo(${id})"><i class="fa-regular fa-trash-can"></i> Eliminar</button>
+        html += `
+            <tr id="row-${e.id_equipamiento}">
+                <td>${e.id_equipamiento}</td>
+                <td>
+                    <div class="eq-item-name">
+                        <span class="eq-item-icon" id="icon-${e.id_equipamiento}">${obtenerIconoHTML(e.categoria)}</span>
+                        <input type="text" id="edit-nombre-${e.id_equipamiento}" class="inline-edit" value="${e.nombre}" disabled>
+                    </div>
+                </td>
+                <td><input type="text" id="edit-marca-${e.id_equipamiento}" class="inline-edit" value="${e.marca}" disabled></td>
+                <td><input type="text" id="edit-modelo-${e.id_equipamiento}" class="inline-edit" value="${e.modelo}" disabled></td>
+                <td>
+                    <select id="edit-cat-${e.id_equipamiento}" class="inline-edit eq-badge category-select" disabled>
+                        <option value="PORTATIL" ${e.categoria === 'PORTATIL' ? 'selected' : ''}>Portátil</option>
+                        <option value="SOBREMESA" ${e.categoria === 'SOBREMESA' ? 'selected' : ''}>Sobremesa</option>
+                        <option value="PERIFERICO" ${e.categoria === 'PERIFERICO' ? 'selected' : ''}>Periférico</option>
+                        <option value="AUDIOVISUAL" ${e.categoria === 'AUDIOVISUAL' ? 'selected' : ''}>Audiovisual</option>
+                        <option value="OTROS" ${e.categoria === 'OTROS' ? 'selected' : ''}>Otros</option>
+                    </select>
+                </td>
+                <td>
+                    <!-- 👇 REDIRECT TO HISTORIAL WITH ID 👇 -->
+                    <a href="index.html?page=historico&id=${e.id_equipamiento}" class="eq-location-link">
+                        <i class="fa-solid fa-location-dot"></i> ${e.ubicacion || 'Almacén'}
+                    </a>
+                </td>
+                <td>
+                    <div class="desc-truncate" id="desc-div-${e.id_equipamiento}" onclick="verDescripcion('${safeDesc}')">
+                        ${e.descripcion || 'Sin descripción'}
+                    </div>
+                    <input type="text" id="edit-desc-${e.id_equipamiento}" class="inline-edit" value="${e.descripcion || ''}" disabled style="display: none;">
+                </td>
+                <td>${btns}</td>
+            </tr>
         `;
-
-    } catch (error) {
-        alert("ERROR: " + error.message);
-        cancelarEdicion(id);
-    }
-}
-
-function cancelarEdicion(id) {
-    const nombreInput = document.getElementById(`edit-nombre-${id}`);
-    const marcaInput = document.getElementById(`edit-marca-${id}`);
-    const modeloInput = document.getElementById(`edit-modelo-${id}`);
-    const catSelect = document.getElementById(`edit-cat-${id}`);
-    const actionsWrapper = document.getElementById(`actions-${id}`);
-    const row = document.getElementById(`row-${id}`);
-
-    // Revert values to original
-    const equipoOriginal = todosLosEquipos.find(e => e.id_equipamiento == id);
-    nombreInput.value = equipoOriginal.nombre;
-    marcaInput.value = equipoOriginal.marca;
-    modeloInput.value = equipoOriginal.modelo;
-    catSelect.value = equipoOriginal.categoria;
-
-    // Disable inputs
-    nombreInput.disabled = true;
-    marcaInput.disabled = true;
-    modeloInput.disabled = true;
-    catSelect.disabled = true;
-    row.classList.remove('row-editing');
-
-    // Restore Edit/Delete buttons
-    actionsWrapper.innerHTML = `
-        <button class="eq-action-btn eq-btn-edit" onclick="toggleEdit(${id})"><i class="fa-solid fa-pen"></i> Editar</button>
-        <button class="eq-action-btn eq-btn-delete" onclick="borrarEquipo(${id})"><i class="fa-regular fa-trash-can"></i> Eliminar</button>
-    `;
-}
-
-// ==========================================
-// 4. CREATE & DELETE LOGIC
-// ==========================================
-function borrarEquipo(id) {
-    if (!confirm('¿Seguro que quieres borrar este equipo?')) return;
-    fetch(`api/Equipamiento.php?id=${id}`, { method: 'DELETE' }).then(() => location.reload());
-}
-
-function abrirModalCrear() { document.getElementById('modal-crear').style.display = 'flex'; }
-function cerrarModalCrear() { document.getElementById('modal-crear').style.display = 'none'; }
-
-const formCrear = document.getElementById('form-crear-eq');
-if (formCrear) {
-    formCrear.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const body = {
-            nombre: document.getElementById('new-nombre').value,
-            marca: document.getElementById('new-marca').value,
-            modelo: document.getElementById('new-modelo').value,
-            descripcion: document.getElementById('new-desc').value,
-            categoria: document.getElementById('new-categoria').value
-        };
-
-        fetch('api/Equipamiento.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(body)
-        }).then(() => {
-            cerrarModalCrear();
-            location.reload();
-        });
     });
+    
+    tbody.innerHTML = html;
 }
+
+document.getElementById('search-input').addEventListener('input', renderizarTabla);
+document.getElementById('filter-location').addEventListener('change', renderizarTabla);
+
+// ==========================================
+// INLINE EDIT, CREATE & DELETE (Keep same as before)
+// ==========================================
+// ... (Paste the toggleEdit, guardarEdicion, cancelarEdicion, borrarEquipo, abrirModalCrear, etc. from your previous working code here) ...
