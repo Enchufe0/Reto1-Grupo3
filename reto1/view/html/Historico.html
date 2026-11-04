@@ -1,0 +1,20 @@
+<div class="eq-header">
+    <h1 class="eq-title">Histórico de Ubicaciones</h1>
+</div>
+
+<!-- This bar matches the equipment page perfectly -->
+<div class="eq-filters-bar">
+    <div class="eq-search-box">
+        <i class="fa-solid fa-magnifying-glass" style="color: #9ca3af;"></i>
+        <input type="number" id="id_equipo" placeholder="Introduce el ID del Equipamiento (ej. 1)">
+    </div>
+    
+    <button class="eq-btn-primary" onclick="buscarHistorial()">
+        <i class="fa-solid fa-clock-rotate-left"></i> Buscar Historial
+    </button>
+</div>
+
+<div id="resultado">
+    <!-- The JS will inject the table here -->
+    <p style="color: #6b7280; margin-top: 20px;">Introduce un ID y pulsa "Buscar" para ver los movimientos.</p>
+</div>

@@ -1,10 +1,12 @@
 <?php       
     //1. preparar el carretillero
-    require_once 'Notificaciones.php';
+
+use enumNotificaciones\EstadoNotificaciones;
+
 
     // si tienes el enum aparte tambien tienes que traertelo
-    require_once 'enumNotificaciones.php';
-
+    require_once __DIR__ . '/../model/Notificaciones.php';
+        require_once __DIR__ . '/../model/EstadoNotificaciones.php';
 
 
 
@@ -19,7 +21,7 @@
         public function crear ( Notificaciones $notificacion):bool {
 
             //ponemos todas las columnas de la tabla menos el id_autoincrement
-            $sql = "INSERT INTO Notificaciones (titulo, descripcion, fecha_creacion, estado, id_usuario)
+            $sql = "INSERT INTO notificaciones (titulo, descripcion, fecha_creacion, estado, id_usuario)
                     VALUES (:titulo, :descripcion, :fecha_creacion, :estado, :id_usuario)";
 
             //avisa al almacen
@@ -43,7 +45,7 @@
         //READ TODAS
         public function obtenerTodas(): array{
             
-            $sql = "SELECT * FROM Notificaciones";
+            $sql = "SELECT * FROM notificaciones";
 
             $stmt = $this->conexion->query($sql);
 
@@ -56,7 +58,7 @@
                     $fila['titulo'],
                     $fila['descripcion'],
                     $fila['fecha_creacion'],
-                    enumNotificacion::from($fila['estado']), //aqui se transforma en el enum el dato
+                    EstadoNotificaciones::from($fila['estado']), //aqui se transforma en el enum el dato
                     $fila['id_usuario']
                 );
 
@@ -65,10 +67,31 @@
             return $listaNotificaciones;
         }
 
+        public function obtenerPorUsuario(int $idUsuario): array {
+            $sql = "SELECT * FROM notificaciones WHERE id_usuario = :id_usuario ORDER BY fecha_creacion DESC";
+            $stmt = $this->conexion->prepare($sql);
+            $stmt->bindValue(':id_usuario', $idUsuario, PDO::PARAM_INT);
+            $stmt->execute();
+
+            $listaNotificaciones = [];
+            while ($fila = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $listaNotificaciones[] = new Notificaciones(
+                    $fila['id_notificacion'],
+                    $fila['titulo'],
+                    $fila['descripcion'],
+                    $fila['fecha_creacion'],
+                    EstadoNotificaciones::from($fila['estado']),
+                    $fila['id_usuario']
+                );
+            }
+
+            return $listaNotificaciones;
+        }
+
         //READ POR ID importante el ?
         public function obtenerPorId(int $id): ?Notificaciones{
 
-            $sql = "SELECT * FROM Notificaciones WHERE id_notificacion = :id";
+            $sql = "SELECT * FROM notificaciones WHERE id_notificacion = :id";
 
             $stmt = $this->conexion->prepare($sql);
 
@@ -84,7 +107,7 @@
                     $fila['titulo'],
                     $fila['descripcion'],
                     $fila['fecha_creacion'],
-                    enumNotificacion::from($fila['estado']),
+                    EstadoNotificaciones::from($fila['estado']),
                     $fila['id_usuario']
                 );
                 return $notificacion;
@@ -96,7 +119,7 @@
         //UPDATE
         public function actualizar (Notificaciones $notificacion): bool{
 
-            $sql = "UPDATE Notificaciones
+            $sql = "UPDATE notificaciones
                     SET titulo = :titulo, descripcion = :descripcion, 
                         fecha_creacion = :fecha_creacion, estado = :estado,
                         id_usuario = :id_usuario
@@ -104,12 +127,12 @@
 
             $stmt = $this->conexion->prepare($sql);
 
-            $stmt->bindValue(':id_notificacion', $notificacion->getIdNotificacion());
             $stmt->bindValue(':titulo', $notificacion->getTitulo());
             $stmt->bindValue(':descripcion', $notificacion->getDescripcion());
             $stmt->bindValue(':fecha_creacion', $notificacion->getFechaCreacion());
             $stmt->bindValue(':estado', $notificacion->getEstado()->value);
             $stmt->bindValue(':id_usuario', $notificacion->getIdUsuario());
+            $stmt->bindValue(':id', $notificacion->getIdNotificacion());
 
             return $stmt->execute();
         }
@@ -117,7 +140,7 @@
         //DELETE
         public function borrar(int $id): bool {
 
-            $sql = "DELETE FROM Notificaciones WHERE id_notificacion = :id";
+            $sql = "DELETE FROM notificaciones WHERE id_notificacion = :id";
 
             $stmt = $this->conexion->prepare($sql);
 
