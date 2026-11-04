@@ -343,10 +343,18 @@ main {
 
 /* Fondo oscuro transparente que tapa toda la pantalla */
 .popup {
+    position: fixed;
+    inset: 0;
+    margin: auto;
     border: none;
     background-color: transparent;
     padding: 0;
 }
+
+.popup-eliminar {
+    width: min(400px, calc(100vw - 32px));
+}
+
 .popup::backdrop {
     background-color: rgba(0, 0, 0, 0.4); /* Pone la pantalla en negro al 40% */
 }
@@ -359,6 +367,47 @@ main {
     width: 400px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.1);
 }
+
+.popup-eliminar-contenido {
+    background-color: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.popup-eliminar-contenido h2 {
+    margin: 0 0 12px;
+    font-weight: 600;
+    font-size: 20px;
+}
+
+.popup-eliminar-contenido p {
+    margin-bottom: 20px;
+    color: #6b7280;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.popup-eliminar-acciones {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.btn-eliminar-confirmar {
+    background-color: #ef4444;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.btn-eliminar-confirmar:hover {
+    background-color: #dc2626;
+}
+
 .popup-contenido h2 {
     margin: 0 0 20px 0;
     font-weight: 600;

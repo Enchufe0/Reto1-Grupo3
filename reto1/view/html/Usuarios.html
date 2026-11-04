@@ -98,14 +98,14 @@
     </dialog>
 
     <!-- Pop-up para Eliminar -->
-    <dialog id="popupEliminar" class="ubi-modal">
-        <div class="ubi-modal-contenido">
-            <h3>¿Eliminar Ubicación?</h3>
-            <p class="ubi-texto-eliminar">¿Estás seguro de que quieres borrar esta ubicación? Esta acción no se puede deshacer.</p>
+    <dialog id="popupEliminar" class="popup popup-eliminar">
+        <div class="popup-eliminar-contenido">
+            <h2>¿Eliminar usuario?</h2>
+            <p>¿Seguro que quieres borrar este usuario? Esta acción no se puede deshacer.</p>
             <input type="hidden" id="eliminarUbiId">
-            <div class="ubi-modal-acciones">
-                <button type="button" class="ubi-btn-cancelar" id="btnCancelarEliminar">Cancelar</button>
-                <button type="button" class="ubi-btn-peligro" id="btnConfirmarEliminar">Eliminar</button>
+            <div class="popup-eliminar-acciones">
+                <button type="button" class="btn-cancelar" id="btnCancelarEliminar">Cancelar</button>
+                <button type="button" class="btn-eliminar-confirmar" id="btnConfirmarEliminar">Eliminar</button>
             </div>
         </div>
     </dialog>

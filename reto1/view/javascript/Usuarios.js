@@ -1,3 +1,4 @@
+(() => {
 const apiUrl = 'http://localhost/Reto1-Grupo3/reto1/api/Usuarios.php';
 
 // Referencias al DOM
@@ -8,14 +9,16 @@ const formUsuario = document.getElementById('formularioUsuario');
 const btnCerrarPopup = document.getElementById('btnCerrarPopUp');
 const tituloPopup = document.getElementById('popupTitulo');
 const estadisticaTotal = document.getElementById('estadisticaTotal');
-const dialogEliminar = document.getElementById('popupEliminarUsuario');
-const inputEliminarId = document.getElementById('eliminarUserId'); 
+const dialogEliminar = document.getElementById('popupEliminar');
+const btnCancelarEliminar = document.getElementById('btnCancelarEliminar');
 const btnConfirmarEliminar = document.getElementById('btnConfirmarEliminar');
+const inputEliminarId = document.getElementById('eliminarUbiId');
 
 // GET
 async function cargarUsuarios() {
     try {
         const respuesta = await fetch(apiUrl);
+        if (!respuesta.ok) throw new Error(`Error HTTP ${respuesta.status}`);
         const usuarios = await respuesta.json();
         
         contenedorTarjetas.innerHTML = ''; 
@@ -111,6 +114,10 @@ window.borrarUsuario = function(id) {
     dialogEliminar.showModal();
 }
 
+btnCancelarEliminar.addEventListener('click', () => {
+    dialogEliminar.close();
+});
+
 btnConfirmarEliminar.addEventListener('click', async () => {
     const id = inputEliminarId.value;
     
@@ -128,4 +135,9 @@ btnConfirmarEliminar.addEventListener('click', async () => {
     }
 });
 
-document.addEventListener('DOMContentLoaded', cargarUsuarios);
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', cargarUsuarios, { once: true });
+} else {
+    cargarUsuarios();
+}
+})();

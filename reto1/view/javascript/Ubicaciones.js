@@ -131,4 +131,8 @@ btnConfirmarEliminar.addEventListener('click', async () => {
     }
 });
 
-document.addEventListener('DOMContentLoaded', cargarUbicaciones);
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', cargarUbicaciones, { once: true });
+} else {
+    cargarUbicaciones();
+}
