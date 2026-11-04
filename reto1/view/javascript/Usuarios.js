@@ -1,4 +1,3 @@
-(() => {
 const apiUrl = new URL('../../api/UsuariosAPI.php', document.currentScript.src).href;
 
 // Referencias al DOM
@@ -12,7 +11,7 @@ const estadisticaTotal = document.getElementById('estadisticaTotal');
 const dialogEliminar = document.getElementById('popupEliminar');
 const btnCancelarEliminar = document.getElementById('btnCancelarEliminar');
 const btnConfirmarEliminar = document.getElementById('btnConfirmarEliminar');
-const inputEliminarId = document.getElementById('eliminarUbiId');
+const inputEliminarId = document.getElementById('eliminarUsuId');
 
 // GET
 async function cargarUsuarios() {
@@ -148,4 +147,3 @@ if (document.readyState === 'loading') {
 } else {
     cargarUsuarios();
 }
-})();
