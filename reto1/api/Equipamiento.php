@@ -4,10 +4,19 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+// Helper functions
 function checkLogin() {
     if (!isset($_SESSION['usuario_id'])) {
         http_response_code(401);
         echo json_encode(['error' => 'No autorizado.']);
+        exit;
+    }
+}
+function checkAdmin() {
+    checkLogin();
+    if ($_SESSION['rol'] !== 'ADMIN') {
+        http_response_code(403);
+        echo json_encode(['error' => 'Solo administradores.']);
         exit;
     }
 }
@@ -32,16 +41,30 @@ try {
         exit;
     }
 
+    if ($httpMethod === 'POST') {
+        checkAdmin(); // 👈 Only Admin can create
+        $equipamientoController->crear($requestPayload);
+        echo json_encode(['ok' => true, 'mensaje' => 'Equipo creado']);
+        exit;
+    }
+
     if ($httpMethod === 'PUT') {
-        // Call the controller
+        checkAdmin();
         $equipamientoController->actualizar($urlId, $requestPayload);
         echo json_encode(['ok' => true, 'mensaje' => 'Equipo actualizado']);
         exit;
     }
 
-    // ... (Add your POST and DELETE logic here) ...
-    
+    if ($httpMethod === 'DELETE') {
+        checkAdmin();
+        $equipamientoController->eliminar($urlId);
+        echo json_encode(['ok' => true, 'mensaje' => 'Equipo eliminado']);
+        exit;
+    }
+
+    throw new Exception("Método HTTP no permitido", 405);
+
 } catch (Throwable $error) {
-    http_response_code(500); // Force a 500 status
-    echo json_encode(['error' => $error->getMessage()]); // Send the exact error message
+    http_response_code($error->getCode() ?: 500);
+    echo json_encode(['error' => $error->getMessage()]);
 }
