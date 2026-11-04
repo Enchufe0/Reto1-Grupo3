@@ -174,13 +174,11 @@ try {
             }
 
             $password = $datos['password'] ?? null;
-            $passwordHash = $datos['password_hash'] ?? null;
-            if (is_string($password) && $password !== '') {
-                $passwordHash = password_hash($password, PASSWORD_DEFAULT);
-            } elseif (!is_string($passwordHash) || $passwordHash === '') {
+            if (!is_string($password) || trim($password) === '') {
                 responderUsuarios(['error' => 'Se requiere una contraseña válida.'], 400);
                 break;
             }
+            $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
             $consulta = $conexion->prepare(
                 'INSERT INTO usuarios (nombre, apellidos, nombre_usuario, password_hash)
@@ -216,17 +214,41 @@ try {
                 break;
             }
 
-            $consulta = $conexion->prepare(
-                'UPDATE usuarios
-                 SET nombre = :nombre, apellidos = :apellidos, nombre_usuario = :nombre_usuario
-                 WHERE id_usuario = :id_usuario'
-            );
-            $consulta->execute([
-                'nombre' => trim($datos['nombre']),
-                'apellidos' => trim($datos['apellidos']),
-                'nombre_usuario' => trim($datos['nombre_usuario']),
-                'id_usuario' => $id
-            ]);
+            if (array_key_exists('password', $datos)
+                && (!is_string($datos['password']) || ($datos['password'] !== '' && trim($datos['password']) === ''))) {
+                responderUsuarios(['error' => 'La contraseña no es válida.'], 400);
+                break;
+            }
+
+            $actualizarPassword = isset($datos['password']) && $datos['password'] !== '';
+            if ($actualizarPassword) {
+                $consulta = $conexion->prepare(
+                    'UPDATE usuarios
+                     SET nombre = :nombre, apellidos = :apellidos, nombre_usuario = :nombre_usuario,
+                         password_hash = :password_hash
+                     WHERE id_usuario = :id_usuario'
+                );
+                $parametros = [
+                    'nombre' => trim($datos['nombre']),
+                    'apellidos' => trim($datos['apellidos']),
+                    'nombre_usuario' => trim($datos['nombre_usuario']),
+                    'password_hash' => password_hash($datos['password'], PASSWORD_DEFAULT),
+                    'id_usuario' => $id
+                ];
+            } else {
+                $consulta = $conexion->prepare(
+                    'UPDATE usuarios
+                     SET nombre = :nombre, apellidos = :apellidos, nombre_usuario = :nombre_usuario
+                     WHERE id_usuario = :id_usuario'
+                );
+                $parametros = [
+                    'nombre' => trim($datos['nombre']),
+                    'apellidos' => trim($datos['apellidos']),
+                    'nombre_usuario' => trim($datos['nombre_usuario']),
+                    'id_usuario' => $id
+                ];
+            }
+            $consulta->execute($parametros);
 
             if ($consulta->rowCount() === 0 && !existeUsuario($conexion, $id)) {
                 responderUsuarios(['error' => 'No se encontró el usuario.'], 404);
