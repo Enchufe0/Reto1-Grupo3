@@ -12,6 +12,9 @@ const dialogEliminar = document.getElementById('popupEliminar');
 const btnCancelarEliminar = document.getElementById('btnCancelarEliminar');
 const btnConfirmarEliminar = document.getElementById('btnConfirmarEliminar');
 const inputEliminarId = document.getElementById('eliminarUsuId');
+const dialogAvisoCuenta = document.getElementById('popupAvisoCuenta');
+const mensajeAvisoCuenta = document.getElementById('mensajeAvisoCuenta');
+const btnCerrarAvisoCuenta = document.getElementById('btnCerrarAvisoCuenta');
 
 // GET
 async function cargarUsuarios() {
@@ -26,17 +29,22 @@ async function cargarUsuarios() {
         usuarios.forEach(usuario => {
             const article = document.createElement('article');
             article.className = 'tarjeta-usu';
-            
+            const esUsuarioActual = Number(usuario.id_usuario) === Number(window.USUARIO_ID);
+            const accionEditar = esUsuarioActual
+                ? "mostrarAvisoCuenta('editar')"
+                : `abrirEditar(${usuario.id_usuario}, '${usuario.nombre}', '${usuario.apellidos}', '${usuario.nombre_usuario}')`;
+            const accionEliminar = esUsuarioActual
+                ? "mostrarAvisoCuenta('eliminar')"
+                : `borrarUsuario(${usuario.id_usuario})`;
             
             article.innerHTML = `
                 <div class="tarjetaInfo">
                     <p><strong>Nombre:</strong> ${usuario.nombre}</p>
                     <p><strong>Apellido:</strong> ${usuario.apellidos}</p>
                     <p><strong>Usuario:</strong> ${usuario.nombre_usuario}</p>
-                </div>
-                <div class="tarjetaAccion">
-                    <button class="btnEditar" onclick="abrirEditar(${usuario.id_usuario}, '${usuario.nombre}', '${usuario.apellidos}', '${usuario.nombre_usuario}')">Editar</button>
-                    <button class="btnEliminar" aria-label="Borrar" onclick="borrarUsuario(${usuario.id_usuario})">❌</button>
+                    <p><strong>Rol:</strong> ${usuario.rol}</p>
+                    <button class="btnEditar" onclick="${accionEditar}">Editar</button>
+                    <button class="btnEliminar" aria-label="Borrar" onclick="${accionEliminar}">❌</button>
                 </div>
             `;
             contenedorTarjetas.appendChild(article);
@@ -71,6 +79,18 @@ window.abrirEditar = function(id, nombre, apellido, username) {
     tituloPopup.textContent = 'EDITAR USUARIO';
     dialogPopup.showModal();
 }
+
+window.mostrarAvisoCuenta = function(accion) {
+    const mensaje = accion === 'editar'
+        ? 'No puedes editar tu propia cuenta mientras tienes la sesión iniciada.'
+        : 'No puedes eliminar tu propia cuenta mientras tienes la sesión iniciada.';
+    mensajeAvisoCuenta.textContent = mensaje;
+    dialogAvisoCuenta.showModal();
+}
+
+btnCerrarAvisoCuenta.addEventListener('click', () => {
+    dialogAvisoCuenta.close();
+});
 
 // CERRAR POPUP
 btnCerrarPopup.addEventListener('click', () => {

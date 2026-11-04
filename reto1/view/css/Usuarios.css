@@ -281,27 +281,18 @@ main {
 }
 
 /* El texto dentro de las tarjetas */
-.tarjeta-info p {
+.tarjetaInfo p {
     margin: 8px 0;
     font-size: 14px;
     color: #4b5563;
 }
-.tarjeta-info strong {
+.tarjetaInfo strong {
     color: #111827; /* La negrita mas oscura para que resalte */
 }
 
-/* La zona de abajo de la tarjeta con los dos botones */
-.tarjetaAccion {
-    margin-top: 20px;
-    display: flex;
-    gap: 6px;
-    border-top: 1px solid #f3f4f6; /* Rayita gris separadora */
-    padding-top: 15px;
-}
-
 /* Formato comun para los botoncitos pequeños de la tarjeta */
-.tarjetaAccion button {
-    display: flex;
+.tarjetaInfo button {
+    display: inline-flex;
     align-items: center;
     gap: 6px;
     background: white;
@@ -311,28 +302,29 @@ main {
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
+    margin: 12px 6px 0 0;
 }
 
 /* Boton de editar */
-.tarjetaAccion .btnEditar {
+.tarjetaInfo .btnEditar {
     color: #d97706;
     border: 1px solid #fcd34d;
 }
-.tarjetaAccion .btnEditar:hover {
+.tarjetaInfo .btnEditar:hover {
     background-color: #fffbeb;
 }
 
 /* Boton de borrar */
-.tarjetaAccion .btnEliminar {
+.tarjetaInfo .btnEliminar {
     color: #ef4444;
     border: 1px solid #fecaca;
     font-size: 0;
 }
-.tarjetaAccion .btnEliminar::before {
+.tarjetaInfo .btnEliminar::before {
     content: "Eliminar";
     font-size: 13px;
 }
-.tarjetaAccion .btnEliminar:hover {
+.tarjetaInfo .btnEliminar:hover {
     background-color: #fef2f2;
 }
 
@@ -406,6 +398,16 @@ main {
 
 .btn-eliminar-confirmar:hover {
     background-color: #dc2626;
+}
+
+.btn-aviso-confirmar {
+    background-color: #111827;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
 }
 
 .popup-contenido h2 {
