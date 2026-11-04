@@ -1,20 +1,40 @@
 <div class="eq-header">
-    <h1 class="eq-title">Histórico de Ubicaciones</h1>
+    <h1 class="eq-title">Historial de Movimientos</h1>
 </div>
 
-<!-- This bar matches the equipment page perfectly -->
 <div class="eq-filters-bar">
+    <!-- El buscador ahora ocupa todo el ancho -->
     <div class="eq-search-box">
         <i class="fa-solid fa-magnifying-glass" style="color: #9ca3af;"></i>
-        <input type="number" id="id_equipo" placeholder="Introduce el ID del Equipamiento (ej. 1)">
+        <input type="text" id="search-input" placeholder="Buscar por nombre, ID o marca...">
     </div>
-    
-    <button class="eq-btn-primary" onclick="buscarHistorial()">
-        <i class="fa-solid fa-clock-rotate-left"></i> Buscar Historial
-    </button>
 </div>
 
-<div id="resultado">
-    <!-- The JS will inject the table here -->
-    <p style="color: #6b7280; margin-top: 20px;">Introduce un ID y pulsa "Buscar" para ver los movimientos.</p>
+<!-- 👇 LAS PESTAÑAS CON FLECHA 👇 -->
+<div class="eq-tabs-container">
+    <div class="eq-tabs">
+        <button class="eq-tab active" data-category="">Todos</button>
+        <button class="eq-tab" data-category="PORTATIL">Portátil</button>
+        <button class="eq-tab" data-category="SOBREMESA">Sobremesa</button>
+        <button class="eq-tab" data-category="PERIFERICO">Periférico</button>
+        <button class="eq-tab" data-category="AUDIOVISUAL">Audiovisual</button>
+        <button class="eq-tab" data-category="OTROS">Otros</button>
+    </div>
+</div>
+
+<div class="eq-table-container">
+    <table class="eq-table" style="min-width: 100%;">
+        <thead>
+            <tr>
+                <th style="width: 60px;">ID</th>
+                <th>Nombre</th>
+                <th>Marca</th>
+                <th>Ubicación Actual</th>
+                <th style="text-align: right; width: 180px;">Acciones</th>
+            </tr>
+        </thead>
+        <tbody id="historico-table-body">
+            <tr><td colspan="5" style="text-align:center; padding: 20px;">Cargando equipamientos...</td></tr>
+        </tbody>
+    </table>
 </div>
