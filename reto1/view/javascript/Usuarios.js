@@ -1,5 +1,5 @@
 (() => {
-const apiUrl = 'http://localhost/Reto1-Grupo3/reto1/api/Usuarios.php';
+const apiUrl = new URL('../../api/UsuariosAPI.php', document.currentScript.src).href;
 
 // Referencias al DOM
 const contenedorTarjetas = document.getElementById('contenedorUsuarios');
@@ -51,7 +51,9 @@ async function cargarUsuarios() {
 btnAnadir.addEventListener('click', () => {
     formUsuario.reset();
     document.getElementById('userId').value = '';
-    document.getElementById('password').setAttribute('required', 'true'); 
+    const passwordInput = document.getElementById('password');
+    passwordInput.required = true;
+    passwordInput.placeholder = '';
     tituloPopup.textContent = 'AÑADIR USUARIO';
     dialogPopup.showModal();
 });
@@ -62,7 +64,10 @@ window.abrirEditar = function(id, nombre, apellido, username) {
     document.getElementById('nombre').value = nombre;
     document.getElementById('apellido').value = apellido;
     document.getElementById('username').value = username;
-    document.getElementById('password').removeAttribute('required'); 
+    const passwordInput = document.getElementById('password');
+    passwordInput.value = '';
+    passwordInput.required = false;
+    passwordInput.placeholder = 'Dejar en blanco para mantener la actual';
     
     tituloPopup.textContent = 'EDITAR USUARIO';
     dialogPopup.showModal();
@@ -82,12 +87,13 @@ formUsuario.addEventListener('submit', async (evento) => {
     
     const urlPeticion = id ? `${apiUrl}?id=${id}` : apiUrl;
 
+    const password = document.getElementById('password').value;
     const datos = {
         nombre: document.getElementById('nombre').value,
         apellidos: document.getElementById('apellido').value,
-        nombre_usuario: document.getElementById('username').value,
-        password: document.getElementById('password').value 
+        nombre_usuario: document.getElementById('username').value
     };
+    if (password) datos.password = password;
 
     try {
         const respuesta = await fetch(urlPeticion, { 
@@ -96,15 +102,17 @@ formUsuario.addEventListener('submit', async (evento) => {
             body: JSON.stringify(datos)
         });
 
+        const resultado = await respuesta.json();
         if (respuesta.ok) {
             dialogPopup.close();
-            cargarUsuarios();
+            await cargarUsuarios();
         } else {
-            console.error("El servidor devolvió un error de validación.");
-            alert("Error al guardar el usuario. Revisa la consola.");
+            console.error("Error al guardar el usuario:", resultado.error);
+            alert(resultado.error || "Error al guardar el usuario.");
         }
     } catch (error) {
         console.error("Error al comunicarse con la API:", error);
+        alert("No se pudo guardar el usuario. Comprueba la conexión e inténtalo de nuevo.");
     }
 });
 

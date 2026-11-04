@@ -25,9 +25,10 @@ require_once 'UsuariosDAO.php';
             $apellido_cliente = $_POST['apellido'];
             $nombre_username_cliente = $_POST['nombre_usuarios'];
             $password_hash_cliente = $_POST['password_hash'];
+            $rol_cliente = $_POST['rol'];
 
             // El ID inicial es 0 porque el usuario aún no se ha guardado.
-            $usuarioNuevo = new Usuarios(0, $nombre_cliente, $apellido_cliente, $nombre_username_cliente, $password_hash_cliente);
+            $usuarioNuevo = new Usuarios(0, $nombre_cliente, $apellido_cliente, $nombre_username_cliente, $password_hash_cliente,$rol_cliente);
 
             $exito = $this->usuariosDAO->crear($usuarioNuevo);
 
@@ -45,13 +46,15 @@ require_once 'UsuariosDAO.php';
             $apellido_cliente = $_POST['apellido'];
             $nombre_username_cliente = $_POST['nombre_usuarios'];
             $password_hash_cliente = $_POST['password_hash'];
+            $rol_cliente = $_POST['rol'];
 
             $usuarioActualizado = new Usuarios(
                 $id_usuario,
                 $nombre_cliente,
                 $apellido_cliente,
                 $nombre_username_cliente,
-                $password_hash_cliente
+                $password_hash_cliente,
+                $rol_cliente
             );
 
             $exito = $this->usuariosDAO->actualizar($usuarioActualizado);
