@@ -6,8 +6,13 @@ const btnAnadir = document.getElementById('btnAnadir'); // ID sin 'ñ'
 const dialogPopup = document.getElementById('popupUbicacion');
 const formUbicacion = document.getElementById('formularioUbicacion');
 const tituloPopup = document.getElementById('popupTitulo');
+const btnCancelarUbicacion = document.getElementById('btnCancelarUbicacion');
+const dialogEliminar = document.getElementById('popupEliminar');
+const btnCancelarEliminar = document.getElementById('btnCancelarEliminar');
+const btnConfirmarEliminar = document.getElementById('btnConfirmarEliminar');
+const inputEliminarId = document.getElementById('eliminarUbiId');
 
-// 1. GET
+// GET
 async function cargarUbicaciones() {
     try {
         const respuesta = await fetch(apiUrl);
@@ -41,7 +46,7 @@ async function cargarUbicaciones() {
     }
 }
 
-// 2. ABRIR POPUP PARA CREAR
+// ABRIR POPUP PARA CREAR
 if (btnAnadir) {
     btnAnadir.addEventListener('click', () => {
         formUbicacion.reset();
@@ -52,8 +57,17 @@ if (btnAnadir) {
 } else {
     console.error("No se encontró el botón btnAnadir en el HTML.");
 }
+btnCancelarUbicacion.addEventListener('click', () => {
+    dialogPopup.close(); // Cierra el pop-up de añadir/editar
+});
 
-// 3. ABRIR POPUP PARA EDITAR
+btnCancelarEliminar.addEventListener('click', () => {
+    dialogEliminar.close(); // Cierra el pop-up de eliminar
+});
+
+
+
+// ABRIR POPUP PARA EDITAR
 window.abrirEditar = function(id, nombre, descripcion) {
     document.getElementById('ubiId').value = id;
     document.getElementById('nombre').value = nombre;
@@ -62,7 +76,7 @@ window.abrirEditar = function(id, nombre, descripcion) {
     dialogPopup.showModal();
 }
 
-// 4. POST - PUT
+// POST - PUT
 formUbicacion.addEventListener('submit', async (evento) => {
     evento.preventDefault();
 
@@ -94,16 +108,31 @@ formUbicacion.addEventListener('submit', async (evento) => {
     }
 });
 
-// 5. DELETE
-window.borrarUbicacion = async function(id) {
-    if (confirm("¿Seguro que quieres borrar esta ubicación? Esta acción no se puede deshacer.")) {
-        try {
-            const respuesta = await fetch(`${apiUrl}?id=${id}`, { method: 'DELETE' });
-            if (respuesta.ok) cargarUbicaciones();
-        } catch (error) {
-            console.error("Error al intentar borrar:", error);
-        }
-    }
+// DELETE
+window.borrarUbicacion = function(id) {
+    inputEliminarId.value = id;
+    dialogEliminar.showModal();
 }
 
-document.addEventListener('DOMContentLoaded', cargarUbicaciones);
+btnConfirmarEliminar.addEventListener('click', async () => {
+    const id = inputEliminarId.value;
+    
+    try {
+        const respuesta = await fetch(`${apiUrl}?id=${id}`, { method: 'DELETE' });
+        
+        if (respuesta.ok) {
+            dialogEliminar.close(); // Cerramos la ventana si ha ido bien
+            cargarUbicaciones();    // Refrescamos la tabla
+        } else {
+            console.error("Error al borrar en la base de datos.");
+        }
+    } catch (error) {
+        console.error("Fallo de conexión al borrar:", error);
+    }
+});
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', cargarUbicaciones, { once: true });
+} else {
+    cargarUbicaciones();
+}

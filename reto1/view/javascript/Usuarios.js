@@ -1,23 +1,34 @@
+(() => {
 const apiUrl = 'http://localhost/Reto1-Grupo3/reto1/api/Usuarios.php';
 
 // Referencias al DOM
-const contenedorTarjetas = document.querySelector('.tarjetaUsuario');
-const btnAnadir = document.getElementById('btnAñadir');
+const contenedorTarjetas = document.getElementById('contenedorUsuarios');
+const btnAnadir = document.getElementById('btnAnadir');
 const dialogPopup = document.getElementById('popupUsuario');
 const formUsuario = document.getElementById('formularioUsuario');
 const btnCerrarPopup = document.getElementById('btnCerrarPopUp');
 const tituloPopup = document.getElementById('popupTitulo');
+const estadisticaTotal = document.getElementById('estadisticaTotal');
+const dialogEliminar = document.getElementById('popupEliminar');
+const btnCancelarEliminar = document.getElementById('btnCancelarEliminar');
+const btnConfirmarEliminar = document.getElementById('btnConfirmarEliminar');
+const inputEliminarId = document.getElementById('eliminarUbiId');
 
-// 1. CARGAR USUARIOS (GET)
+// GET
 async function cargarUsuarios() {
     try {
         const respuesta = await fetch(apiUrl);
+        if (!respuesta.ok) throw new Error(`Error HTTP ${respuesta.status}`);
         const usuarios = await respuesta.json();
         
-        contenedorTarjetas.innerHTML = ''; // Limpiamos las tarjetas de ejemplo
+        contenedorTarjetas.innerHTML = ''; 
+        if (estadisticaTotal) estadisticaTotal.textContent = usuarios.length; // Actualiza el contador
 
         usuarios.forEach(usuario => {
             const article = document.createElement('article');
+            article.className = 'tarjeta-usu';
+            
+            
             article.innerHTML = `
                 <div class="tarjetaInfo">
                     <p><strong>Nombre:</strong> ${usuario.nombre}</p>
@@ -36,49 +47,50 @@ async function cargarUsuarios() {
     }
 }
 
-// 2. ABRIR POPUP PARA CREAR
+// POPUP CREAR
 btnAnadir.addEventListener('click', () => {
     formUsuario.reset();
     document.getElementById('userId').value = '';
+    document.getElementById('password').setAttribute('required', 'true'); 
     tituloPopup.textContent = 'AÑADIR USUARIO';
     dialogPopup.showModal();
 });
 
-// 3. ABRIR POPUP PARA EDITAR
+// POPUP EDITAR
 window.abrirEditar = function(id, nombre, apellido, username) {
     document.getElementById('userId').value = id;
     document.getElementById('nombre').value = nombre;
     document.getElementById('apellido').value = apellido;
     document.getElementById('username').value = username;
-    document.getElementById('password').removeAttribute('required'); // La contraseña es opcional al editar
-    document.getElementById('statTotal').textContent = usuarios.length;
+    document.getElementById('password').removeAttribute('required'); 
     
     tituloPopup.textContent = 'EDITAR USUARIO';
     dialogPopup.showModal();
 }
 
-// 4. CERRAR POPUP
+// CERRAR POPUP
 btnCerrarPopup.addEventListener('click', () => {
     dialogPopup.close();
 });
 
-// 5. GUARDAR O ACTUALIZAR (POST / PUT)
-formUsuario.addEventListener('submit', async (e) => {
-    e.preventDefault();
+// POST - PUT
+formUsuario.addEventListener('submit', async (evento) => {
+    evento.preventDefault();
 
     const id = document.getElementById('userId').value;
     const metodo = id ? 'PUT' : 'POST';
+    
+    const urlPeticion = id ? `${apiUrl}?id=${id}` : apiUrl;
+
     const datos = {
         nombre: document.getElementById('nombre').value,
         apellidos: document.getElementById('apellido').value,
         nombre_usuario: document.getElementById('username').value,
-        password_hash: document.getElementById('password').value
+        password: document.getElementById('password').value 
     };
 
-    if (id) datos.id_usuario = id;
-
     try {
-        const respuesta = await fetch(apiUrl, {
+        const respuesta = await fetch(urlPeticion, { 
             method: metodo,
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(datos)
@@ -88,24 +100,44 @@ formUsuario.addEventListener('submit', async (e) => {
             dialogPopup.close();
             cargarUsuarios();
         } else {
-            alert("Error al guardar el usuario.");
+            console.error("El servidor devolvió un error de validación.");
+            alert("Error al guardar el usuario. Revisa la consola.");
         }
     } catch (error) {
-        console.error("Error al guardar:", error);
+        console.error("Error al comunicarse con la API:", error);
     }
 });
 
-// 6. BORRAR USUARIO (DELETE)
-window.borrarUsuario = async function(id) {
-    if (confirm("¿Seguro que quieres borrar este usuario?")) {
-        try {
-            const respuesta = await fetch(`${apiUrl}?id=${id}`, { method: 'DELETE' });
-            if (respuesta.ok) cargarUsuarios();
-        } catch (error) {
-            console.error("Error al borrar:", error);
-        }
-    }
+// DELETE 
+window.borrarUsuario = function(id) {
+    inputEliminarId.value = id;
+    dialogEliminar.showModal();
 }
 
-// Iniciar cargando la lista
-document.addEventListener('DOMContentLoaded', cargarUsuarios);
+btnCancelarEliminar.addEventListener('click', () => {
+    dialogEliminar.close();
+});
+
+btnConfirmarEliminar.addEventListener('click', async () => {
+    const id = inputEliminarId.value;
+    
+    try {
+        const respuesta = await fetch(`${apiUrl}?id=${id}`, { method: 'DELETE' });
+        
+        if (respuesta.ok) {
+            dialogEliminar.close(); // Cerramos la ventana si ha ido bien
+            cargarUsuarios();    // Refrescamos la tabla
+        } else {
+            console.error("Error al borrar en la base de datos.");
+        }
+    } catch (error) {
+        console.error("Fallo de conexión al borrar:", error);
+    }
+});
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', cargarUsuarios, { once: true });
+} else {
+    cargarUsuarios();
+}
+})();
