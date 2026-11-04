@@ -1,5 +1,4 @@
-const apiUrl = 'http://localhost/Reto1-Grupo3/reto1/api/UbicacionesAPI.php';
-
+const apiUrl = 'api/UbicacionesAPI.php';
 // Referencias al DOM
 const contenedorUbicaciones = document.getElementById('contenedorUbicaciones');
 const btnAnadir = document.getElementById('btnAnadir'); // ID sin 'ñ'
