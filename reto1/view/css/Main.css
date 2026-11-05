@@ -75,11 +75,11 @@ main {
 .nav-profile .bell { color: #6b7280; font-size: 18px; cursor: pointer; transition: color 0.2s; }
 .notification-toggle { position: relative; display: flex; align-items: center; justify-content: center; padding: 8px; border: 0; background: transparent; cursor: pointer; }
 .notification-toggle:hover,
-.notification-toggle.is-current,
 .notification-toggle[aria-expanded="true"] { border-radius: 50%; background: #e0e7ff; }
 .notification-toggle:hover .bell,
-.notification-toggle.is-current .bell,
 .notification-toggle[aria-expanded="true"] .bell { color: #1d4ed8; }
+.notification-toggle.is-current { border-radius: 50%; background: #0b1b42; }
+.notification-toggle.is-current .bell { color: white; }
 .notification-toggle:focus-visible { outline: 2px solid #1d4ed8; outline-offset: 2px; border-radius: 50%; }
 .notification-badge { position: absolute; top: 0; right: 0; min-width: 17px; height: 17px; padding: 0 4px; border-radius: 9px; background: #dc2626; color: white; font-size: 10px; font-weight: 600; line-height: 17px; text-align: center; }
 .user-avatar { width: 34px; height: 34px; background: #e0e7ff; color: #1d4ed8; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; }
