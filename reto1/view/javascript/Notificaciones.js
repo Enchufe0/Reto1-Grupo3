@@ -9,7 +9,7 @@ async function cargarNotificaciones() {
     if (!cuerpoTabla) return;
 
     try {
-        const respuesta = await fetch('api/Notificaciones.php?mine=1');
+        const respuesta = await fetch('api/NotificacionesAPI.php?mine=1');
         if (!respuesta.ok) {
             throw new Error(`No se pudieron cargar las notificaciones (${respuesta.status}).`);
         }
