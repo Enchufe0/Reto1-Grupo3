@@ -1,0 +1,40 @@
+<div class="eq-header">
+    <h1 class="eq-title">Historial de Movimientos</h1>
+</div>
+
+<div class="eq-filters-bar">
+    <div class="eq-search-box">
+        <i class="fa-solid fa-magnifying-glass" style="color: #9ca3af;"></i>
+        <input type="text" id="search-input" placeholder="Buscar por nombre, ID o marca...">
+    </div>
+</div>
+
+<!--  LAS PESTAÑAS CON FLECHA -->
+<div class="eq-tabs-container">
+    <div class="eq-tabs">
+        <button class="eq-tab active" data-category="">Todos</button>
+        <button class="eq-tab" data-category="PORTATIL">Portátil</button>
+        <button class="eq-tab" data-category="SOBREMESA">Sobremesa</button>
+        <button class="eq-tab" data-category="PERIFERICO">Periférico</button>
+        <button class="eq-tab" data-category="AUDIOVISUAL">Audiovisual</button>
+        <button class="eq-tab" data-category="OTROS">Otros</button>
+    </div>
+</div>
+
+<div class="eq-table-container">
+    <table class="eq-table" style="min-width: 100%;">
+        <thead>
+            <tr>
+                <th style="width: 60px;">ID</th>
+                <th>Nombre</th>
+                <th>Marca</th>
+                <th>Categoría</th> <!--  NUEVA COLUMNA -->
+                <th>Ubicación Actual</th>
+                <th style="text-align: right; width: 180px;">Acciones</th>
+            </tr>
+        </thead>
+        <tbody id="historico-table-body">
+            <tr><td colspan="6" style="text-align:center; padding: 20px;">Cargando equipamientos...</td></tr>
+        </tbody>
+    </table>
+</div>

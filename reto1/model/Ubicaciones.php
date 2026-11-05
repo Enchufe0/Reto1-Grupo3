@@ -14,6 +14,14 @@
             $this->descripcion = $descripcion;
         }
 
+        public function toArray() {
+            return [
+                'id_ubicacion' => $this->id_ubicacion,
+                'nombre'=>$this->nombre,
+                'descripcion'=>$this->descripcion
+            ];
+        }
+
         // --- GETTERS ---
 
         public function getIdUbicacion(): int {
