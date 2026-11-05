@@ -147,4 +147,3 @@ if (document.readyState === 'loading') {
 } else {
     cargarUsuarios();
 }
-})();
