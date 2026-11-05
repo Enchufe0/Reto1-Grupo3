@@ -13,7 +13,6 @@
 
 
         //funcion CREAR, meter una caja nueva en la estanteria
-
         public function crear(Ubicaciones $ubicaciones): bool {
 
 
@@ -23,8 +22,6 @@
 
 
             //3. avisar al almacen(prepare)
-
-
             $stmt = $this->conexion->prepare($sql);
 
 

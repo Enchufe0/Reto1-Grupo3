@@ -45,6 +45,14 @@ document.addEventListener("DOMContentLoaded", async () => {
                 document.getElementById('nav-usuarios').style.display = 'block';
             }
 
+            const notificationToggle = document.getElementById('notificationToggle');
+            notificationToggle.classList.toggle('is-current', page === 'notificaciones');
+            if (page === 'notificaciones') {
+                notificationToggle.setAttribute('aria-current', 'page');
+            } else {
+                notificationToggle.removeAttribute('aria-current');
+            }
+
             initializeNotificationDropdown(user.id_usuario);
 
             // Highlight the active tab

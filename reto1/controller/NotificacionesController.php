@@ -1,113 +1,139 @@
 <?php
 
+require_once __DIR__ . '/../dao/NotificacionesDAO.php';
+require_once __DIR__ . '/../model/Notificaciones.php';
+require_once __DIR__ . '/../model/EstadoNotificaciones.php';
+
 use enumNotificaciones\EstadoNotificaciones;
 
-    require_once 'Notificaciones.php';
-    require_once 'NotificacionesDAO.php';
-    require_once 'EstadoNotificaciones.php';
+class NotificacionesController
+{
+    private NotificacionesDAO $notificacionesDAO;
 
-    class NotificacionesController {
-
-        private NotificacionesDAO $notificacionesDAO;
-
-        public function __construct(PDO $conexion) {
-            $this->notificacionesDAO = new NotificacionesDAO($conexion);
-        }
-
-        //READ TODAS
-        public function obtenerTodas() {
-            //pedimos el pale completo al DAO
-            $listaNotificaciones = $this->notificacionesDAO->obtenerTodas();
-
-            //lo mostramos en el escaparate
-            require 'POR DEFINIR';
-        }
-
-        //CREAR
-        public function guardarNuevo () {
-            //leemos la carta que trae el cliente
-
-            $titulo_cliente = $_POST['titulo'];
-            $descripcion_cliente = $_POST['descripcion'];
-            $fecha_cliente = $_POST['fecha_creacion'];
-            $estado_texto_cliente = $_POST['estado']; //hay que poner las dos para el enum. 
-            $estado_enum = EstadoNotificaciones::from($estado_texto_cliente); //aqui lo combertimos en texto
-            $id_usuario_cliente = $_POST['id_usuario'];
-
-            //armamos la caja, ponemos id 0 por que se lo pone la bs
-            $notificacioNueva = new Notificaciones( 0, $titulo_cliente, $descripcion_cliente, $fecha_cliente, $estado_enum,
-                                                    $id_usuario_cliente);
-
-            //mandamos guardar el dao
-            $exito = $this->notificacionesDAO->crear($notificacioNueva);
-
-            //si todo va bien redirigimos
-            if ($exito) {
-                header ("Location: RUTA PENDIENTE");
-            } else {
-                echo "Error al crear la notificacion";
-            }
-        }
-
-        //READ POR ID
-        public function obtenerPorId() {
-            //1 leemos el id que nos piden
-            $id_buscado = (int) $_GET['id'];
-
-            //2 le pediomos esa caja exacta al DAO
-            $notificacion = $this->notificacionesDAO->obtenerPorId($id_buscado);
-
-            //3 mandamos la caja a al vista
-            if ($notificacion) {
-                require 'POR DEFINIR';
-            } else {
-                echo "la notificacion no existe";
-            }
-        }
-
-        //ACTUALIZAR
-        public function actualizar() {
-            //leemos la carta con los datos modificados
-
-            $id_notificacion = (int) $_POST['id_notificacion'];
-            $titulo_cliente = $_POST['titulo'];
-            $descripcion_cliente = $_POST['descripcion'];
-            $fecha_cliente = $_POST['fecha_creacion'];
-            $estado_texto_cliente = $_POST['estado']; //lo mismo, ponemos el enum asi
-            $id_usuario_cliente = (int) $_POST['id_usuario'];
-
-            $estado_enum = EstadoNotificaciones::from($estado_texto_cliente); //y aqui ponemos el enum
-
-            //armamos la caja, esta vez si ponemos el id reald, para la caja
-            $notificacionModificada = new Notificaciones(
-                $id_notificacion, $titulo_cliente, $descripcion_cliente, $fecha_cliente, $estado_enum, $id_usuario_cliente
-            );
-
-            //mandamos a actualizar el DAO
-            $exito = $this->notificacionesDAO->actualizar($notificacionModificada);
-
-            //redirigimos y comprobamos
-            if ($exito) {
-               // header (Location: "POR DEFINIR");
-            } else {
-                echo "Error al actualizar la notificaciones";
-            }
-        }
-
-        //DELETE
-        public function eliminar() {
-            //leemos el id que quiere borrr el cliente
-            $id_borrar = (int) $_GET['id'];
-
-            //damos la orden
-            $this->notificacionesDAO->borrar($id_borrar());
-
-            //recargamos la lista
-            header ("Location: POR DEFINIR");
-        }
-
+    public function __construct(PDO $conexion)
+    {
+        $this->notificacionesDAO = new NotificacionesDAO($conexion);
     }
 
+    public function obtenerTodas(): array
+    {
+        return array_map([$this, 'serializar'], $this->notificacionesDAO->obtenerTodas());
+    }
 
+    public function obtenerPorUsuario(int $idUsuario): array
+    {
+        if ($idUsuario <= 0) {
+            throw new Exception('El ID del usuario no es válido', 400);
+        }
 
-?>
+        return array_map(
+            [$this, 'serializar'],
+            $this->notificacionesDAO->obtenerPorUsuario($idUsuario)
+        );
+    }
+
+    public function obtenerPorId(int $id): array
+    {
+        if ($id <= 0) {
+            throw new Exception('El ID de la notificación no es válido', 400);
+        }
+
+        $notificacion = $this->notificacionesDAO->obtenerPorId($id);
+        if ($notificacion === null) {
+            throw new Exception("No se encontró ninguna notificación con el ID: $id", 404);
+        }
+
+        return $this->serializar($notificacion);
+    }
+
+    public function crear(array $datos): bool
+    {
+        $notificacion = $this->crearModelo($datos, false);
+        if (!$this->notificacionesDAO->crear($notificacion)) {
+            throw new Exception('Error al guardar la notificación en la base de datos', 500);
+        }
+
+        return true;
+    }
+
+    public function actualizar(array $datos): bool
+    {
+        $notificacion = $this->crearModelo($datos, true);
+        if (!$this->notificacionesDAO->actualizar($notificacion)) {
+            throw new Exception('Error al actualizar la notificación en la base de datos', 500);
+        }
+
+        return true;
+    }
+
+    public function eliminar(int $id): bool
+    {
+        if ($id <= 0) {
+            throw new Exception('El ID de la notificación no es válido', 400);
+        }
+
+        if (!$this->notificacionesDAO->borrar($id)) {
+            throw new Exception('Error al eliminar la notificación de la base de datos', 500);
+        }
+
+        return true;
+    }
+
+    private function crearModelo(array $datos, bool $incluirId): Notificaciones
+    {
+        $camposObligatorios = ['titulo', 'descripcion', 'fecha_creacion', 'estado', 'id_usuario'];
+        if ($incluirId) {
+            $camposObligatorios[] = 'id_notificacion';
+        }
+
+        foreach ($camposObligatorios as $campo) {
+            if (!array_key_exists($campo, $datos)) {
+                throw new Exception('Faltan datos obligatorios para la notificación', 400);
+            }
+        }
+
+        foreach (['titulo', 'descripcion', 'fecha_creacion', 'estado'] as $campo) {
+            if (!is_string($datos[$campo])) {
+                throw new Exception("El campo $campo no es válido", 400);
+            }
+        }
+
+        $idUsuario = filter_var($datos['id_usuario'], FILTER_VALIDATE_INT);
+        $idNotificacion = $incluirId
+            ? filter_var($datos['id_notificacion'], FILTER_VALIDATE_INT)
+            : 0;
+
+        if ($idUsuario === false || $idUsuario <= 0) {
+            throw new Exception('El ID del usuario no es válido', 400);
+        }
+        if ($incluirId && ($idNotificacion === false || $idNotificacion <= 0)) {
+            throw new Exception('El ID de la notificación no es válido', 400);
+        }
+
+        $estado = EstadoNotificaciones::tryFrom($datos['estado']);
+        if ($estado === null) {
+            throw new Exception('El estado de la notificación no es válido', 400);
+        }
+
+        return new Notificaciones(
+            $idNotificacion,
+            $datos['titulo'],
+            $datos['descripcion'],
+            $datos['fecha_creacion'],
+            $estado,
+            $idUsuario
+        );
+    }
+
+    private function serializar(Notificaciones $notificacion): array
+    {
+        return [
+            'id_notificacion' => $notificacion->getIdNotificacion(),
+            'titulo' => $notificacion->getTitulo(),
+            'descripcion' => $notificacion->getDescripcion(),
+            'fecha_creacion' => $notificacion->getFechaCreacion(),
+            'estado' => $notificacion->getEstado()->value,
+            'id_usuario' => $notificacion->getIdUsuario(),
+        ];
+    }
+}

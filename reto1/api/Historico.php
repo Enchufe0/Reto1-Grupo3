@@ -1,46 +1,46 @@
 <?php
-require 'api.php';
-require __DIR__ . '/../controller/HistoricoController.php';
+header('Content-Type: application/json; charset=utf-8');
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Habilitar errores temporalmente para depurar si algo falla
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
+// Verificar que el usuario esté logueado (opcional, por seguridad)
+if (!isset($_SESSION['usuario_id'])) {
+    http_response_code(401);
+    echo json_encode(['error' => 'No autorizado']);
+    exit;
+}
+
+require_once __DIR__ . '/../config/conexion.php';
+require_once __DIR__ . '/../controller/HistoricoController.php';
 
 try {
-
-    checkLogin();
-
-    $httpMethod = $_SERVER['REQUEST_METHOD'];
-    if ($httpMethod !== 'GET') {
-        throw new Exception('Método HTTP no permitido. Solo se acepta GET.', 405);
-    }
-
-    $rawIdFromUrl = $_GET['id_equipamiento'] ?? null;
-    
-    if ($rawIdFromUrl === null) {
-        throw new Exception('Debes indicar un id_equipamiento en la URL', 422);
-    }
-
-    $validatedEquipmentId = filter_var($rawIdFromUrl, FILTER_VALIDATE_INT);
-    
-    if ($validatedEquipmentId === false || $validatedEquipmentId <= 0) {
-        throw new Exception('El id_equipamiento debe ser un número válido', 422);
-    }
-
     $database = new Database();
     $dbConnection = $database->getConnection();
-
-    if (!$dbConnection instanceof PDO) {
-        throw new RuntimeException('Error de conexión a la base de datos', 500);
-    }
-
-    $historicoController = new HistoricoController($dbConnection);
-
-    $historyData = $historicoController->listar($validatedEquipmentId);
     
-    json($historyData, 200);
-
-} catch (Throwable $error) {
-    $errorCode = $error->getCode();
-    if ($errorCode < 400 || $errorCode > 599) {
-        $errorCode = 500;
+    if (!$dbConnection instanceof PDO) {
+        throw new RuntimeException("Error de conexión a la base de datos", 500);
     }
 
-    json(['error' => $error->getMessage()], $errorCode);
+    $controller = new HistoricoController($dbConnection);
+    
+    // Validar que venga el ID del equipo
+    $idEquipo = isset($_GET['id_equipamiento']) ? (int)$_GET['id_equipamiento'] : 0;
+    if ($idEquipo <= 0) {
+        throw new Exception("ID de equipamiento inválido", 400);
+    }
+
+    // Obtener el historial y devolverlo como JSON
+    $historial = $controller->listar($idEquipo);
+    echo json_encode($historial);
+    exit;
+
+} catch (Throwable $e) {
+    http_response_code($e->getCode() ?: 500);
+    echo json_encode(['error' => $e->getMessage()]);
+    exit;
 }
