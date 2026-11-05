@@ -31,8 +31,8 @@ async function cargarUbicaciones() {
                         <span class="descripcion-aula">${ubicacion.descripcion}</span>
                     </span>
                     <div class="ubi-boton-editar-eliminar">
-                        <button class="ubi-boton-editar" onclick="abrirEditar(${ubicacion.id_ubicacion}, '${ubicacion.nombre}', '${ubicacion.descripcion}')">Editar</button>
-                        <button class="ubi-boton-eliminar" onclick="borrarUbicacion(${ubicacion.id_ubicacion})">Eliminar</button>
+                        <button class="ubi-boton-editar" type="button" aria-label="Editar ubicación" title="Editar ubicación" onclick="abrirEditar(${ubicacion.id_ubicacion}, '${ubicacion.nombre}', '${ubicacion.descripcion}')"><i class="fa-solid fa-pen" aria-hidden="true"></i></button>
+                        <button class="ubi-boton-eliminar" type="button" aria-label="Eliminar ubicación" title="Eliminar ubicación" onclick="borrarUbicacion(${ubicacion.id_ubicacion})"><i class="fa-regular fa-trash-can" aria-hidden="true"></i></button>
                     </div>
                 </summary>
                 <div class="contenido-desplegable" id="lista-equipos-${ubicacion.id_ubicacion}" data-cargado="false">

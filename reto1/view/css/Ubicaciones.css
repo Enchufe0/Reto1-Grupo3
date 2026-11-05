@@ -250,33 +250,35 @@ summary {
 
 /* editas los dos botones a la vez, en cuanto al fondo, el grosor... */
 .ubi-boton-editar, .ubi-boton-eliminar {
-    background: white;
-    padding: 6px 12px;
-    border-radius: 6px;
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 32px;
+    color: white;
+    border: none;
+    padding: 0;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.2s;
 }
 
 /* edtias el boton de editar */
 .ubi-boton-editar {
-    color: #d97706; 
-    border: 1px solid #fcd34d; /* Borde naranja claro */
+    background-color: #f69f3d;
 }
 .ubi-boton-editar:hover {
-    background-color: #fffbeb; 
+    background-color: #d17000;
 }
 
 /* edkitas el boton eliminar*/
 .ubi-boton-eliminar {
-    color: #ef4444; 
-    border: 1px solid #fecaca; 
+    background-color: #ff3939;
 }
 .ubi-boton-eliminar:hover {
-    background-color: #fef2f2; 
+    background-color: #ba1313;
 }
 
 /* El fondo se pone azul clarito al pasar el raton */
@@ -431,7 +433,7 @@ summary::-webkit-details-marker {
 }
 
 .ubi-btn-peligro {
-    background-color: #ef4444;
+    background-color: #ff3939;
     color: white;
     border: none;
     padding: 10px 20px;
@@ -442,21 +444,22 @@ summary::-webkit-details-marker {
 }
 
 .ubi-btn-peligro:hover {
-    background-color: #dc2626;
+    background-color: #ba1313;
 }
 
 .ubi-btn-guardar {
-    background: #0f172a; /* Azul oscuro como el boton de Añadir principal */
+    background: #0b1b42;
     color: white;
     border: none;
-    padding: 10px 20px;
-    border-radius: 6px;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 14px;
     cursor: pointer;
     font-weight: 500;
     transition: 0.2s;
 }
 .ubi-btn-guardar:hover { 
-    background: #1e293b; 
+    background: #1e293b;
 }
 
 /* LISTA DE EQUIPOS EN EL DESPLEGABLE */
@@ -501,4 +504,3 @@ summary::-webkit-details-marker {
     font-size: 14px;
     font-weight: 500;
 }
-

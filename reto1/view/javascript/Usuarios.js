@@ -35,8 +35,8 @@ async function cargarUsuarios() {
                     <p><strong>Usuario:</strong> ${usuario.nombre_usuario}</p>
                 </div>
                 <div class="tarjetaAccion">
-                    <button class="btnEditar" onclick="abrirEditar(${usuario.id_usuario}, '${usuario.nombre}', '${usuario.apellidos}', '${usuario.nombre_usuario}')">Editar</button>
-                    <button class="btnEliminar" aria-label="Borrar" onclick="borrarUsuario(${usuario.id_usuario})"></button>
+                    <button class="btnEditar" type="button" aria-label="Editar usuario" title="Editar usuario" onclick="abrirEditar(${usuario.id_usuario}, '${usuario.nombre}', '${usuario.apellidos}', '${usuario.nombre_usuario}')"><i class="fa-solid fa-pen" aria-hidden="true"></i></button>
+                    <button class="btnEliminar" type="button" aria-label="Eliminar usuario" title="Eliminar usuario" onclick="borrarUsuario(${usuario.id_usuario})"><i class="fa-regular fa-trash-can" aria-hidden="true"></i></button>
                 </div>
             `;
             contenedorTarjetas.appendChild(article);
