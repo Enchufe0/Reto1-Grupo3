@@ -26,6 +26,7 @@
     display: flex; 
     align-items: center; 
     gap: 8px; 
+
 }
 
 .stat-number { 
@@ -142,7 +143,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     cursor: pointer;
-    color: #2563eb;
+    color: #003099;
     font-weight: 500;
 }
 
@@ -205,56 +206,54 @@
     display: flex; 
     justify-content: flex-end; 
     align-items: center; 
-    gap: 8px; 
+    gap: 10px; 
 }
 
 .eq-action-btn { 
     display: inline-flex; 
     align-items: center; 
-    gap: 6px; 
-    background: white; 
-    padding: 6px 12px; 
+    justify-content: center;
+    width: 40px;
+    height: 32px;
+    padding: 0;
     border-radius: 6px; 
-    font-size: 13px; 
-    font-weight: 500; 
+    font-size: 14px; 
     cursor: pointer; 
     transition: 0.2s; 
+    border: none;
+    color: white; /* Hace los iconos blancos */
 }
 
+/* Botón Editar (Naranja) */
 .eq-btn-edit { 
-    color: #d97706; 
-    border: 1px solid #fcd34d; 
+    background-color: #f69f3d; 
 }
-
 .eq-btn-edit:hover { 
-    background: #fffbeb; 
+    background-color: #d17000; 
 }
 
+/* Botón Eliminar (Rojo) */
 .eq-btn-delete { 
-    color: #ef4444; 
-    border: 1px solid #fecaca; 
+    background-color: #ff3939; 
 }
-
 .eq-btn-delete:hover { 
-    background: #fef2f2; 
+    background-color: #ba1313; 
 }
 
+/* Botón Guardar (Verde) */
 .eq-btn-save { 
-    color: #059669; 
-    border: 1px solid #a7f3d0; 
+    background-color: #10b981; 
 }
-
 .eq-btn-save:hover { 
-    background: #ecfdf5; 
+    background-color: #059669; 
 }
 
+/* Botón Cancelar (Gris) */
 .eq-btn-cancel { 
-    color: #6b7280; 
-    border: 1px solid #d1d5db; 
+    background-color: #6b7280; 
 }
-
 .eq-btn-cancel:hover { 
-    background: #f3f4f6; 
+    background-color: #4b5563; 
 }
 
 /* =========================================
@@ -467,7 +466,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    color: #2563eb;
+    color: #1a6a0a;
     text-decoration: none;
     font-weight: 500;
     transition: 0.2s;
@@ -625,4 +624,22 @@
     background: #d1d5db;
     margin-top: 16px; /* Centra la línea con los iconos */
     min-width: 50px;
+}
+/* =========================================
+   ALTERNATE ROW COLORS (Zebra Striping)
+   ========================================= */
+
+/* Filas pares (2, 4, 6...) */
+.eq-table tbody tr:nth-child(even) {
+    background-color: #f9fafb; /* 👈 Color gris muy clarito */
+}
+
+/* Filas impares (1, 3, 5...) */
+.eq-table tbody tr:nth-child(odd) {
+    background-color: #ffffff; /* Blanco puro */
+}
+
+/* El fondo al pasar el ratón por encima (opcional, pero queda muy bien) */
+.eq-table tbody tr:hover {
+    background-color: #eff6ff; /* Azul muy clarito al pasar el ratón */
 }

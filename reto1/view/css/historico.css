@@ -76,3 +76,89 @@ tr[id^="history-row-"] {
 tr[id^="history-row-"] td {
     border-bottom: 2px solid #e5e7eb;
 }
+
+/* =========================================
+   HISTORICO PAGE DESIGN
+   ========================================= */
+/* ... (Tus estilos anteriores de horizontal-timeline, ht-node, etc.) ... */
+
+/* 👇 NUEVO BOTÓN PARA VER HISTORIAL 👇 */
+.eq-btn-history {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #eff6ff; /* Azul muy clarito */
+    color: #2563eb; /* Texto azul */
+    border: 1px solid #bfdbfe;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.eq-btn-history:hover {
+    background-color: #2563eb; /* Se vuelve azul oscuro */
+    color: white; /* El texto y el icono se vuelven blancos */
+    border-color: #2563eb;
+    box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2); /* Sombra para que resalte */
+    transform: translateY(-1px); /* Se eleva un poquito */
+}
+
+/* Estilos por si quieres mantener tu tabla rayada (opcional) */
+.eq-table tbody tr:nth-child(even) {
+    background-color: #f9fafb;
+}
+/* Efecto hover para indicar que la fila es clickeable */
+#historico-table-body tr[id^="row-"]:hover {
+    background-color: #f3f4f6 !important; /* Gris muy clarito al pasar el ratón */
+    transition: background-color 0.2s ease;
+}
+
+/* El botón dentro de la fila ya no necesita el hover de antes porque ahora hace hover la fila entera, 
+   pero le dejamos un pequeño efecto por si acaso */
+.eq-btn-history {
+    pointer-events: none; /* 👈 Esto hace que si haces clic en el botón, el clic "pase a través" y active el de la fila */
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #eff6ff;
+    color: #2563eb;
+    border: 1px solid #bfdbfe;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+}
+/* =========================================
+   ALTERNATE ROW COLORS (Para Historial)
+   ========================================= */
+
+/* Fila 1, 3, 5... (Blanco) */
+#historico-table-body tr[id^="row-"]:nth-child(4n+1) {
+    background-color: #ffffff;
+}
+
+/* Fila 2, 4, 6... (Gris muy clarito) */
+#historico-table-body tr[id^="row-"]:nth-child(4n+3) {
+    background-color: #f9fafb;
+}
+
+/* El efecto hover para que se ilumine al pasar el ratón (se mantiene) */
+#historico-table-body tr[id^="row-"]:hover {
+    background-color: #f3f4f6 !important; 
+    transition: background-color 0.2s ease;
+}
+/* =========================================
+   HIGHLIGHT ROW ON NAVIGATION
+   ========================================= */
+.row-highlight {
+    background-color: #fef08a !important; /* Amarillo suave */
+    transition: background-color 1s ease; /* Hace que el color se desvanezca suavemente */
+}
+
+/* Opcional: Para que el borde también se ilumine un poco */
+.row-highlight td {
+    border-bottom: 1px solid #fde047 !important;
+}
