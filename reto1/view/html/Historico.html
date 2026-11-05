@@ -3,14 +3,13 @@
 </div>
 
 <div class="eq-filters-bar">
-    <!-- El buscador ahora ocupa todo el ancho -->
     <div class="eq-search-box">
         <i class="fa-solid fa-magnifying-glass" style="color: #9ca3af;"></i>
         <input type="text" id="search-input" placeholder="Buscar por nombre, ID o marca...">
     </div>
 </div>
 
-<!-- 👇 LAS PESTAÑAS CON FLECHA 👇 -->
+<!--  LAS PESTAÑAS CON FLECHA -->
 <div class="eq-tabs-container">
     <div class="eq-tabs">
         <button class="eq-tab active" data-category="">Todos</button>
@@ -29,12 +28,13 @@
                 <th style="width: 60px;">ID</th>
                 <th>Nombre</th>
                 <th>Marca</th>
+                <th>Categoría</th> <!--  NUEVA COLUMNA -->
                 <th>Ubicación Actual</th>
                 <th style="text-align: right; width: 180px;">Acciones</th>
             </tr>
         </thead>
         <tbody id="historico-table-body">
-            <tr><td colspan="5" style="text-align:center; padding: 20px;">Cargando equipamientos...</td></tr>
+            <tr><td colspan="6" style="text-align:center; padding: 20px;">Cargando equipamientos...</td></tr>
         </tbody>
     </table>
 </div>
