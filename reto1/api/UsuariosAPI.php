@@ -2,10 +2,6 @@
 
 header('Content-Type: application/json; charset=utf-8');
 
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
 // Envía una respuesta JSON y establece el código de estado HTTP.
 function responderUsuarios(array $datos, int $estado = 200): void
 {
@@ -46,12 +42,6 @@ function existeUsuario(PDO $conexion, int $id): bool
     $consulta->execute(['id_usuario' => $id]);
 
     return $consulta->fetchColumn() !== false;
-}
-
-// Evita que la sesión actual modifique o elimine su propia cuenta.
-function esUsuarioDeSesion(int $id): bool
-{
-    return isset($_SESSION['usuario_id']) && (int) $_SESSION['usuario_id'] === $id;
 }
 
 // Obtiene el ID de usuario desde el parámetro de consulta o la ruta.
@@ -123,7 +113,7 @@ try {
                 }
 
                 $consulta = $conexion->prepare(
-                    'SELECT id_usuario, nombre, apellidos, nombre_usuario, rol
+                    'SELECT id_usuario, nombre, apellidos, nombre_usuario
                      FROM usuarios WHERE id_usuario = :id_usuario'
                 );
                 $consulta->execute(['id_usuario' => $id]);
@@ -139,7 +129,7 @@ try {
             }
 
             $consulta = $conexion->query(
-                'SELECT id_usuario, nombre, apellidos, nombre_usuario, rol FROM usuarios'
+                'SELECT id_usuario, nombre, apellidos, nombre_usuario FROM usuarios'
             );
             responderUsuarios($consulta->fetchAll(PDO::FETCH_ASSOC));
             break;
@@ -215,11 +205,6 @@ try {
                 break;
             }
 
-            if (esUsuarioDeSesion($id)) {
-                responderUsuarios(['error' => 'No puedes editar tu propia cuenta mientras tienes la sesión iniciada.'], 403);
-                break;
-            }
-
             $datos = leerJsonUsuarios();
             if ($datos === null) {
                 break;
@@ -281,11 +266,6 @@ try {
                 break;
             }
 
-            if (esUsuarioDeSesion($id)) {
-                responderUsuarios(['error' => 'No puedes editar tu propia cuenta mientras tienes la sesión iniciada.'], 403);
-                break;
-            }
-
             $datos = leerJsonUsuarios();
             if ($datos === null) {
                 break;
@@ -316,11 +296,6 @@ try {
             if (($ruta !== [] && (count($ruta) !== 1 || !ctype_digit($ruta[0])))
                 || $id === null || $id < 1) {
                 responderUsuarios(['error' => 'Se requiere un ID de usuario válido.'], 400);
-                break;
-            }
-
-            if (esUsuarioDeSesion($id)) {
-                responderUsuarios(['error' => 'No puedes eliminar tu propia cuenta mientras tienes la sesión iniciada.'], 403);
                 break;
             }
 

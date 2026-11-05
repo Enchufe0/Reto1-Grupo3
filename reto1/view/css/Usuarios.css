@@ -281,51 +281,55 @@ main {
 }
 
 /* El texto dentro de las tarjetas */
-.tarjetaInfo p {
+.tarjeta-info p {
     margin: 8px 0;
     font-size: 14px;
     color: #4b5563;
 }
-.tarjetaInfo strong {
+.tarjeta-info strong {
     color: #111827; /* La negrita mas oscura para que resalte */
 }
 
+/* La zona de abajo de la tarjeta con los dos botones */
+.tarjetaAccion {
+    margin-top: 20px;
+    display: flex;
+    gap: 6px;
+    border-top: 1px solid #f3f4f6; /* Rayita gris separadora */
+    padding-top: 15px;
+}
+
 /* Formato comun para los botoncitos pequeños de la tarjeta */
-.tarjetaInfo button {
+.tarjetaAccion button {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    background: white;
+    justify-content: center;
+    width: 40px;
+    height: 32px;
+    color: white;
+    border: none;
     border-radius: 6px;
-    padding: 6px 12px;
-    font-size: 13px;
+    padding: 0;
+    font-size: 14px;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s ease;
-    margin: 12px 6px 0 0;
+    transition: 0.2s;
 }
 
 /* Boton de editar */
-.tarjetaInfo .btnEditar {
-    color: #d97706;
-    border: 1px solid #fcd34d;
+.tarjetaAccion .btnEditar {
+    background-color: #f69f3d;
 }
-.tarjetaInfo .btnEditar:hover {
-    background-color: #fffbeb;
+.tarjetaAccion .btnEditar:hover {
+    background-color: #d17000;
 }
 
 /* Boton de borrar */
-.tarjetaInfo .btnEliminar {
-    color: #ef4444;
-    border: 1px solid #fecaca;
-    font-size: 0;
+.tarjetaAccion .btnEliminar {
+    background-color: #ff3939;
 }
-.tarjetaInfo .btnEliminar::before {
-    content: "Eliminar";
-    font-size: 13px;
-}
-.tarjetaInfo .btnEliminar:hover {
-    background-color: #fef2f2;
+.tarjetaAccion .btnEliminar:hover {
+    background-color: #ba1313;
 }
 
 
@@ -387,27 +391,18 @@ main {
 }
 
 .btn-eliminar-confirmar {
-    background-color: #ef4444;
+    background-color: #ff3939;
     color: white;
     border: none;
     padding: 10px 20px;
     border-radius: 6px;
     cursor: pointer;
     font-weight: 500;
+    transition: 0.2s;
 }
 
 .btn-eliminar-confirmar:hover {
-    background-color: #dc2626;
-}
-
-.btn-aviso-confirmar {
-    background-color: #111827;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 500;
+    background-color: #ba1313;
 }
 
 .popup-contenido h2 {
@@ -461,8 +456,13 @@ main {
     background-color: #0b1b42; 
     color: white;
     border: none;
-    padding: 10px 20px;
-    border-radius: 6px;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 14px;
     font-weight: 500;
     cursor: pointer;
+    transition: 0.2s;
+}
+.btn-aceptar:hover {
+    background-color: #1e293b;
 }

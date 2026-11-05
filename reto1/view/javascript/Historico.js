@@ -1,13 +1,11 @@
 let todosLosEquipos = [];
 let currentCategoryFilter = "";
 
-// Helper para quitar tildes en la búsqueda
 function normalizarTexto(texto) {
     if (!texto) return '';
     return texto.toString().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
 
-// 1. Cargar Equipos al entrar a la página
 fetch('api/Equipamiento.php')
     .then(res => res.json())
     .then(data => {
@@ -17,7 +15,6 @@ fetch('api/Equipamiento.php')
     })
     .catch(err => console.error("Error al cargar equipos:", err));
 
-// 2. Lógica de las pestañas
 document.querySelectorAll('.eq-tab').forEach(tab => {
     tab.addEventListener('click', (e) => {
         document.querySelectorAll('.eq-tab').forEach(t => t.classList.remove('active'));
@@ -27,14 +24,12 @@ document.querySelectorAll('.eq-tab').forEach(tab => {
     });
 });
 
-// 3. Dibujar la tabla principal
 function renderizarTablaHistorico() {
     const tbody = document.getElementById('historico-table-body');
     if (!tbody) return;
 
     const search = normalizarTexto(document.getElementById('search-input').value);
 
-    // Filtramos solo por búsqueda y categoría
     const filtrados = todosLosEquipos.filter(e => {
         const matchSearch = normalizarTexto(e.nombre).includes(search) || 
                             normalizarTexto(e.marca).includes(search) || 
@@ -45,7 +40,7 @@ function renderizarTablaHistorico() {
     });
 
     if (filtrados.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 20px;">No se encontraron resultados.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 20px;">No se encontraron resultados.</td></tr>';
         return;
     }
 
@@ -57,7 +52,8 @@ function renderizarTablaHistorico() {
         if (e.categoria === 'AUDIOVISUAL') icon = '<i class="fa-solid fa-video"></i>';
 
         html += `
-            <tr id="row-${e.id_equipamiento}">
+            <!-- 👇 ONCLICK MOVIDO AQUÍ Y CURSOR POINTER 👇 -->
+            <tr id="row-${e.id_equipamiento}" onclick="verHistorialExpandido(${e.id_equipamiento})" style="cursor: pointer;">
                 <td>${e.id_equipamiento}</td>
                 <td>
                     <div class="eq-item-name">
@@ -65,19 +61,21 @@ function renderizarTablaHistorico() {
                     </div>
                 </td>
                 <td>${e.marca}</td>
+                <td><span class="eq-badge">${e.categoria}</span></td>
                 <td>
                     <div class="eq-location" style="font-weight: 500; color: #111827;">
                         <i class="fa-solid fa-location-dot" style="color: #2563eb;"></i> ${e.ubicacion || 'Almacén'}
                     </div>
                 </td>
                 <td style="text-align: right;">
-                    <button class="eq-action-btn eq-btn-edit" onclick="verHistorialExpandido(${e.id_equipamiento})">
-                        <i class="fa-solid fa-route"></i> Ver más ubicaciones
+                    <!-- Botón sin onclick (solo decorativo) -->
+                    <button class="eq-btn-history">
+                        <i class="fa-solid fa-route"></i> Ver Historial
                     </button>
                 </td>
             </tr>
             <tr id="history-row-${e.id_equipamiento}" style="display: none; background: #fffdf5;">
-                <td colspan="5" id="history-content-${e.id_equipamiento}" style="padding: 20px;"></td>
+                <td colspan="6" id="history-content-${e.id_equipamiento}" style="padding: 20px;"></td>
             </tr>
         `;
     });
@@ -85,10 +83,39 @@ function renderizarTablaHistorico() {
     tbody.innerHTML = html;
 }
 
-// Añadir evento al buscador (ya no hay filtro de ubicación)
+    tbody.innerHTML = html;
+
+    // 👇 LÓGICA DE HIGHLIGHT MEJORADA 👇
+    const urlParams = new URLSearchParams(window.location.search);
+    const idToHighlight = urlParams.get('id');
+
+    if (idToHighlight) {
+        // Usamos un setTimeout para asegurarnos de que el DOM está 100% pintado
+        setTimeout(() => {
+            const rowToHighlight = document.getElementById(`row-${idToHighlight}`);
+            
+            if (rowToHighlight) {
+                console.log("✅ Fila encontrada para resaltar:", idToHighlight);
+                
+                // 1. Añadimos la clase con el color amarillo
+                rowToHighlight.classList.add('row-highlight');
+                
+                // 2. Hacemos scroll automático hasta la fila (muy útil)
+                rowToHighlight.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                
+                // 3. Quitamos el color a los 5 segundos
+                setTimeout(() => {
+                    rowToHighlight.classList.remove('row-highlight');
+                }, 5000);
+            } else {
+                console.log("❌ No se encontró la fila con ID:", idToHighlight);
+            }
+        }, 100); 
+    }
+    // 👆 FIN DEL HIGHLIGHT 👆
+
 document.getElementById('search-input').addEventListener('input', renderizarTablaHistorico);
 
-// 4. Función para desplegar la línea de tiempo
 async function verHistorialExpandido(id) {
     const historyRow = document.getElementById(`history-row-${id}`);
     const contentDiv = document.getElementById(`history-content-${id}`);
@@ -114,7 +141,6 @@ async function verHistorialExpandido(id) {
             return;
         }
 
-        // Dibujar la línea de tiempo horizontal
         let html = '<div class="horizontal-timeline">';
 
         datos.forEach((h, index) => {
