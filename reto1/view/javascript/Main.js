@@ -220,7 +220,7 @@ function renderNotificationItems(items) {
 }
 
 async function fetchNotifications() {
-    const response = await fetch('api/Notificaciones.php?mine=1');
+    const response = await fetch('api/NotificacionesAPI.php?mine=1');
     if (!response.ok) throw new Error(`No se pudieron cargar las notificaciones (${response.status}).`);
 
     const result = await response.json();
