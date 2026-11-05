@@ -24,6 +24,11 @@ async function cargarUbicaciones() {
         ubicaciones.forEach(ubicacion => {
             const details = document.createElement('details');
             details.className = 'desplegable-planta';
+            details.ontoggle = () => {
+                if (details.open) {
+                    cargarEquiposUbicacion(ubicacion.id_ubicacion);
+                }
+            };
             details.innerHTML = `
                 <summary>
                     <span class="titulo-alineado">
