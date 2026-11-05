@@ -123,7 +123,7 @@ try {
                 }
 
                 $consulta = $conexion->prepare(
-                    'SELECT id_usuario, nombre, apellidos, nombre_usuario
+                    'SELECT id_usuario, nombre, apellidos, nombre_usuario, rol
                      FROM usuarios WHERE id_usuario = :id_usuario'
                 );
                 $consulta->execute(['id_usuario' => $id]);
@@ -139,7 +139,7 @@ try {
             }
 
             $consulta = $conexion->query(
-                'SELECT id_usuario, nombre, apellidos, nombre_usuario FROM usuarios'
+                'SELECT id_usuario, nombre, apellidos, nombre_usuario, rol FROM usuarios'
             );
             responderUsuarios($consulta->fetchAll(PDO::FETCH_ASSOC));
             break;

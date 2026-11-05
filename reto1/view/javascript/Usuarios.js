@@ -35,7 +35,8 @@ async function cargarUsuarios() {
             [
                 ['Nombre:', usuario.nombre],
                 ['Apellido:', usuario.apellidos],
-                ['Usuario:', usuario.nombre_usuario]
+                ['Usuario:', usuario.nombre_usuario],
+                ['Rol:', usuario.rol]
             ].forEach(([etiqueta, valor]) => {
                 const parrafo = document.createElement('p');
                 const textoEtiqueta = document.createElement('strong');
