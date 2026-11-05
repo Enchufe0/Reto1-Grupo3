@@ -5,6 +5,7 @@
     require_once __DIR__ . '/../dao/NotificacionesDAO.php';
     require_once __DIR__ . '/../model/EstadoNotificaciones.php';
 
+    
     class NotificacionesController {
         private NotificacionesDAO $notificacionesDAO;
 

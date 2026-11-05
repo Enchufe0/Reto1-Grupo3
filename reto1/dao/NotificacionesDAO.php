@@ -3,6 +3,7 @@
 
     require_once __DIR__ . '/../model/Notificaciones.php';
     require_once __DIR__ . '/../model/EstadoNotificaciones.php';
+    
 
     class NotificacionesDAO {
         private PDO $conexion; // llave del almacen
