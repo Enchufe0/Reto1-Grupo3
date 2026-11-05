@@ -1,5 +1,5 @@
 let todosLosEquipos = [];
-let currentCategoryFilter = ""; // Track active tab
+let currentCategoryFilter = ""; 
 
 if (window.ROL === 'ADMIN') {
     const btnCreate = document.getElementById('btn-crear-equipamiento');
@@ -44,14 +44,10 @@ function actualizarEstadisticas() {
     }
 }
 
-// 👇 Tab Click Listener
 document.querySelectorAll('.eq-tab').forEach(tab => {
     tab.addEventListener('click', (e) => {
-        // Update active class
         document.querySelectorAll('.eq-tab').forEach(t => t.classList.remove('active'));
         e.target.classList.add('active');
-
-        // Update filter and render
         currentCategoryFilter = e.target.getAttribute('data-category');
         renderizarTabla();
     });
@@ -87,8 +83,8 @@ function renderizarTabla() {
     filtrados.forEach(e => {
         let btns = `<div class="eq-actions-wrapper" id="actions-${e.id_equipamiento}">`;
         if (window.ROL === 'ADMIN') {
-            btns += `<button class="eq-action-btn eq-btn-edit" onclick="toggleEdit(${e.id_equipamiento})"><i class="fa-solid fa-pen"></i> Editar</button>`;
-            btns += `<button class="eq-action-btn eq-btn-delete" onclick="borrarEquipo(${e.id_equipamiento})"><i class="fa-regular fa-trash-can"></i> Eliminar</button>`;
+            btns += `<button class="eq-action-btn eq-btn-edit" onclick="toggleEdit(${e.id_equipamiento})"><i class="fa-solid fa-pen"></i></button>`;
+            btns += `<button class="eq-action-btn eq-btn-delete" onclick="borrarEquipo(${e.id_equipamiento})"><i class="fa-regular fa-trash-can"></i></button>`;
         }
         btns += '</div>';
 
@@ -105,8 +101,13 @@ function renderizarTabla() {
                 </td>
                 <td><input type="text" id="edit-marca-${e.id_equipamiento}" class="inline-edit" value="${e.marca}" disabled></td>
                 <td><input type="text" id="edit-modelo-${e.id_equipamiento}" class="inline-edit" value="${e.modelo}" disabled></td>
+                
                 <td>
-                    <select id="edit-cat-${e.id_equipamiento}" class="inline-edit eq-badge category-select" disabled>
+                    <!-- 👇 MODO LECTURA: Span normal (Igual que Historial) 👇 -->
+                    <span class="eq-badge" id="cat-span-${e.id_equipamiento}">${e.categoria}</span>
+                    
+                    <!-- 👇 MODO EDICIÓN: Select oculto 👇 -->
+                    <select id="edit-cat-${e.id_equipamiento}" class="inline-edit eq-badge category-select" disabled style="display: none;">
                         <option value="PORTATIL" ${e.categoria === 'PORTATIL' ? 'selected' : ''}>Portátil</option>
                         <option value="SOBREMESA" ${e.categoria === 'SOBREMESA' ? 'selected' : ''}>Sobremesa</option>
                         <option value="PERIFERICO" ${e.categoria === 'PERIFERICO' ? 'selected' : ''}>Periférico</option>
@@ -114,8 +115,8 @@ function renderizarTabla() {
                         <option value="OTROS" ${e.categoria === 'OTROS' ? 'selected' : ''}>Otros</option>
                     </select>
                 </td>
+
                 <td>
-                    <!-- 👇 REDIRECT TO HISTORIAL WITH ID 👇 -->
                     <a href="index.html?page=historico&id=${e.id_equipamiento}" class="eq-location-link">
                         <i class="fa-solid fa-location-dot"></i> ${e.ubicacion || 'Almacén'}
                     </a>
@@ -137,7 +138,214 @@ function renderizarTabla() {
 document.getElementById('search-input').addEventListener('input', renderizarTabla);
 document.getElementById('filter-location').addEventListener('change', renderizarTabla);
 
+function verDescripcion(texto) {
+    document.getElementById('desc-text-content').textContent = texto;
+    document.getElementById('modal-desc').style.display = 'flex';
+}
+
+function cerrarModalDesc() {
+    document.getElementById('modal-desc').style.display = 'none';
+}
+
 // ==========================================
-// INLINE EDIT, CREATE & DELETE (Keep same as before)
+// LÓGICA DE EDICIÓN INLINE
 // ==========================================
-// ... (Paste the toggleEdit, guardarEdicion, cancelarEdicion, borrarEquipo, abrirModalCrear, etc. from your previous working code here) ...
+function toggleEdit(id) {
+    const row = document.getElementById(`row-${id}`);
+    const nombreInput = document.getElementById(`edit-nombre-${id}`);
+    const marcaInput = document.getElementById(`edit-marca-${id}`);
+    const modeloInput = document.getElementById(`edit-modelo-${id}`);
+    const catSpan = document.getElementById(`cat-span-${id}`);
+    const catSelect = document.getElementById(`edit-cat-${id}`);
+    const descDiv = document.getElementById(`desc-div-${id}`);
+    const descInput = document.getElementById(`edit-desc-${id}`);
+    const actionsWrapper = document.getElementById(`actions-${id}`);
+
+    nombreInput.disabled = false;
+    marcaInput.disabled = false;
+    modeloInput.disabled = false;
+    
+    // 👇 INTERCAMBIAMOS SPAN POR SELECT 👇
+    catSpan.style.display = 'none';
+    catSelect.style.display = 'inline-block';
+    catSelect.disabled = false;
+    
+    descDiv.style.display = 'none';
+    descInput.style.display = 'block';
+    descInput.disabled = false;
+    
+    row.classList.add('row-editing'); 
+    
+    actionsWrapper.innerHTML = `
+        <button class="eq-action-btn eq-btn-save" onclick="guardarEdicion(${id})"><i class="fa-solid fa-check"></i></button>
+        <button class="eq-action-btn eq-btn-cancel" onclick="cancelarEdicion(${id})"><i class="fa-solid fa-xmark"></i></button>
+    `;
+    
+    nombreInput.focus();
+}
+
+async function guardarEdicion(id) {
+    const row = document.getElementById(`row-${id}`);
+    const nombreInput = document.getElementById(`edit-nombre-${id}`);
+    const marcaInput = document.getElementById(`edit-marca-${id}`);
+    const modeloInput = document.getElementById(`edit-modelo-${id}`);
+    const catSpan = document.getElementById(`cat-span-${id}`);
+    const catSelect = document.getElementById(`edit-cat-${id}`);
+    const descDiv = document.getElementById(`desc-div-${id}`);
+    const descInput = document.getElementById(`edit-desc-${id}`);
+    const actionsWrapper = document.getElementById(`actions-${id}`);
+    const iconSpan = document.getElementById(`icon-${id}`);
+
+    if (nombreInput.value.trim() === '') {
+        alert("El nombre no puede estar vacío");
+        return;
+    }
+
+    actionsWrapper.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+
+    const equipoOriginal = todosLosEquipos.find(e => e.id_equipamiento == id);
+
+    const body = {
+        nombre: nombreInput.value,
+        marca: marcaInput.value,
+        modelo: modeloInput.value,
+        categoria: catSelect.value || 'OTROS',
+        descripcion: descInput.value
+    };
+
+    try {
+        const res = await fetch(`api/Equipamiento.php?id=${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        });
+
+        if (!res.ok) throw new Error("Error al guardar");
+
+        equipoOriginal.nombre = body.nombre;
+        equipoOriginal.marca = body.marca;
+        equipoOriginal.modelo = body.modelo;
+        equipoOriginal.categoria = body.categoria;
+        equipoOriginal.descripcion = body.descripcion;
+
+        nombreInput.disabled = true;
+        marcaInput.disabled = true;
+        modeloInput.disabled = true;
+        
+        // 👇 VOLVEMOS A MOSTRAR EL SPAN CON EL NUEVO TEXTO 👇
+        catSelect.style.display = 'none';
+        catSelect.disabled = true;
+        catSpan.style.display = 'inline-block';
+        catSpan.textContent = body.categoria; 
+        
+        descInput.disabled = true;
+        descInput.style.display = 'none';
+        descDiv.style.display = 'block';
+        descDiv.textContent = body.descripcion || 'Sin descripción';
+        
+        const newSafeDesc = (body.descripcion || 'Sin descripción').replace(/'/g, "\\'");
+        descDiv.setAttribute('onclick', `verDescripcion('${newSafeDesc}')`);
+
+        // Cambiamos el icono dinámicamente
+        iconSpan.innerHTML = obtenerIconoHTML(body.categoria);
+
+        row.classList.remove('row-editing'); 
+        
+        actionsWrapper.innerHTML = `
+            <button class="eq-action-btn eq-btn-edit" onclick="toggleEdit(${id})"><i class="fa-solid fa-pen"></i></button>
+            <button class="eq-action-btn eq-btn-delete" onclick="borrarEquipo(${id})"><i class="fa-regular fa-trash-can"></i></button>
+        `;
+
+    } catch (error) {
+        alert("ERROR: " + error.message);
+        cancelarEdicion(id);
+    }
+}
+
+function cancelarEdicion(id) {
+    const row = document.getElementById(`row-${id}`);
+    const nombreInput = document.getElementById(`edit-nombre-${id}`);
+    const marcaInput = document.getElementById(`edit-marca-${id}`);
+    const modeloInput = document.getElementById(`edit-modelo-${id}`);
+    const catSpan = document.getElementById(`cat-span-${id}`);
+    const catSelect = document.getElementById(`edit-cat-${id}`);
+    const descDiv = document.getElementById(`desc-div-${id}`);
+    const descInput = document.getElementById(`edit-desc-${id}`);
+    const actionsWrapper = document.getElementById(`actions-${id}`);
+
+    const equipoOriginal = todosLosEquipos.find(e => e.id_equipamiento == id);
+    
+    nombreInput.value = equipoOriginal.nombre;
+    marcaInput.value = equipoOriginal.marca;
+    modeloInput.value = equipoOriginal.modelo;
+    catSelect.value = equipoOriginal.categoria;
+    descInput.value = equipoOriginal.descripcion || '';
+
+    nombreInput.disabled = true;
+    marcaInput.disabled = true;
+    modeloInput.disabled = true;
+    
+    // 👇 RESTAURAMOS EL SPAN AL CANCELAR 👇
+    catSelect.style.display = 'none';
+    catSelect.disabled = true;
+    catSpan.style.display = 'inline-block';
+    
+    descInput.disabled = true;
+    descInput.style.display = 'none';
+    descDiv.style.display = 'block';
+
+    row.classList.remove('row-editing');
+
+    actionsWrapper.innerHTML = `
+        <button class="eq-action-btn eq-btn-edit" onclick="toggleEdit(${id})"><i class="fa-solid fa-pen"></i></button>
+        <button class="eq-action-btn eq-btn-delete" onclick="borrarEquipo(${id})"><i class="fa-regular fa-trash-can"></i></button>
+    `;
+}
+
+function borrarEquipo(id) {
+    if (!confirm('¿Seguro que quieres borrar este equipo?')) return;
+    fetch(`api/Equipamiento.php?id=${id}`, { method: 'DELETE' }).then(() => location.reload());
+}
+
+function abrirModalCrear() { document.getElementById('modal-crear').style.display = 'flex'; }
+function cerrarModalCrear() { document.getElementById('modal-crear').style.display = 'none'; }
+
+const formCrear = document.getElementById('form-crear-eq');
+if (formCrear) {
+    formCrear.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const body = {
+            nombre: document.getElementById('new-nombre').value,
+            marca: document.getElementById('new-marca').value,
+            modelo: document.getElementById('new-modelo').value,
+            descripcion: document.getElementById('new-desc').value,
+            categoria: document.getElementById('new-categoria').value
+        };
+
+        try {
+            const res = await fetch('api/Equipamiento.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+
+            if (!res.ok) {
+                const text = await res.text();
+                try {
+                    const json = JSON.parse(text);
+                    alert("❌ ERROR DEL SERVIDOR: " + json.error);
+                } catch(e) {
+                    alert("❌ ERROR GRAVE (PHP Crash): " + text.substring(0, 150));
+                }
+                return;
+            }
+
+            cerrarModalCrear();
+            location.reload();
+
+        } catch (error) {
+            alert("❌ ERROR DE CONEXIÓN: " + error.message);
+        }
+    });
+}
