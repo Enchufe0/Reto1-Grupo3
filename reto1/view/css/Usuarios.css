@@ -250,7 +250,7 @@ main {
     gap: 16px;
 }
 
-/* COLORES DE TARJETA: cambia el borde (#292929) y los background-color de cada rol. */
+/* El color de rol se aplica a la tarjeta; la franja de acciones queda blanca. */
 .tarjeta-usu {
     border: 1px solid #292929;
     border-radius: 8px;
@@ -258,12 +258,18 @@ main {
     transition: 0.2s;
 }
 
+.tarjeta-info {
+    color: inherit;
+}
+
 .tarjeta-usu.admin {
-    background-color: #eef2ff;
+    background-color: #11225b;
+    color: #ffffff;
 }
 
 .tarjeta-usu.usuario {
-    background-color: #ecfdf5;
+    background-color: #256725;
+    color: #fff5f2;
 }
 
 /* Efecto SUPER CHULI al pasar el raton: borde azulito y levita un pelin */
@@ -277,19 +283,22 @@ main {
 .tarjeta-info p {
     margin: 8px 0;
     font-size: 14px;
-    color: #4b5563;
+    color: inherit;
 }
 .tarjeta-info strong {
-    color: #111827; /* La negrita mas oscura para que resalte */
+    color: inherit;
+    margin-right: 6px;
 }
 
 /* La zona de abajo de la tarjeta con los dos botones */
 .tarjetaAccion {
-    margin-top: 20px;
+    margin: 20px -20px -20px;
     display: flex;
     gap: 6px;
-    border-top: 1px solid #f3f4f6; /* Rayita gris separadora */
-    padding-top: 15px;
+    border-top: 1px solid #292929;
+    border-radius: 0 0 7px 7px;
+    background-color: white;
+    padding: 15px 20px;
 }
 
 /* Formato comun para los botoncitos pequeños de la tarjeta */

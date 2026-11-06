@@ -444,7 +444,7 @@ body.colorblind-mode .ubi-boton-editar,
 body.colorblind-mode .btnEditar,
 body.colorblind-mode .eq-btn-edit,
 body.colorblind-mode .eq-btn-history {
-    background-color: #051BFF !important;
+    background-color: #FFCB00 !important;
     color: #FFFFFF !important;
     border: 2px solid #000000 !important;
 }
