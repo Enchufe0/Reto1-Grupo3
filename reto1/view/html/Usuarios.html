@@ -50,39 +50,14 @@
                 <input type="text" id="buscarUsuario" placeholder="Buscar usuario por nombre o ID...">
             </div>
             
-            <button class="usu-boton-añadir" id="btnAñadir">
+            <button class="usu-boton-añadir" id="btnAnadir">
                 <i class="fa-solid fa-plus"></i> Añadir Usuario
             </button>
         </div>
 
         <!-- Contenedor cuadricula para las tarjetas de usuarios -->
-        <div class="usu-contenedor-tarjetas">
+        <div class="usu-contenedor-tarjetas" id="contenedorUsuarios">
             
-            <!-- Tarjeta 1 -->
-            <article class="tarjeta-usu">
-                <div class="tarjeta-info">
-                    <p><strong>Nombre:</strong> Juan</p>
-                    <p><strong>Apellido:</strong> Pérez</p>
-                    <p><strong>Usuario:</strong> jperez</p>
-                </div>
-                <div class="tarjeta-accion">
-                    <button class="btn-editar"><i class="fa-solid fa-pen"></i> Editar</button>
-                    <button class="btn-eliminar"><i class="fa-solid fa-trash"></i> Borrar</button>
-                </div>
-            </article>
-
-            <!-- Tarjeta 2 -->
-            <article class="tarjeta-usu">
-                <div class="tarjeta-info">
-                    <p><strong>Nombre:</strong> Ana</p>
-                    <p><strong>Apellido:</strong> Pérez</p>
-                    <p><strong>Usuario:</strong> aperez</p>
-                </div>
-                <div class="tarjeta-accion">
-                    <button class="btn-editar"><i class="fa-solid fa-pen"></i> Editar</button>
-                    <button class="btn-eliminar"><i class="fa-solid fa-trash"></i> Borrar</button>
-                </div>
-            </article>
 
         </div>
     </main>
@@ -115,12 +90,27 @@
                 </div>
 
                 <div class="botones-popup">
-                    <button type="button" class="btn-cancelar" id="btnCerrarPopUp">CANCELAR</button>
-                    <button type="submit" class="btn-aceptar">ACEPTAR</button>
+                    <button type="button" class="btn-cancelar" id="btnCerrarPopUp">Cancelar</button>
+                    <button type="submit" class="btn-aceptar">Aceptar</button>
                 </div>
             </form>
         </div>
     </dialog>
+
+    <!-- Pop-up para Eliminar -->
+    <dialog id="popupEliminar" class="popup popup-eliminar">
+        <div class="popup-eliminar-contenido">
+            <h2>¿Eliminar usuario?</h2>
+            <p>¿Seguro que quieres borrar este usuario? Esta acción no se puede deshacer.</p>
+            <input type="hidden" id="eliminarUbiId">
+            <div class="popup-eliminar-acciones">
+                <button type="button" class="btn-cancelar" id="btnCancelarEliminar">Cancelar</button>
+                <button type="button" class="btn-eliminar-confirmar" id="btnConfirmarEliminar">Eliminar</button>
+            </div>
+        </div>
+    </dialog>
+
+    <script src="../javascript/Usuarios.js"></script>
 
 </body>
 </html>

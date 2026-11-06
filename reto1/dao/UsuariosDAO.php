@@ -39,7 +39,8 @@ class UsuariosDAO
                 $fila['nombre'],
                 $fila['apellidos'],
                 $fila['nombre_usuario'],
-                $fila['password_hash']
+                $fila['password_hash'],
+                $fila['rol']
             );
         }
 
@@ -65,6 +66,7 @@ class UsuariosDAO
                 $filaUsuarios->apellido,
                 $filaUsuarios->nombre_usuario,
                 $filaUsuarios->password_hash,
+                $filaUsuarios->rol
             );
             $usuarios[] = $usuario;
         }

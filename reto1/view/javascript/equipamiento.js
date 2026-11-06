@@ -1,26 +1,21 @@
 let todosLosEquipos = [];
+let currentCategoryFilter = ""; 
 
-// ============== Iconos, tildes etc..==============//
+if (window.ROL === 'ADMIN') {
+    const btnCreate = document.getElementById('btn-crear-equipamiento');
+    if (btnCreate) btnCreate.style.display = 'flex';
+}
 
-// Quitar tildes en la busqueda
 function normalizarTexto(texto) {
     if (!texto) return '';
-    return texto.toString()
-        .toLowerCase()
-        .normalize("NFD") 
-        .replace(/[\u0300-\u036f]/g, ""); // Elimina las tildes
+    return texto.toString().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
-// Obtener el icono segun la categoría
+
 function obtenerIconoHTML(categoria) {
     if (categoria === 'PORTATIL' || categoria === 'SOBREMESA') return '<i class="fa-solid fa-laptop"></i>';
     if (categoria === 'PERIFERICO') return '<i class="fa-solid fa-computer-mouse"></i>';
     if (categoria === 'AUDIOVISUAL') return '<i class="fa-solid fa-video"></i>';
     return '<i class="fa-solid fa-box"></i>';
-}
-
-if (window.ROL === 'ADMIN') {
-    const btnCreate = document.getElementById('btn-crear-equipamiento');
-    if (btnCreate) btnCreate.style.display = 'flex';
 }
 
 fetch('api/Equipamiento.php')
@@ -49,13 +44,20 @@ function actualizarEstadisticas() {
     }
 }
 
+document.querySelectorAll('.eq-tab').forEach(tab => {
+    tab.addEventListener('click', (e) => {
+        document.querySelectorAll('.eq-tab').forEach(t => t.classList.remove('active'));
+        e.target.classList.add('active');
+        currentCategoryFilter = e.target.getAttribute('data-category');
+        renderizarTabla();
+    });
+});
+
 function renderizarTabla() {
     const tbody = document.getElementById('eq-table-body');
     if (!tbody) return;
 
-    // 3. Usar el normalizador en la búsqueda
     const search = normalizarTexto(document.getElementById('search-input').value);
-    const filterCat = document.getElementById('filter-category').value;
     const filterLoc = document.getElementById('filter-location').value;
 
     const filtrados = todosLosEquipos.filter(e => {
@@ -64,7 +66,7 @@ function renderizarTabla() {
                             normalizarTexto(e.modelo).includes(search) ||
                             normalizarTexto(e.id_equipamiento).includes(search);
         
-        const matchCat = filterCat === '' || e.categoria === filterCat;
+        const matchCat = currentCategoryFilter === '' || e.categoria === currentCategoryFilter;
         const matchLoc = filterLoc === '' || e.ubicacion === filterLoc;
 
         return matchSearch && matchCat && matchLoc;
@@ -81,29 +83,31 @@ function renderizarTabla() {
     filtrados.forEach(e => {
         let btns = `<div class="eq-actions-wrapper" id="actions-${e.id_equipamiento}">`;
         if (window.ROL === 'ADMIN') {
-            btns += `<button class="eq-action-btn eq-btn-edit" onclick="toggleEdit(${e.id_equipamiento})"><i class="fa-solid fa-pen"></i> Editar</button>`;
-            btns += `<button class="eq-action-btn eq-btn-delete" onclick="borrarEquipo(${e.id_equipamiento})"><i class="fa-regular fa-trash-can"></i> Eliminar</button>`;
+            btns += `<button class="eq-action-btn eq-btn-edit" onclick="toggleEdit(${e.id_equipamiento})"><i class="fa-solid fa-pen"></i></button>`;
+            btns += `<button class="eq-action-btn eq-btn-delete" onclick="borrarEquipo(${e.id_equipamiento})"><i class="fa-regular fa-trash-can"></i></button>`;
         }
         btns += '</div>';
 
         const safeDesc = (e.descripcion || 'Sin descripción').replace(/'/g, "\\'");
         
-        // 4. Usar el helper del icono
-        const iconHTML = obtenerIconoHTML(e.categoria);
-
         html += `
             <tr id="row-${e.id_equipamiento}">
                 <td>${e.id_equipamiento}</td>
                 <td>
                     <div class="eq-item-name">
-                        <span class="eq-item-icon" id="icon-${e.id_equipamiento}">${iconHTML}</span>
+                        <span class="eq-item-icon" id="icon-${e.id_equipamiento}">${obtenerIconoHTML(e.categoria)}</span>
                         <input type="text" id="edit-nombre-${e.id_equipamiento}" class="inline-edit" value="${e.nombre}" disabled>
                     </div>
                 </td>
                 <td><input type="text" id="edit-marca-${e.id_equipamiento}" class="inline-edit" value="${e.marca}" disabled></td>
                 <td><input type="text" id="edit-modelo-${e.id_equipamiento}" class="inline-edit" value="${e.modelo}" disabled></td>
+                
                 <td>
-                    <select id="edit-cat-${e.id_equipamiento}" class="inline-edit eq-badge category-select" disabled>
+                    <!-- 👇 MODO LECTURA: Span normal (Igual que Historial) 👇 -->
+                    <span class="eq-badge" id="cat-span-${e.id_equipamiento}">${e.categoria}</span>
+                    
+                    <!-- 👇 MODO EDICIÓN: Select oculto 👇 -->
+                    <select id="edit-cat-${e.id_equipamiento}" class="inline-edit eq-badge category-select" disabled style="display: none;">
                         <option value="PORTATIL" ${e.categoria === 'PORTATIL' ? 'selected' : ''}>Portátil</option>
                         <option value="SOBREMESA" ${e.categoria === 'SOBREMESA' ? 'selected' : ''}>Sobremesa</option>
                         <option value="PERIFERICO" ${e.categoria === 'PERIFERICO' ? 'selected' : ''}>Periférico</option>
@@ -111,10 +115,11 @@ function renderizarTabla() {
                         <option value="OTROS" ${e.categoria === 'OTROS' ? 'selected' : ''}>Otros</option>
                     </select>
                 </td>
+
                 <td>
-                    <div class="eq-location">
+                    <a href="index.html?page=historico&id=${e.id_equipamiento}" class="eq-location-link">
                         <i class="fa-solid fa-location-dot"></i> ${e.ubicacion || 'Almacén'}
-                    </div>
+                    </a>
                 </td>
                 <td>
                     <div class="desc-truncate" id="desc-div-${e.id_equipamiento}" onclick="verDescripcion('${safeDesc}')">
@@ -131,12 +136,8 @@ function renderizarTabla() {
 }
 
 document.getElementById('search-input').addEventListener('input', renderizarTabla);
-document.getElementById('filter-category').addEventListener('change', renderizarTabla);
 document.getElementById('filter-location').addEventListener('change', renderizarTabla);
 
-// ==========================================
-// MODAL POPUP FOR DESCRIPTION
-// ==========================================
 function verDescripcion(texto) {
     document.getElementById('desc-text-content').textContent = texto;
     document.getElementById('modal-desc').style.display = 'flex';
@@ -147,13 +148,14 @@ function cerrarModalDesc() {
 }
 
 // ==========================================
-// INLINE EDIT LOGIC
+// LÓGICA DE EDICIÓN INLINE
 // ==========================================
 function toggleEdit(id) {
     const row = document.getElementById(`row-${id}`);
     const nombreInput = document.getElementById(`edit-nombre-${id}`);
     const marcaInput = document.getElementById(`edit-marca-${id}`);
     const modeloInput = document.getElementById(`edit-modelo-${id}`);
+    const catSpan = document.getElementById(`cat-span-${id}`);
     const catSelect = document.getElementById(`edit-cat-${id}`);
     const descDiv = document.getElementById(`desc-div-${id}`);
     const descInput = document.getElementById(`edit-desc-${id}`);
@@ -162,8 +164,11 @@ function toggleEdit(id) {
     nombreInput.disabled = false;
     marcaInput.disabled = false;
     modeloInput.disabled = false;
+    
+    // 👇 INTERCAMBIAMOS SPAN POR SELECT 👇
+    catSpan.style.display = 'none';
+    catSelect.style.display = 'inline-block';
     catSelect.disabled = false;
-    catSelect.classList.add('is-editing');
     
     descDiv.style.display = 'none';
     descInput.style.display = 'block';
@@ -172,8 +177,8 @@ function toggleEdit(id) {
     row.classList.add('row-editing'); 
     
     actionsWrapper.innerHTML = `
-        <button class="eq-action-btn eq-btn-save" onclick="guardarEdicion(${id})"><i class="fa-solid fa-check"></i> Guardar</button>
-        <button class="eq-action-btn eq-btn-cancel" onclick="cancelarEdicion(${id})"><i class="fa-solid fa-xmark"></i> Cancelar</button>
+        <button class="eq-action-btn eq-btn-save" onclick="guardarEdicion(${id})"><i class="fa-solid fa-check"></i></button>
+        <button class="eq-action-btn eq-btn-cancel" onclick="cancelarEdicion(${id})"><i class="fa-solid fa-xmark"></i></button>
     `;
     
     nombreInput.focus();
@@ -184,18 +189,19 @@ async function guardarEdicion(id) {
     const nombreInput = document.getElementById(`edit-nombre-${id}`);
     const marcaInput = document.getElementById(`edit-marca-${id}`);
     const modeloInput = document.getElementById(`edit-modelo-${id}`);
+    const catSpan = document.getElementById(`cat-span-${id}`);
     const catSelect = document.getElementById(`edit-cat-${id}`);
     const descDiv = document.getElementById(`desc-div-${id}`);
     const descInput = document.getElementById(`edit-desc-${id}`);
     const actionsWrapper = document.getElementById(`actions-${id}`);
-    const iconSpan = document.getElementById(`icon-${id}`); // 👈 Referencia al icono
+    const iconSpan = document.getElementById(`icon-${id}`);
 
     if (nombreInput.value.trim() === '') {
         alert("El nombre no puede estar vacío");
         return;
     }
 
-    actionsWrapper.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Guardando...';
+    actionsWrapper.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
 
     const equipoOriginal = todosLosEquipos.find(e => e.id_equipamiento == id);
 
@@ -216,19 +222,21 @@ async function guardarEdicion(id) {
 
         if (!res.ok) throw new Error("Error al guardar");
 
-        // Actualizar array local
         equipoOriginal.nombre = body.nombre;
         equipoOriginal.marca = body.marca;
         equipoOriginal.modelo = body.modelo;
         equipoOriginal.categoria = body.categoria;
         equipoOriginal.descripcion = body.descripcion;
 
-        // Desactivar inputs
         nombreInput.disabled = true;
         marcaInput.disabled = true;
         modeloInput.disabled = true;
+        
+        // 👇 VOLVEMOS A MOSTRAR EL SPAN CON EL NUEVO TEXTO 👇
+        catSelect.style.display = 'none';
         catSelect.disabled = true;
-        catSelect.classList.remove('is-editing');
+        catSpan.style.display = 'inline-block';
+        catSpan.textContent = body.categoria; 
         
         descInput.disabled = true;
         descInput.style.display = 'none';
@@ -238,14 +246,14 @@ async function guardarEdicion(id) {
         const newSafeDesc = (body.descripcion || 'Sin descripción').replace(/'/g, "\\'");
         descDiv.setAttribute('onclick', `verDescripcion('${newSafeDesc}')`);
 
-        // 👇 5. CAMBIAR EL ICONO DINÁMICAMENTE 👇
+        // Cambiamos el icono dinámicamente
         iconSpan.innerHTML = obtenerIconoHTML(body.categoria);
 
         row.classList.remove('row-editing'); 
         
         actionsWrapper.innerHTML = `
-            <button class="eq-action-btn eq-btn-edit" onclick="toggleEdit(${id})"><i class="fa-solid fa-pen"></i> Editar</button>
-            <button class="eq-action-btn eq-btn-delete" onclick="borrarEquipo(${id})"><i class="fa-regular fa-trash-can"></i> Eliminar</button>
+            <button class="eq-action-btn eq-btn-edit" onclick="toggleEdit(${id})"><i class="fa-solid fa-pen"></i></button>
+            <button class="eq-action-btn eq-btn-delete" onclick="borrarEquipo(${id})"><i class="fa-regular fa-trash-can"></i></button>
         `;
 
     } catch (error) {
@@ -259,6 +267,7 @@ function cancelarEdicion(id) {
     const nombreInput = document.getElementById(`edit-nombre-${id}`);
     const marcaInput = document.getElementById(`edit-marca-${id}`);
     const modeloInput = document.getElementById(`edit-modelo-${id}`);
+    const catSpan = document.getElementById(`cat-span-${id}`);
     const catSelect = document.getElementById(`edit-cat-${id}`);
     const descDiv = document.getElementById(`desc-div-${id}`);
     const descInput = document.getElementById(`edit-desc-${id}`);
@@ -275,8 +284,11 @@ function cancelarEdicion(id) {
     nombreInput.disabled = true;
     marcaInput.disabled = true;
     modeloInput.disabled = true;
+    
+    // 👇 RESTAURAMOS EL SPAN AL CANCELAR 👇
+    catSelect.style.display = 'none';
     catSelect.disabled = true;
-    catSelect.classList.remove('is-editing');
+    catSpan.style.display = 'inline-block';
     
     descInput.disabled = true;
     descInput.style.display = 'none';
@@ -285,14 +297,11 @@ function cancelarEdicion(id) {
     row.classList.remove('row-editing');
 
     actionsWrapper.innerHTML = `
-        <button class="eq-action-btn eq-btn-edit" onclick="toggleEdit(${id})"><i class="fa-solid fa-pen"></i> Editar</button>
-        <button class="eq-action-btn eq-btn-delete" onclick="borrarEquipo(${id})"><i class="fa-regular fa-trash-can"></i> Eliminar</button>
+        <button class="eq-action-btn eq-btn-edit" onclick="toggleEdit(${id})"><i class="fa-solid fa-pen"></i></button>
+        <button class="eq-action-btn eq-btn-delete" onclick="borrarEquipo(${id})"><i class="fa-regular fa-trash-can"></i></button>
     `;
 }
 
-// ==========================================
-// CREATE & DELETE LOGIC
-// ==========================================
 function borrarEquipo(id) {
     if (!confirm('¿Seguro que quieres borrar este equipo?')) return;
     fetch(`api/Equipamiento.php?id=${id}`, { method: 'DELETE' }).then(() => location.reload());

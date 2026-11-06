@@ -42,121 +42,64 @@
             </div>
         </div>
 
-        <!-- Buscador y botón de añadir -->
+        <!-- Buscador y boton de añadir -->
         <div class="ubi-filtro-buscador">
             <div class="ubi-buscador">
                 <i class="fa-solid fa-magnifying-glass"></i>
                 <input type="text" id="buscarUbicacion" placeholder="Buscar aula o espacio...">
             </div>
             
-            <button class="ubi-boton-añadir" id="btnAñadir">
-                <i class="fa-solid fa-plus"></i> Añadir Ubicación
+            <button class="ubi-boton-añadir" id="btnAnadir">
+                Añadir Ubicación
+                <i class="fa-solid fa-plus"></i> 
             </button>
         </div>
 
         <!-- Contenedor blanco para las ubicaciones -->
-        <div class="ubi-contenedor-tabla">
-            
-            <details class="desplegable-planta">
-                <summary>
-                    <span class="titulo-alineado">
-                        <span class="nombre-aula">Almacén |</span>
-                        <span class="descripcion-aula">Ubicación inicial de todos los equipamientos</span>
-                    </span>
-                </summary>
-                <div class="contenido-desplegable">
-                    <a href="#" class="item-equipo">PC-01 (Profesor)</a>
-                    <a href="#" class="item-equipo">Proyector Epson</a>
-                    <a href="#" class="item-equipo">Switch 24 puertos</a>
-                </div>
-            </details>
-
-            <details class="desplegable-planta">
-                <summary>
-                    <span class="titulo-alineado">
-                        <span class="nombre-aula">Aula 101 |</span>
-                        <span class="descripcion-aula">Aula de informatica de primer curso</span>
-                    </span>
-                </summary>
-                <div class="contenido-desplegable">
-                    <span class="item-equipo">Sin equipos registrados</span>
-                </div>
-            </details>
-
-            <details class="desplegable-planta">
-                <summary>
-                    <span class="titulo-alineado">
-                        <span class="nombre-aula">Aula 102 |</span>
-                        <span class="descripcion-aula">Aula de informatica de segundo curso</span>
-                    </span>
-                </summary>
-                <div class="contenido-desplegable">
-                    <span class="item-equipo">Sin equipos registrados</span>
-                </div>
-            </details>
-
-            <details class="desplegable-planta">
-                <summary>
-                    <span class="titulo-alineado">
-                        <span class="nombre-aula">Aula 103 |</span>
-                        <span class="descripcion-aula">Aula de informatica para proyectos</span>
-                    </span>
-                </summary>
-                <div class="contenido-desplegable">
-                    <span class="item-equipo">Sin equipos registrados</span>
-                </div>
-            </details>
-
-            <details class="desplegable-planta">
-                <summary>
-                    <span class="titulo-alineado">
-                        <span class="nombre-aula">Sala Profesores |</span>
-                        <span class="descripcion-aula">Sala destinada al personal docente</span>
-                    </span>
-                </summary>
-                <div class="contenido-desplegable">
-                    <span class="item-equipo">Sin equipos registrados</span>
-                </div>
-            </details>
-
-            <details class="desplegable-planta">
-                <summary>
-                    <span class="titulo-alineado">
-                        <span class="nombre-aula">Despacho Dirección |</span>
-                        <span class="descripcion-aula">Despacho dirección</span>
-                    </span>
-                </summary>
-                <div class="contenido-desplegable">
-                    <span class="item-equipo">Sin equipos registrados</span>
-                </div>
-            </details>
-
-            <details class="desplegable-planta">
-                <summary>
-                    <span class="titulo-alineado">
-                        <span class="nombre-aula">Laboratorio |</span>
-                        <span class="descripcion-aula">Laboratorio de pruebas y sistemas</span>
-                    </span>
-                </summary>
-                <div class="contenido-desplegable">
-                    <span class="item-equipo">Sin equipos registrados</span>
-                </div>
-            </details>
-
-            <details class="desplegable-planta">
-                <summary>
-                    <span class="titulo-alineado">
-                        <span class="nombre-aula">Salón de Actos |</span>
-                        <span class="descripcion-aula">Espacio para presentación y eventos</span>
-                    </span>
-                </summary>
-                <div class="contenido-desplegable">
-                    <span class="item-equipo">Sin equipos registrados</span>
-                </div>
-            </details>
-
+        <div class="ubi-contenedor-tabla" id="contenedorUbicaciones">
+            <!--Aqui se meten las ubicaciones-->
         </div>
+
     </main>
 
+    <!-- POP UP UNIFICADO PARA AÑADIR/EDITAR -->
+    <dialog id="popupUbicacion" class="ubi-modal">
+        <div class="ubi-modal-contenido">
+            <h3 id="popupTitulo">Nueva Ubicación</h3>
+            <form id="formularioUbicacion">
+                <input type="hidden" id="ubiId">
+                
+                <div class="ubi-form-grupo">
+                    <label for="nombre">Nombre</label>
+                    <input type="text" id="nombre" required>
+                </div>
+                
+                <div class="ubi-form-grupo">
+                    <label for="descripcion">Descripción</label>
+                    <input type="text" id="descripcion" required>
+                </div>
+
+                <div class="ubi-modal-acciones">
+                    <button type="button" class="ubi-btn-cancelar" id="btnCancelarUbicacion">Cancelar</button>
+                    <button type="submit" class="ubi-btn-guardar">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+    <!-- Pop-up para Eliminar -->
+    <dialog id="popupEliminar" class="ubi-modal">
+        <div class="ubi-modal-contenido">
+            <h3>¿Eliminar Ubicación?</h3>
+            <p class="ubi-texto-eliminar">¿Estás seguro de que quieres borrar esta ubicación? Esta acción no se puede deshacer.</p>
+            <input type="hidden" id="eliminarUbiId">
+            <div class="ubi-modal-acciones">
+                <button type="button" class="ubi-btn-cancelar" id="btnCancelarEliminar">Cancelar</button>
+                <button type="button" class="ubi-btn-peligro" id="btnConfirmarEliminar">Eliminar</button>
+            </div>
+        </div>
+    </dialog>
+
+    <script src="../javascript/Ubicaciones.js"></script>
 </body>
 </html>

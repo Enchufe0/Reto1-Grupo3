@@ -3,6 +3,9 @@
     use enumNotificaciones\EstadoNotificaciones; 
 
     header('Content-Type: application/json; charset=utf-8');
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
 
     require_once __DIR__ . '/../model/Notificaciones.php';
     require_once __DIR__ . '/../dao/NotificacionesDAO.php';
@@ -26,7 +29,29 @@
 
         //CASO 1. GET
         case 'GET':
-            if (isset($_GET['id'])){
+            if (isset($_GET['mine'])) {
+                if (!isset($_SESSION['usuario_id'])) {
+                    http_response_code(401);
+                    echo json_encode(["error" => "Es necesario iniciar sesión"]);
+                    break;
+                }
+
+                $listaNotificaciones = $notificacionesDAO->obtenerPorUsuario((int) $_SESSION['usuario_id']);
+                $resultado = [];
+                foreach ($listaNotificaciones as $notificacion) {
+                    $resultado[] = [
+                        'id_notificacion' => $notificacion->getIdNotificacion(),
+                        'titulo' => $notificacion->getTitulo(),
+                        'descripcion' => $notificacion->getDescripcion(),
+                        'fecha_creacion' => $notificacion->getFechaCreacion(),
+                        'estado' => $notificacion->getEstado()->value,
+                        'id_usuario' => $notificacion->getIdUsuario()
+                    ];
+                }
+
+                http_response_code(200);
+                echo json_encode($resultado, JSON_UNESCAPED_UNICODE);
+            } elseif (isset($_GET['id'])){
                 $id = intval($_GET['id']);
                 $notificacion = $notificacionesDAO->obtenerPorId($id);
 
