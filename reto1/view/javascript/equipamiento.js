@@ -103,10 +103,8 @@ function renderizarTabla() {
                 <td><input type="text" id="edit-modelo-${e.id_equipamiento}" class="inline-edit" value="${e.modelo}" disabled></td>
                 
                 <td>
-                    <!-- 👇 MODO LECTURA: Span normal (Igual que Historial) 👇 -->
                     <span class="eq-badge" id="cat-span-${e.id_equipamiento}">${e.categoria}</span>
                     
-                    <!-- 👇 MODO EDICIÓN: Select oculto 👇 -->
                     <select id="edit-cat-${e.id_equipamiento}" class="inline-edit eq-badge category-select" disabled style="display: none;">
                         <option value="PORTATIL" ${e.categoria === 'PORTATIL' ? 'selected' : ''}>Portátil</option>
                         <option value="SOBREMESA" ${e.categoria === 'SOBREMESA' ? 'selected' : ''}>Sobremesa</option>
@@ -165,7 +163,6 @@ function toggleEdit(id) {
     marcaInput.disabled = false;
     modeloInput.disabled = false;
     
-    // 👇 INTERCAMBIAMOS SPAN POR SELECT 👇
     catSpan.style.display = 'none';
     catSelect.style.display = 'inline-block';
     catSelect.disabled = false;
@@ -232,7 +229,6 @@ async function guardarEdicion(id) {
         marcaInput.disabled = true;
         modeloInput.disabled = true;
         
-        // 👇 VOLVEMOS A MOSTRAR EL SPAN CON EL NUEVO TEXTO 👇
         catSelect.style.display = 'none';
         catSelect.disabled = true;
         catSpan.style.display = 'inline-block';
@@ -246,7 +242,6 @@ async function guardarEdicion(id) {
         const newSafeDesc = (body.descripcion || 'Sin descripción').replace(/'/g, "\\'");
         descDiv.setAttribute('onclick', `verDescripcion('${newSafeDesc}')`);
 
-        // Cambiamos el icono dinámicamente
         iconSpan.innerHTML = obtenerIconoHTML(body.categoria);
 
         row.classList.remove('row-editing'); 
@@ -285,7 +280,6 @@ function cancelarEdicion(id) {
     marcaInput.disabled = true;
     modeloInput.disabled = true;
     
-    // 👇 RESTAURAMOS EL SPAN AL CANCELAR 👇
     catSelect.style.display = 'none';
     catSelect.disabled = true;
     catSpan.style.display = 'inline-block';
@@ -302,14 +296,48 @@ function cancelarEdicion(id) {
     `;
 }
 
+// ==========================================
+// LÓGICA PARA ELIMINAR (CON POPUP)
+// ==========================================
 function borrarEquipo(id) {
-    if (!confirm('¿Seguro que quieres borrar este equipo?')) return;
-    fetch(`api/Equipamiento.php?id=${id}`, { method: 'DELETE' }).then(() => location.reload());
+    document.getElementById('delete-id-eq').value = id;
+    document.getElementById('modal-eliminar-eq').style.display = 'flex';
 }
 
-function abrirModalCrear() { document.getElementById('modal-crear').style.display = 'flex'; }
-function cerrarModalCrear() { document.getElementById('modal-crear').style.display = 'none'; }
+function cerrarModalEliminar() {
+    document.getElementById('modal-eliminar-eq').style.display = 'none';
+}
 
+function confirmarEliminar() {
+    const id = document.getElementById('delete-id-eq').value;
+    
+    fetch(`api/Equipamiento.php?id=${id}`, { method: 'DELETE' })
+        .then(res => {
+            if (res.ok) {
+                cerrarModalEliminar();
+                location.reload(); 
+            } else {
+                alert("Error al intentar eliminar el equipo.");
+            }
+        })
+        .catch(err => {
+            console.error("Error de conexión:", err);
+            alert("Error de conexión con el servidor.");
+        });
+}
+
+// ==========================================
+// LÓGICA PARA CREAR
+// ==========================================
+function abrirModalCrear() { 
+    document.getElementById('modal-crear').showModal(); // 👈 Abre el dialog nativo
+}
+
+function cerrarModalCrear() { 
+    document.getElementById('modal-crear').close();     // 👈 Cierra el dialog nativo
+}
+
+// El submit se queda igual
 const formCrear = document.getElementById('form-crear-eq');
 if (formCrear) {
     formCrear.addEventListener('submit', async (e) => {

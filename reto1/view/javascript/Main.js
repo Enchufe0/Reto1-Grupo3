@@ -16,6 +16,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     const urlParams = new URLSearchParams(window.location.search);
     let page = urlParams.get('page') || 'login';
 
+    // --- COLORBLIND MODE INITIALIZATION ---
+    // Check if user had colorblind mode enabled previously
+    const isColorblind = localStorage.getItem('modoDaltonismo') === 'true';
+    if (isColorblind) {
+        document.body.classList.add('colorblind-mode');
+        const switchEl = document.getElementById('colorblindSwitch');
+        if (switchEl) switchEl.classList.add('active');
+    }
+
     try {
         // Check session with the API
         const res = await fetch('api/Login.php', { method: 'GET' });
@@ -34,6 +43,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             const user = sessionData.usuario;
             window.ROL = user.rol; 
             window.USUARIO_ID = user.id_usuario;
+            window.USUARIO_DATA = user; // 👈 Guardamos los datos para el Perfil
 
             if (page === 'login') {
                 window.location.href = 'index.html?page=equipamientos';
@@ -170,29 +180,86 @@ function loadPageJS(jsFileName) {
 }
 
 /* =========================================
-   5. NAVBAR UTILITIES
+   5. NAVBAR UTILITIES & USER SETTINGS
    ========================================= */
 function toggleDropdown(event) {
     event.stopPropagation();
     document.getElementById('adminMenu').classList.toggle('show');
 }
 
-window.onclick = function(event) {
+// --- PERFIL ---
+async function abrirPerfil(event) {
+    if (event) event.stopPropagation();
     const menu = document.getElementById('adminMenu');
-    if (menu && menu.classList.contains('show')) menu.classList.remove('show');
-    
-    const notificationMenu = document.getElementById('notificationMenu');
-    if (notificationMenu && notificationMenu.classList.contains('show')) {
-        notificationMenu.classList.remove('show');
-        document.getElementById('notificationToggle').setAttribute('aria-expanded', 'false');
+    if (menu) menu.classList.remove('show');
+
+    const modal = document.getElementById('perfilModal');
+    document.getElementById('perfil-nombre').textContent = 'Cargando...';
+    document.getElementById('perfil-apellidos').textContent = '...';
+    document.getElementById('perfil-usuario').textContent = '...';
+    document.getElementById('perfil-rol').textContent = '...';
+    modal.showModal();
+
+    try {
+        const res = await fetch('api/Perfil.php');
+        
+        // Si el servidor da error, leemos el texto para ver qué pasó
+        if (!res.ok) {
+            const text = await res.text();
+            console.error("Error del servidor:", text);
+            throw new Error("El servidor falló.");
+        }
+
+        const user = await res.json();
+
+        document.getElementById('perfil-nombre').textContent = user.nombre || 'N/A';
+        document.getElementById('perfil-apellidos').textContent = user.apellidos || 'N/A';
+        document.getElementById('perfil-usuario').textContent = user.nombre_usuario || 'N/A';
+        document.getElementById('perfil-rol').textContent = user.rol || 'N/A';
+        
+        const iniciales = (user.nombre || 'U').substring(0, 2).toUpperCase();
+        document.getElementById('perfil-avatar').textContent = iniciales;
+
+    } catch (error) {
+        console.error("Error en fetch:", error);
+        alert("No se pudieron cargar los datos. Revisa la consola (F12).");
+        cerrarPerfil();
     }
 }
-
-async function logout() {
-    await fetch('api/Login.php', { method: 'DELETE' });
-    window.location.href = 'index.html?page=login';
+function cerrarPerfil() {
+    const modal = document.getElementById('perfilModal');
+    if (modal && typeof modal.close === 'function') {
+        modal.close();
+    }
+}
+// --- MODO DALTONISMO (Encender / Apagar) ---
+function toggleColorblind(event) {
+    if (event) event.stopPropagation();
+    
+    const body = document.body;
+    const switchEl = document.getElementById('colorblindSwitch');
+    
+    // 1. Alternar la clase en el body (añadir o quitar)
+    body.classList.toggle('colorblind-mode');
+    
+    // 2. Mover el interruptor visualmente
+    switchEl.classList.toggle('active');
+    
+    // 3. Guardar la preferencia en el navegador
+    const isColorblind = body.classList.contains('colorblind-mode');
+    localStorage.setItem('modoDaltonismo', isColorblind);
 }
 
+// --- COMPROBAR ESTADO AL CARGAR LA PÁGINA ---
+document.addEventListener("DOMContentLoaded", () => {
+    // Si el usuario lo había activado antes, se enciende
+    const isColorblind = localStorage.getItem('modoDaltonismo') === 'true';
+    if (isColorblind) {
+        document.body.classList.add('colorblind-mode');
+        const switchEl = document.getElementById('colorblindSwitch');
+        if (switchEl) switchEl.classList.add('active');
+    }
+});
 /* =========================================
    6. NOTIFICATIONS SYSTEM
    ========================================= */
@@ -310,3 +377,51 @@ async function toggleNotifications(event) {
         list.appendChild(message);
     }
 }
+// Cerrar el modal de perfil si se hace clic fuera de la caja blanca
+document.addEventListener("DOMContentLoaded", () => {
+    const modal = document.getElementById('perfilModal');
+    if (modal) {
+        modal.addEventListener("click", (e) => {
+            const rect = modal.getBoundingClientRect();
+            const isInDialog = (
+                e.clientX >= rect.left &&
+                e.clientX <= rect.right &&
+                e.clientY >= rect.top &&
+                e.clientY <= rect.bottom
+            );
+            if (!isInDialog) {
+                modal.close();
+            }
+        });
+    }
+});
+
+/* =========================================
+   MODO DALTONISMO
+   ========================================= */
+function toggleColorblind(event) {
+    if (event) event.stopPropagation(); // Evita que el menú se cierre de golpe
+    
+    const body = document.body;
+    const switchEl = document.getElementById('colorblindSwitch');
+    
+    // 1. Alternar la clase en el body (añade o quita los colores)
+    body.classList.toggle('colorblind-mode');
+    
+    // 2. Mover el interruptor visualmente
+    switchEl.classList.toggle('active');
+    
+    // 3. Guardar la preferencia en el navegador
+    const isColorblind = body.classList.contains('colorblind-mode');
+    localStorage.setItem('modoDaltonismo', isColorblind);
+}
+
+// Al cargar la página, comprobar si el usuario ya lo tenía activado
+document.addEventListener("DOMContentLoaded", () => {
+    const isColorblind = localStorage.getItem('modoDaltonismo') === 'true';
+    if (isColorblind) {
+        document.body.classList.add('colorblind-mode');
+        const switchEl = document.getElementById('colorblindSwitch');
+        if (switchEl) switchEl.classList.add('active');
+    }
+});

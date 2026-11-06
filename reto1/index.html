@@ -72,16 +72,36 @@
             <!--AVATAR-->
             <div class="user-avatar" id="nav-avatar">AD</div>
 
-            <!--MENU (ESPERA QUE TERMINE)-->
+            <!--MENU-->
+                        <!--MENU (ESPERA QUE TERMINE)-->
             <div class="dropdown-container">
                 <div class="admin-dropdown" onclick="toggleDropdown(event)">
-                    <span id="nav-username">Administración</span> <i class="fa-solid fa-chevron-down" style="font-size: 10px; color: #6b7280; margin-left: 5px;"></i>
+                    <span id="nav-username">Administración</span> 
+                    <i class="fa-solid fa-chevron-down" style="font-size: 10px; color: #6b7280; margin-left: 5px;"></i>
                 </div>
+                
+                <!-- AQUÍ ESTÁ EL MENÚ -->
                 <div class="dropdown-menu" id="adminMenu">
-                    <a class="dropdown-item" onclick="logout()">Salir</a>
+                    <!-- Opción: Perfil -->
+                    <a class="dropdown-item" onclick="abrirPerfil(event)" style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                        <i class="fa-solid fa-user"></i> Mi Perfil
+                    </a>
+                    
+                    <!-- Opción: Daltonismo -->
+                    <!-- Opción: Daltonismo -->
+<div class="dropdown-item" onclick="toggleColorblind(event)" style="display: flex; justify-content: space-between; align-items: center; cursor: pointer; gap: 20px; padding-right: 20px;">
+    <span>Daltonismo</span>
+    <div class="toggle-switch" id="colorblindSwitch"></div>
+</div>
+                    
+                    <div style="border-top: 1px solid #e5e7eb; margin: 5px 0;"></div>
+                    
+                    <!-- Opción: Salir -->
+                    <a class="dropdown-item" onclick="logout()" style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                        <i class="fa-solid fa-right-from-bracket"></i> Salir
+                    </a>
                 </div>
             </div>
-        </div>
         <!-----NOTIF, AVATAR, MENU---->
     </nav>
 
@@ -94,6 +114,43 @@
     <footer id="main-footer">
         &copy; 2026 Reto 2DAW - Ordenza. Todos los derechos reservados.
     </footer>
+
+        <!-- 👇 NUEVO MODAL DE PERFIL 👇 -->
+    <dialog id="perfilModal" class="perfil-modal">
+        <div class="perfil-modal-content">
+            
+            <div class="perfil-header">
+                <!-- Avatar con las iniciales -->
+                <div class="perfil-avatar-icon" id="perfil-avatar">AD</div>
+                <h3>Mi Perfil</h3>
+                <p class="perfil-subtitle">Información de la cuenta</p>
+            </div>
+            
+            <div class="perfil-body">
+                <div class="perfil-row">
+                    <span class="perfil-label"><i class="fa-solid fa-user"></i> Nombre</span>
+                    <span class="perfil-value" id="perfil-nombre">-</span>
+                </div>
+                <div class="perfil-row">
+                    <span class="perfil-label"><i class="fa-solid fa-signature"></i> Apellidos</span>
+                    <span class="perfil-value" id="perfil-apellidos">-</span>
+                </div>
+                <div class="perfil-row">
+                    <span class="perfil-label"><i class="fa-solid fa-at"></i> Usuario</span>
+                    <span class="perfil-value" id="perfil-usuario">-</span>
+                </div>
+                <div class="perfil-row">
+                    <span class="perfil-label"><i class="fa-solid fa-shield-halved"></i> Rol</span>
+                    <span class="perfil-value" id="perfil-rol" style="font-weight: bold; color: #2563eb;">-</span>
+                </div>
+            </div>
+            
+                        <div class="perfil-footer">
+                <!-- 👇 Cambiado el texto a "Cerrar" 👇 -->
+                <button type="button" class="perfil-btn-cerrar" onclick="cerrarPerfil()">Cerrar</button>
+            </div>
+        </div>
+    </dialog>
 
     <!--MAIN DE JS DONDE ESTAN LOS HTML-->
     <script src="view/javascript/Main.js"></script>
