@@ -67,6 +67,14 @@ document.addEventListener("DOMContentLoaded", async () => {
                 document.getElementById('nav-usuarios').style.display = 'block';
             }
 
+            const notificationToggle = document.getElementById('notificationToggle');
+            notificationToggle.classList.toggle('is-current', page === 'notificaciones');
+            if (page === 'notificaciones') {
+                notificationToggle.setAttribute('aria-current', 'page');
+            } else {
+                notificationToggle.removeAttribute('aria-current');
+            }
+
             initializeNotificationDropdown(user.id_usuario);
 
             // Highlight the active tab
@@ -312,7 +320,7 @@ function renderNotificationItems(items) {
 }
 
 async function fetchNotifications() {
-    const response = await fetch('api/Notificaciones.php?mine=1');
+    const response = await fetch('api/NotificacionesAPI.php?mine=1');
     if (!response.ok) throw new Error(`No se pudieron cargar las notificaciones (${response.status}).`);
 
     const result = await response.json();

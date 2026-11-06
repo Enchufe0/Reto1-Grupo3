@@ -19,7 +19,6 @@
         <!-- Titulo de la seccion -->
         <div class="header-usu">
             <h1 class="titulo-usu">Gestión de Usuarios</h1>
-            <p class="subtitulo-usu">Consulta y organiza los usuarios del sistema</p>
         </div>
 
         <!-- Tarjetas de estadísticas -->
@@ -35,12 +34,6 @@
                 <span class="estadistica-numero">3</span> 
                 <span class="estadistica-barra">administradores</span>
             </div>
-            <div class="usu-estadisticas-division"></div>
-            <div class="usu-estadisticas">
-                <i class="fa-solid fa-user-plus"></i>
-                <span class="estadistica-numero">5</span> 
-                <span class="estadistica-barra">nuevos este mes</span>
-            </div>
         </div>
 
         <!-- Buscador y botón de añadir -->
@@ -55,10 +48,16 @@
             </button>
         </div>
 
-        <!-- Contenedor cuadricula para las tarjetas de usuarios -->
-        <div class="usu-contenedor-tarjetas" id="contenedorUsuarios">
-            
-
+        <!-- Usuarios agrupados por rol -->
+        <div class="usu-grupos">
+            <section class="usu-grupo">
+                <h2 class="usu-grupo-titulo">Administradores</h2>
+                <div class="usu-contenedor-tarjetas" id="contenedorAdmins"></div>
+            </section>
+            <section class="usu-grupo">
+                <h2 class="usu-grupo-titulo">Usuarios</h2>
+                <div class="usu-contenedor-tarjetas" id="contenedorUsuarios"></div>
+            </section>
         </div>
     </main>
 
@@ -102,10 +101,20 @@
         <div class="popup-eliminar-contenido">
             <h2>¿Eliminar usuario?</h2>
             <p>¿Seguro que quieres borrar este usuario? Esta acción no se puede deshacer.</p>
-            <input type="hidden" id="eliminarUbiId">
+            <input type="hidden" id="eliminarUsuId">
             <div class="popup-eliminar-acciones">
                 <button type="button" class="btn-cancelar" id="btnCancelarEliminar">Cancelar</button>
                 <button type="button" class="btn-eliminar-confirmar" id="btnConfirmarEliminar">Eliminar</button>
+            </div>
+        </div>
+    </dialog>
+
+    <dialog id="popupAvisoCuenta" class="popup popup-eliminar">
+        <div class="popup-eliminar-contenido">
+            <h2>Acción no permitida</h2>
+            <p id="mensajeAvisoCuenta"></p>
+            <div class="popup-eliminar-acciones">
+                <button type="button" class="btn-cancelar" id="btnCerrarAvisoCuenta">Cerrar</button>
             </div>
         </div>
     </dialog>

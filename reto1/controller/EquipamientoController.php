@@ -15,6 +15,12 @@ class EquipamientoController {
         return array_map([$this, 'normalizarEquipo'], $this->dao->listar());
     }
 
+    // --- AÑADIDO PARA FILTRAR POR UBICACION ADRIAN ---
+    public function listarPorUbicacion(int $idUbicacion): array {
+        return array_map([$this, 'normalizarEquipo'], $this->dao->listarPorUbicacion($idUbicacion));
+    }
+    // ------------------------------------------
+
     public function crear($datos): bool {
         if (!is_array($datos)) {
             throw new Exception('Los datos no son válidos', 400);
