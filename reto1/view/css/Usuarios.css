@@ -29,39 +29,6 @@ main {
    BARRA DE NAVEGACION SUPERIOR 
    ------------------------------- */
 
-/* La barra de arriba del todo, se queda pegada al techo al bajar con el raton */
-.top-navbar { 
-    background-color: #fff2b3; 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    height: 84px; 
-    padding: 0 40px; 
-    position: sticky; 
-    top: 0; 
-    z-index: 1000; 
-}
-
-/* Mete los enlaces del menu en una fila */
-.nav-tabs { 
-    display: flex; 
-    gap: 8px; 
-    align-items: center; 
-    flex: 1; 
-}
-
-/* El aspecto normal de los botones del menu */
-.nav-tabs a { 
-    text-decoration: none; 
-    color: #4b5563; 
-    font-weight: 500; 
-    font-size: 14px; 
-    padding: 10px 20px; 
-    border-radius: 20px; 
-    transition: 0.2s; 
-    background-color: #efece3; 
-}
-
 /* Hover del raton en los links */
 .nav-tabs a:hover { 
     background-color: #e5e1d5; 
@@ -147,13 +114,6 @@ main {
     letter-spacing: -0.5px; 
 }
 
-/* Estilo del texto pequeño bajo el titulo principal */
-.subtitulo-usu {
-    color: #6b7280; 
-    margin-top: 8px; 
-    font-size: 15px;
-}
-
 /* La fila donde van las tres estadisticas */
 .usu-barra-estadisticas { 
     display: flex; 
@@ -198,7 +158,7 @@ main {
 .usu-filtro-buscador { 
     display: flex; 
     gap: 12px; 
-    margin-bottom: 24px; 
+    margin-bottom: 48px;
     align-items: center; 
     justify-content: space-between; 
 }
@@ -257,25 +217,64 @@ main {
    TARJETAS DE LOS USUARIOS 
    ------------------------- */
 
-/* La cuadricula donde van metidas todas las tarjetitas */
-.usu-contenedor-tarjetas {
+/* Columnas: administradores a la izquierda y usuarios a la derecha */
+.usu-grupos {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* Crea columnas solitas segun el espacio */
-    gap: 20px; /* Hueco entre tarjeta y tarjeta */
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0;
 }
 
-/* Cada tarjetita individual blanca */
+.usu-grupo:first-child {
+    padding-right: 24px;
+    border-right: 2px solid #343a40;
+}
+
+.usu-grupo:last-child {
+    padding-left: 24px;
+}
+
+.usu-grupo-titulo {
+    margin: 0 0 20px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid #343a40;
+    font-size: 20px;
+    font-weight: 500;
+    color: #111827;
+    text-align: center;
+}
+
+/* La cuadricula de cada grupo */
+.usu-contenedor-tarjetas {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+/* El color de rol se aplica a la tarjeta; la franja de acciones queda blanca. */
 .tarjeta-usu {
-    background-color: white;
-    border: 1px solid #e5e7eb; /* Borde gris suavecito igual que en ubicaciones */
+    border: 1px solid #292929;
     border-radius: 8px;
     padding: 20px;
-    transition: 0.2s; /* Para que el hover sea suave */
+    transition: 0.2s;
+}
+
+.tarjeta-info {
+    color: inherit;
+}
+
+.tarjeta-usu.admin {
+    background-color: #11225b;
+    color: #ffffff;
+}
+
+.tarjeta-usu.usuario {
+    background-color: #256725;
+    color: #fff5f2;
 }
 
 /* Efecto SUPER CHULI al pasar el raton: borde azulito y levita un pelin */
 .tarjeta-usu:hover {
-    border-color: #2563eb;
+    border-color: #111827;
     box-shadow: 0 4px 12px rgba(37,99,235,0.08);
     transform: translateY(-2px);
 }
@@ -284,19 +283,22 @@ main {
 .tarjeta-info p {
     margin: 8px 0;
     font-size: 14px;
-    color: #4b5563;
+    color: inherit;
 }
 .tarjeta-info strong {
-    color: #111827; /* La negrita mas oscura para que resalte */
+    color: inherit;
+    margin-right: 6px;
 }
 
 /* La zona de abajo de la tarjeta con los dos botones */
 .tarjetaAccion {
-    margin-top: 20px;
+    margin: 20px -20px -20px;
     display: flex;
     gap: 6px;
-    border-top: 1px solid #f3f4f6; /* Rayita gris separadora */
-    padding-top: 15px;
+    border-top: 1px solid #292929;
+    border-radius: 0 0 7px 7px;
+    background-color: white;
+    padding: 15px 20px;
 }
 
 /* Formato comun para los botoncitos pequeños de la tarjeta */
@@ -331,6 +333,8 @@ main {
 .tarjetaAccion .btnEliminar:hover {
     background-color: #ba1313;
 }
+
+
 
 
 /* -----------------------------

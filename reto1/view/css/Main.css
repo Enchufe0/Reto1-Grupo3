@@ -1,21 +1,54 @@
 /* =========================================
    MAIN GENERAL DESIGN (Nav, Body, Footer)
    ========================================= */
+   /* =========================================
+   FIX STICKY NAVBAR
+   ========================================= */
+html, body {
+    overflow-x: clip !important; /* 'clip' allows sticky to work, unlike 'hidden' */
+}
+
+.top-navbar { 
+    position: sticky !important; 
+    top: 0 !important; 
+    z-index: 1000 !important; 
+}
+
+/* =========================================
+   FIX DROPDOWN WIDTH (For the switch gap)
+   ========================================= */
+.dropdown-menu {
+    min-width: 220px !important; /* Makes the menu wider so the toggle switch sits nicely on the right */
+}
 
     /* 1. Global Base */
     body {
     margin: 0;
     font-family: 'Inter', sans-serif;
-    background: #fff8d3;
-    color: #111827;
+    /* 🎨 CHANGE YOUR MAIN BACKGROUND COLOR HERE */
+    background: #fffdf0 !important; 
+    
+    color: #0f172a;
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    }
+}
 
 .top-navbar {
-    width: 100%;
+    /* 🎨 CHANGE YOUR NAVBAR COLOR HERE */
+    background: #fff198 !important; 
+    
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    height: 84px; 
+    padding: 0 40px; 
+    border-bottom: 1px solid rgba(0,0,0,0.04); 
+    position: sticky; 
+    top: 0; 
+    z-index: 1000; 
 }
+
 main#app-content {
     flex: 1; /* 👈 Pushes the footer to the bottom */
     width: 95%; /* 👈 Stretches the container */
@@ -24,14 +57,16 @@ main#app-content {
     padding: 40px 20px;
     box-sizing: border-box; }
 footer {
+    background: #fff198 !important; 
+    
     width: 100%;
     text-align: center;
     padding: 20px;
-    background-color: #fff2b3;
     color: #6b7280;
     font-size: 14px;
     border-top: 1px solid rgba(0,0,0,0.04);
     box-sizing: border-box;
+
 }
 
 /* Main content area */
@@ -60,10 +95,29 @@ main {
 }
 
 /* Left: Tabs */
-.nav-tabs { display: flex; gap: 8px; align-items: center; flex: 1; }
-.nav-tabs a { text-decoration: none; color: #4b5563; font-weight: 500; font-size: 14px; padding: 10px 20px; border-radius: 20px; transition: 0.2s; background: #efece3; }
-.nav-tabs a:hover { background: #e5e1d5; }
-.nav-tabs a.active { background: #0b1b42; color: white; }
+.nav-tabs { 
+    display: flex; 
+    gap: 8px; 
+    align-items: center; 
+    flex: 1; 
+}
+.nav-tabs a { 
+    text-decoration: none; 
+    color: #5f5f5f; 
+    font-weight: 500; 
+    font-size: 14px; 
+    padding: 10px 20px; 
+    border-radius: 20px; 
+    transition: 0.2s; 
+    background: #F5F4ED; 
+}
+.nav-tabs a:hover { 
+    background: #e5e1d5; 
+}
+.nav-tabs a.active { 
+    background: #0b1b42; 
+    color: white; 
+}
 
 /* Center: Logo */
 .nav-logo-center { display: flex; align-items: center; gap: 15px; flex: 0 0 auto; }
@@ -72,8 +126,14 @@ main {
 
 /* Right: Profile & Dropdown */
 .nav-profile { display: flex; justify-content: flex-end; align-items: center; gap: 20px; flex: 1; }
-.nav-profile .bell { color: #6b7280; font-size: 18px; cursor: pointer; }
+.nav-profile .bell { color: #6b7280; font-size: 18px; cursor: pointer; transition: color 0.2s; }
 .notification-toggle { position: relative; display: flex; align-items: center; justify-content: center; padding: 8px; border: 0; background: transparent; cursor: pointer; }
+.notification-toggle:hover,
+.notification-toggle[aria-expanded="true"] { border-radius: 50%; background: #e0e7ff; }
+.notification-toggle:hover .bell,
+.notification-toggle[aria-expanded="true"] .bell { color: #1d4ed8; }
+.notification-toggle.is-current { border-radius: 50%; background: #0b1b42; }
+.notification-toggle.is-current .bell { color: white; }
 .notification-toggle:focus-visible { outline: 2px solid #1d4ed8; outline-offset: 2px; border-radius: 50%; }
 .notification-badge { position: absolute; top: 0; right: 0; min-width: 17px; height: 17px; padding: 0 4px; border-radius: 9px; background: #dc2626; color: white; font-size: 10px; font-weight: 600; line-height: 17px; text-align: center; }
 .user-avatar { width: 34px; height: 34px; background: #e0e7ff; color: #1d4ed8; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; }
@@ -93,8 +153,19 @@ main {
 .notification-menu__message { padding: 18px; text-align: center; }
 .notification-menu__footer { display: block; padding: 13px 18px; border-top: 1px solid #e5e7eb; color: #1d4ed8; font-size: 13px; font-weight: 600; text-align: center; text-decoration: none; }
 .notification-menu__footer:hover { background: #f9fafb; }
-.dropdown-item { display: block; padding: 10px 16px; color: #ef4444; text-decoration: none; font-size: 14px; font-weight: 500; cursor: pointer; }
-.dropdown-item:hover { background: #fef2f2; }
+
+.dropdown-item { 
+    display: block; 
+    padding: 10px 16px; 
+    color: #000000; 
+    text-decoration: none; 
+    font-size: 14px; 
+    font-weight: 500; 
+    cursor: pointer; 
+}
+.dropdown-item:hover { 
+    background: #fef2f2; 
+}
 
 /* 3. Footer */
 footer {
@@ -104,4 +175,607 @@ footer {
     color: #6b7280;
     font-size: 14px;
     border-top: 1px solid rgba(0,0,0,0.04);
+}
+
+/* =========================================
+   MODAL DE PERFIL (Ajustado a tu diseño)
+   ========================================= */
+
+.perfil-modal {
+    margin: auto;
+    border: none;
+    border-radius: 16px;
+    padding: 0;
+    background: transparent;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    max-width: 400px;
+    width: 90%;
+    animation: modalFadeIn 0.3s ease-out;
+}
+
+.perfil-modal::backdrop {
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(4px);
+}
+
+/* 👇 FONDO AMARILLO COMO EL RESTO DE LA WEB 👇 */
+.perfil-modal-content {
+    background: #fff8d3; 
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Cabecera (Avatar y Título) */
+.perfil-header {
+    /* 👇 MISMO AMARILLO QUE LA WEB 👇 */
+    background: #fff8d3; 
+    padding: 30px 20px 20px;
+    text-align: center;
+    border-bottom: 1px solid #e5dcc3; /* Borde marrón clarito */
+}
+
+/* 👇 AVATAR CON TEXTO MARRÓN 👇 */
+.perfil-avatar-icon {
+    background: #f5e6d3; /* Fondo beige/marrón muy claro */
+    color: #8B5A2B;      /* Texto marrón */
+    font-size: 24px;
+    font-weight: 700;
+    width: 70px;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    margin: 0 auto 15px;
+    border: 3px solid #d4b896; /* Borde marrón más claro */
+    box-shadow: 0 4px 10px rgba(139, 90, 43, 0.15);
+}
+
+/* 👇 TÍTULO EN MARRÓN 👇 */
+.perfil-header h3 {
+    margin: 0;
+    font-size: 20px;
+    color: #000000; 
+    font-weight: 600;
+}
+
+.perfil-subtitle {
+    margin: 5px 0 0;
+    font-size: 13px;
+    color: #000000; /* Marrón */
+    opacity: 0.7;
+}
+
+/* Cuerpo (Los datos) */
+.perfil-body {
+    padding: 20px 30px;
+}
+
+.perfil-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #e5dcc3;
+}
+
+.perfil-row:last-child {
+    border-bottom: none;
+}
+
+/* 👇 LABELS (Nombre, Apellidos...) EN MARRÓN 👇 */
+.perfil-label {
+    font-size: 13px;
+    color: #8B5A2B;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* 👇 ICONOS EN MARRÓN 👇 */
+.perfil-label i {
+    width: 16px;
+    text-align: center;
+    color: #8B5A2B;
+}
+
+/* 👇 VALORES (El nombre real, el rol...) EN NEGRO 👇 */
+.perfil-value {
+    font-size: 14px;
+    color: #000000; /* Negro puro */
+    font-weight: 600;
+}
+
+/* Footer y Botón de Cerrar */
+.perfil-footer {
+    padding: 20px 30px 30px;
+}
+
+/* 👇 BOTÓN CERRAR CON EL MISMO AZUL QUE "CREAR EQUIPAMIENTO" 👇 */
+.perfil-btn-cerrar {
+    width: 100%;
+    background: #0b1b42; /* Mismo azul que .eq-btn-primary */
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.perfil-btn-cerrar:hover {
+    background: #1e293b; /* Azul un poco más claro al pasar el ratón */
+    transform: translateY(-1px);
+}
+
+@keyframes modalFadeIn {
+    from { opacity: 0; transform: scale(0.95) translateY(10px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+/* =========================================
+   INTERRUPTOR (TOGGLE SWITCH)
+   ========================================= */
+.dropdown-item .toggle-switch {
+    width: 34px;
+    height: 18px;
+    background-color: #d1d5db;
+    border-radius: 20px;
+    position: relative;
+    transition: 0.3s;
+}
+
+.dropdown-item .toggle-switch::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 14px;
+    height: 14px;
+    background: white;
+    border-radius: 50%;
+    transition: 0.3s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.dropdown-item .toggle-switch.active {
+    background-color: #051BFF; /* Azul de tu paleta */
+}
+
+.dropdown-item .toggle-switch.active::after {
+    left: 18px;
+}
+
+/* =========================================
+   MODO DALTONISMO: PALETA GLOBAL
+   (Blanco #FFFFFF, Negro #000000, Amarillo #FFCB00, 
+   Marrón #872200, Azul #051BFF)
+   ========================================= */
+
+/* 1. Fondo general y texto base */
+body.colorblind-mode { 
+    background-color: #FFFFFF !important; 
+    color: #000000 !important;
+}
+
+/* 2. NAVBAR (Amarillo, Botones Marrón, Activo Azul) */
+body.colorblind-mode .top-navbar {
+    background-color: #FFCB00 !important;
+    border-bottom: 2px solid #000000 !important;
+}
+body.colorblind-mode .nav-tabs a {
+    background-color: #872200 !important; /* Botón inactivo marrón */
+    color: #FFFFFF !important;
+    border: 2px solid #000000 !important;
+}
+body.colorblind-mode .nav-tabs a.active,
+body.colorblind-mode .nav-tabs a:hover {
+    background-color: #051BFF !important; /* Botón activo azul */
+    color: #FFFFFF !important;
+}
+body.colorblind-mode .login-logo-text { color: #000000 !important; }
+body.colorblind-mode .admin-dropdown { background-color: #872200 !important; color: #FFFFFF !important; }
+
+/* 3. BORDES NEGROS GRUESOS (Inputs y Cajas) */
+body.colorblind-mode input, 
+body.colorblind-mode select, 
+body.colorblind-mode textarea,
+body.colorblind-mode .eq-search-box,
+body.colorblind-mode .ubi-buscador,
+body.colorblind-mode .usu-buscador {
+    border: 2px solid #000000 !important;
+    background-color: #FFFFFF !important;
+    color: #000000 !important;
+}
+
+/* 4. CABECERAS Y TÍTULOS (Amarillo y Negro) */
+body.colorblind-mode h1, 
+body.colorblind-mode h2, 
+body.colorblind-mode h3 { 
+    color: #000000 !important; 
+}
+body.colorblind-mode .eq-table th,
+body.colorblind-mode .notificaciones-lista__tabla th {
+    background-color: #FFCB00 !important;
+    color: #000000 !important;
+    border: 2px solid #000000 !important;
+}
+
+/* 5. BOTONES PRINCIPALES / CREAR / AÑADIR / GUARDAR (Azul) */
+body.colorblind-mode .eq-btn-primary,
+body.colorblind-mode .ubi-boton-añadir,
+body.colorblind-mode .usu-boton-añadir,
+body.colorblind-mode .ubi-btn-guardar,
+body.colorblind-mode .btn-aceptar,
+body.colorblind-mode .notificaciones-lista__accion,
+body.colorblind-mode .notificaciones-admin__acciones input[type="submit"] {
+    background-color: #051BFF !important;
+    color: #FFFFFF !important;
+    border: 2px solid #000000 !important;
+}
+
+/* 6. ICONOS Y TEXTOS GRISES (Reemplazados por Marrón #872200) */
+body.colorblind-mode .subtitulo-ubi, 
+body.colorblind-mode .subtitulo-usu,
+body.colorblind-mode .ubi-estadisticas,
+body.colorblind-mode .ubi-estadisticas i,
+body.colorblind-mode .usu-estadisticas,
+body.colorblind-mode .usu-estadisticas i,
+body.colorblind-mode .estadistica-numero,
+body.colorblind-mode .estadistica-barra,
+body.colorblind-mode .tarjetaInfo p,
+body.colorblind-mode .tarjetaInfo strong,
+body.colorblind-mode .notificaciones-lista__tabla td,
+body.colorblind-mode .notificaciones-lista__controles h1,
+body.colorblind-mode .notificaciones-admin__campo label,
+body.colorblind-mode .perfil-label,
+body.colorblind-mode .perfil-label i,
+body.colorblind-mode .perfil-value {
+    color: #872200 !important;
+}
+
+/* 7. BOTONES DE ACCIÓN (Editar / Eliminar / Ver) */
+/* Editar: Fondo azul, icono/texto blanco */
+body.colorblind-mode .ubi-boton-editar, 
+body.colorblind-mode .btnEditar,
+body.colorblind-mode .eq-btn-edit,
+body.colorblind-mode .eq-btn-history {
+    background-color: #FFCB00 !important;
+    color: #FFFFFF !important;
+    border: 2px solid #000000 !important;
+}
+/* Eliminar: Fondo marrón, icono/texto blanco */
+body.colorblind-mode .ubi-boton-eliminar,
+body.colorblind-mode .btnEliminar,
+body.colorblind-mode .eq-btn-delete,
+body.colorblind-mode .ubi-btn-peligro,
+body.colorblind-mode .btn-eliminar-confirmar {
+    background-color: #872200 !important;
+    color: #FFFFFF !important;
+    border: 2px solid #000000 !important;
+}
+
+/* 8. CATEGORÍAS (Pestañas de equipamiento) */
+body.colorblind-mode .eq-tab {
+    background-color: #FFFFFF !important;
+    color: #000000 !important;
+    border: 2px solid #000000 !important;
+}
+body.colorblind-mode .eq-tab.active {
+    background-color: #872200 !important; /* Al hacer clic, marrón */
+    color: #FFFFFF !important;
+}
+
+/* 9. TABLAS Y FILAS (Ubicaciones, Usuarios, Notificaciones) */
+body.colorblind-mode .desplegable-planta,
+body.colorblind-mode .tarjeta-usu,
+body.colorblind-mode .notificaciones-lista__tabla table {
+    border: 2px solid #000000 !important;
+}
+body.colorblind-mode .notificacion-leida,
+body.colorblind-mode .notificacion-no-leida {
+    background-color: #FFFFFF !important;
+    border-bottom: 2px solid #000000 !important;
+}
+
+/* 10. POPUPS Y MODALES (Notificaciones, Ubicaciones, Usuarios) */
+body.colorblind-mode .ubi-modal-contenido,
+body.colorblind-mode .popup-contenido,
+body.colorblind-mode .popup-eliminar-contenido,
+body.colorblind-mode .perfil-modal-content {
+    background-color: #FFFFFF !important;
+    border: 2px solid #000000 !important;
+}
+body.colorblind-mode .ubi-btn-cancelar,
+body.colorblind-mode .btn-cancelar {
+    background-color: #872200 !important;
+    color: #FFFFFF !important;
+    border: 2px solid #000000 !important;
+}
+
+/* 11. FOOTER */
+body.colorblind-mode footer {
+    background-color: #FFCB00 !important;
+    color: #000000 !important;
+    border-top: 2px solid #000000 !important;
+}
+/* =========================================
+   MODO DALTONISMO: REGLAS ESPECÍFICAS
+   ========================================= */
+
+/* 1. Categorías (Badges): Fondo Marrón, Texto Blanco */
+body.colorblind-mode .eq-badge {
+    background-color: #872200 !important;
+    color: #FFFFFF !important;
+}
+
+/* 2. Ubicación y Descripción: Texto e Iconos Azules */
+body.colorblind-mode .eq-location,
+body.colorblind-mode .eq-location i,
+body.colorblind-mode #historico-table-body .eq-location,
+body.colorblind-mode #historico-table-body .eq-location i,
+body.colorblind-mode .desc-truncate {
+    color: #000000 !important;
+}
+
+/* 3. Botones de Edición: Check (Azul) y X (Marrón) */
+body.colorblind-mode .eq-btn-save {
+    background-color: #051BFF !important;
+    color: #FFFFFF !important;
+}
+body.colorblind-mode .eq-btn-cancel {
+    background-color: #872200 !important;
+    color: #FFFFFF !important;
+}
+
+/* 4. Flecha de las pestañas activas: Marrón */
+body.colorblind-mode .eq-tab.active::after {
+    border-color: #872200 transparent transparent transparent !important;
+}
+
+/* 5. Estadísticas (Equipos, Categorías, Ubicaciones): Negro con iconos negros */
+/* Equipamientos */
+body.colorblind-mode .eq-stats-bar,
+body.colorblind-mode .eq-stat,
+body.colorblind-mode .eq-stat i,
+body.colorblind-mode .stat-number,
+/* Ubicaciones (Clases de Adrián) */
+body.colorblind-mode .ubi-barra-estadisticas,
+body.colorblind-mode .ubi-estadisticas,
+body.colorblind-mode .ubi-estadisticas i,
+body.colorblind-mode .estadistica-numero,
+body.colorblind-mode .estadistica-barra,
+/* Usuarios (Clases de Adrián) */
+body.colorblind-mode .usu-barra-estadisticas,
+body.colorblind-mode .usu-estadisticas,
+body.colorblind-mode .usu-estadisticas i {
+    color: #000000 !important;
+}
+
+/* =========================================
+   MODO DALTONISMO: BARRA DE BÚSQUEDA
+   ========================================= */
+
+/* Texto que escribe el usuario */
+body.colorblind-mode .eq-search-box input,
+body.colorblind-mode .ubi-buscador input,
+body.colorblind-mode .usu-buscador input {
+    color: #000000 !important;
+    background-color: #FFFFFF !important;
+}
+
+/* Texto de fondo (Placeholder) */
+body.colorblind-mode .eq-search-box input::placeholder,
+body.colorblind-mode .ubi-buscador input::placeholder,
+body.colorblind-mode .usu-buscador input::placeholder {
+    color: #000000 !important;
+    opacity: 1 !important; /* Fuerza a que no se vea transparente */
+}
+/* =========================================
+   MODO DALTONISMO: TEXTOS DE FORMULARIOS
+   ========================================= */
+
+/* 1. Títulos y etiquetas de los formularios (Crear, Editar, Eliminar) */
+body.colorblind-mode .eq-form-grupo label,
+body.colorblind-mode .ubi-form-grupo label,
+body.colorblind-mode .grupo-input label,
+body.colorblind-mode .eq-modal-content h3,
+body.colorblind-mode .ubi-modal-contenido h3,
+body.colorblind-mode .popup-contenido h2,
+body.colorblind-mode .popup-eliminar-contenido h2,
+body.colorblind-mode .popup-eliminar-contenido p,
+body.colorblind-mode .ubi-texto-eliminar {
+    color: #000000 !important;
+}
+
+/* 2. Texto de los inputs, selects y textareas */
+body.colorblind-mode input, 
+body.colorblind-mode select, 
+body.colorblind-mode textarea {
+    color: #000000 !important;
+}
+
+/* 3. Texto de fondo (Placeholder) dentro de los inputs */
+body.colorblind-mode input::placeholder,
+body.colorblind-mode textarea::placeholder {
+    color: #000000 !important;
+    opacity: 1 !important; /* Evita que el navegador lo vuelva transparente */
+}
+
+/* 4. Texto de las opciones dentro de los selectores (dropdowns) */
+body.colorblind-mode select option {
+    color: #000000 !important;
+    background-color: #FFFFFF !important;
+}
+/* =========================================
+   MODO DALTONISMO: COLOR DE LA COLUMNA UBICACIÓN
+   ========================================= */
+
+/* Forzamos el color azul de la paleta solo en modo daltonismo */
+body.colorblind-mode #historico-table-body .eq-location,
+body.colorblind-mode #historico-table-body .eq-location i,
+body.colorblind-mode #eq-table-body .eq-location,
+body.colorblind-mode #eq-table-body .eq-location i,
+body.colorblind-mode .eq-location-link,
+body.colorblind-mode .eq-location-link i {
+    color: #051BFF !important; /* Azul de tu paleta daltonismo */
+}
+/* =========================================
+   MODO DALTONISMO: MI PERFIL
+   ========================================= */
+
+/* 1. Fondo y bordes del modal */
+body.colorblind-mode .perfil-modal-content {
+    background-color: #FFFFFF !important;
+    border: 2px solid #000000 !important;
+}
+
+body.colorblind-mode .perfil-header {
+    background-color: #FFFFFF !important;
+    border-bottom: 2px solid #000000 !important;
+}
+
+body.colorblind-mode .perfil-row {
+    border-bottom: 2px solid #000000 !important;
+}
+
+/* 2. Avatar (Amarillo con borde negro) */
+body.colorblind-mode .perfil-avatar-icon {
+    background-color: #FFCB00 !important;
+    color: #000000 !important;
+    border: 2px solid #000000 !important;
+    box-shadow: none !important;
+}
+
+/* 3. Textos (Título, subtítulo, labels y valores) */
+body.colorblind-mode .perfil-header h3 {
+    color: #000000 !important;
+}
+
+body.colorblind-mode .perfil-subtitle {
+    color: #000000 !important;
+    opacity: 1 !important; /* Quitamos la transparencia para que se lea mejor */
+}
+
+body.colorblind-mode .perfil-label,
+body.colorblind-mode .perfil-label i {
+    color: #872200 !important; /* Marrón de tu paleta */
+}
+
+body.colorblind-mode .perfil-value {
+    color: #000000 !important; /* Negro puro */
+}
+
+/* 4. Forzar el color del Rol (que tiene un estilo inline en el HTML) */
+body.colorblind-mode #perfil-rol {
+    color: #000000 !important; 
+}
+
+/* 5. Botón Cerrar (Azul con borde negro) */
+body.colorblind-mode .perfil-btn-cerrar {
+    background-color: #051BFF !important;
+    color: #FFFFFF !important;
+    border: 2px solid #000000 !important;
+}
+
+body.colorblind-mode .perfil-btn-cerrar:hover {
+    background-color: #0415cc !important; /* Un azul un poco más oscuro para el hover */
+}
+/* =========================================
+   MODO DALTONISMO: GROSOR DE TEXTO EN PERFIL
+   ========================================= */
+
+/* Título (Mi Perfil) - De normal a grueso */
+body.colorblind-mode .perfil-header h3 {
+    font-weight: 700 !important; 
+}
+
+/* Subtítulo (Información de la cuenta) */
+body.colorblind-mode .perfil-subtitle {
+    font-weight: 600 !important;
+}
+
+/* Etiquetas (Nombre, Apellidos, etc.) */
+body.colorblind-mode .perfil-label {
+    font-weight: 700 !important;
+}
+
+/* Valores (El nombre real, el rol, etc.) */
+body.colorblind-mode .perfil-value {
+    font-weight: 700 !important;
+}
+
+/* Botón de Cerrar */
+body.colorblind-mode .perfil-btn-cerrar {
+    font-weight: 700 !important;
+}
+
+/* =========================================
+   MODO DALTONISMO: GROSOR GLOBAL DE TEXTO
+   ========================================= */
+
+/* 1. Subimos el grosor base de toda la página (de 400 a 500) */
+body.colorblind-mode {
+    font-weight: 500 !important;
+}
+
+/* 2. Hacemos los títulos más gruesos (de 300 a 600) */
+body.colorblind-mode h1, 
+body.colorblind-mode h2, 
+body.colorblind-mode h3,
+body.colorblind-mode .eq-title,
+body.colorblind-mode .titulo-ubi,
+body.colorblind-mode .titulo-usu,
+body.colorblind-mode .perfil-header h3 {
+    font-weight: 600 !important;
+}
+
+/* 3. Hacemos las cabeceras de las tablas y botones más gruesos */
+body.colorblind-mode .eq-table th,
+body.colorblind-mode .notificaciones-lista th,
+body.colorblind-mode button,
+body.colorblind-mode .eq-btn-primary,
+body.colorblind-mode .ubi-boton-añadir,
+body.colorblind-mode .usu-boton-añadir,
+body.colorblind-mode .perfil-btn-cerrar,
+body.colorblind-mode .nav-tabs a {
+    font-weight: 600 !important;
+}
+
+/* 4. Textos secundarios (fechas, estadísticas, descripciones) */
+body.colorblind-mode p,
+body.colorblind-mode td,
+body.colorblind-mode .eq-stat,
+body.colorblind-mode .subtitulo-ubi,
+body.colorblind-mode .subtitulo-usu,
+body.colorblind-mode .stat-number {
+    font-weight: 500 !important;
+}
+/* =========================================
+   MODO DALTONISMO: AJUSTES ESPECÍFICOS
+   ========================================= */
+
+/* 1. Textos de las tarjetas de Usuarios en NEGRO */
+body.colorblind-mode .tarjetaInfo p,
+body.colorblind-mode .tarjetaInfo strong {
+    color: #000000 !important;
+}
+
+/* 2. Campana de notificaciones gruesa y NEGRA */
+body.colorblind-mode .notification-toggle .bell,
+body.colorblind-mode .notification-toggle i {
+    color: #000000 !important;
+    -webkit-text-stroke: 1.5px #000000; /* Hace que el icono sea más grueso */
+    font-weight: 900 !important;
+}
+
+/* 3. Resaltado de 10 segundos en el Historial (Amarillo de la paleta) */
+body.colorblind-mode .row-highlight,
+body.colorblind-mode .row-highlight td {
+    background-color: #FFCB00 !important; /* Amarillo daltonismo */
+    border-bottom: 2px solid #000000 !important; /* Borde negro para mantener el estilo */
 }

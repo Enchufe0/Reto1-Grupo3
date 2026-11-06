@@ -91,6 +91,16 @@
             return false;
         }
 
+        public function actualizarEstado(int $id, string $estado): bool {
+            try {
+                $estadoEnum = EstadoNotificaciones::from($estado);
+            } catch (ValueError $e) {
+                return false;
+            }
+
+            return $this->notificacionesDAO->actualizarEstado($id, $estadoEnum);
+        }
+
         // DELETE
         public function eliminar(int $id): bool {
             return $this->notificacionesDAO->borrar($id);

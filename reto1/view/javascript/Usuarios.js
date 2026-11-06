@@ -1,7 +1,8 @@
 const apiUrl = new URL('../../api/UsuariosAPI.php', document.currentScript.src).href;
 
 // Referencias al DOM
-const contenedorTarjetas = document.getElementById('contenedorUsuarios');
+const contenedorAdmins = document.getElementById('contenedorAdmins');
+const contenedorUsuarios = document.getElementById('contenedorUsuarios');
 const btnAnadir = document.getElementById('btnAnadir');
 const dialogPopup = document.getElementById('popupUsuario');
 const formUsuario = document.getElementById('formularioUsuario');
@@ -12,6 +13,9 @@ const dialogEliminar = document.getElementById('popupEliminar');
 const btnCancelarEliminar = document.getElementById('btnCancelarEliminar');
 const btnConfirmarEliminar = document.getElementById('btnConfirmarEliminar');
 const inputEliminarId = document.getElementById('eliminarUsuId');
+const dialogAvisoCuenta = document.getElementById('popupAvisoCuenta');
+const mensajeAvisoCuenta = document.getElementById('mensajeAvisoCuenta');
+const btnCerrarAvisoCuenta = document.getElementById('btnCerrarAvisoCuenta');
 
 // GET
 async function cargarUsuarios() {
@@ -20,26 +24,78 @@ async function cargarUsuarios() {
         if (!respuesta.ok) throw new Error(`Error HTTP ${respuesta.status}`);
         const usuarios = await respuesta.json();
         
-        contenedorTarjetas.innerHTML = ''; 
+        contenedorAdmins.innerHTML = '';
+        contenedorUsuarios.innerHTML = '';
         if (estadisticaTotal) estadisticaTotal.textContent = usuarios.length; // Actualiza el contador
 
         usuarios.forEach(usuario => {
             const article = document.createElement('article');
-            article.className = 'tarjeta-usu';
-            
-            
-            article.innerHTML = `
-                <div class="tarjetaInfo">
-                    <p><strong>Nombre:</strong> ${usuario.nombre}</p>
-                    <p><strong>Apellido:</strong> ${usuario.apellidos}</p>
-                    <p><strong>Usuario:</strong> ${usuario.nombre_usuario}</p>
-                </div>
-                <div class="tarjetaAccion">
-                    <button class="btnEditar" type="button" aria-label="Editar usuario" title="Editar usuario" onclick="abrirEditar(${usuario.id_usuario}, '${usuario.nombre}', '${usuario.apellidos}', '${usuario.nombre_usuario}')"><i class="fa-solid fa-pen" aria-hidden="true"></i></button>
-                    <button class="btnEliminar" type="button" aria-label="Eliminar usuario" title="Eliminar usuario" onclick="borrarUsuario(${usuario.id_usuario})"><i class="fa-regular fa-trash-can" aria-hidden="true"></i></button>
-                </div>
-            `;
-            contenedorTarjetas.appendChild(article);
+            const esAdmin = String(usuario.rol).toUpperCase() === 'ADMIN';
+            article.className = `tarjeta-usu ${esAdmin ? 'admin' : 'usuario'}`;
+            const detalles = document.createElement('div');
+            detalles.className = 'tarjeta-info';
+
+            [
+                ['Nombre:', usuario.nombre],
+                ['Apellido:', usuario.apellidos],
+                ['Usuario:', usuario.nombre_usuario],
+                ['Rol:', usuario.rol]
+            ].forEach(([etiqueta, valor]) => {
+                const parrafo = document.createElement('p');
+                const textoEtiqueta = document.createElement('strong');
+                textoEtiqueta.textContent = etiqueta;
+                parrafo.append(textoEtiqueta, ` ${valor ?? ''}`);
+                detalles.appendChild(parrafo);
+            });
+
+            const acciones = document.createElement('div');
+            acciones.className = 'tarjetaAccion';
+            const esUsuarioActual = Number(usuario.id_usuario) === Number(window.USUARIO_ID);
+
+            const botonEditar = document.createElement('button');
+            botonEditar.className = 'btnEditar';
+            botonEditar.type = 'button';
+            botonEditar.setAttribute('aria-label', 'Editar usuario');
+            botonEditar.title = 'Editar usuario';
+            const iconoEditar = document.createElement('i');
+            iconoEditar.className = 'fa-solid fa-pen';
+            iconoEditar.setAttribute('aria-hidden', 'true');
+            botonEditar.appendChild(iconoEditar);
+            botonEditar.addEventListener('click', () => {
+                if (esUsuarioActual) {
+                    mostrarAvisoCuenta('editar');
+                    return;
+                }
+
+                abrirEditar(
+                    usuario.id_usuario,
+                    usuario.nombre,
+                    usuario.apellidos,
+                    usuario.nombre_usuario
+                );
+            });
+
+            const botonEliminar = document.createElement('button');
+            botonEliminar.className = 'btnEliminar';
+            botonEliminar.type = 'button';
+            botonEliminar.setAttribute('aria-label', 'Eliminar usuario');
+            botonEliminar.title = 'Eliminar usuario';
+            const iconoEliminar = document.createElement('i');
+            iconoEliminar.className = 'fa-regular fa-trash-can';
+            iconoEliminar.setAttribute('aria-hidden', 'true');
+            botonEliminar.appendChild(iconoEliminar);
+            botonEliminar.addEventListener('click', () => {
+                if (esUsuarioActual) {
+                    mostrarAvisoCuenta('eliminar');
+                    return;
+                }
+
+                borrarUsuario(usuario.id_usuario);
+            });
+
+            acciones.append(botonEditar, botonEliminar);
+            article.append(detalles, acciones);
+            (esAdmin ? contenedorAdmins : contenedorUsuarios).appendChild(article);
         });
     } catch (error) {
         console.error("Error al cargar:", error);
@@ -71,6 +127,17 @@ window.abrirEditar = function(id, nombre, apellido, username) {
     tituloPopup.textContent = 'EDITAR USUARIO';
     dialogPopup.showModal();
 }
+
+function mostrarAvisoCuenta(accion) {
+    mensajeAvisoCuenta.textContent = accion === 'editar'
+        ? 'No puedes editar tu propia cuenta mientras tienes la sesión iniciada.'
+        : 'No puedes eliminar tu propia cuenta mientras tienes la sesión iniciada.';
+    dialogAvisoCuenta.showModal();
+}
+
+btnCerrarAvisoCuenta.addEventListener('click', () => {
+    dialogAvisoCuenta.close();
+});
 
 // CERRAR POPUP
 btnCerrarPopup.addEventListener('click', () => {
@@ -133,12 +200,15 @@ btnConfirmarEliminar.addEventListener('click', async () => {
         
         if (respuesta.ok) {
             dialogEliminar.close(); // Cerramos la ventana si ha ido bien
-            cargarUsuarios();    // Refrescamos la tabla
+            await cargarUsuarios();    // Refrescamos la tabla
         } else {
-            console.error("Error al borrar en la base de datos.");
+            const resultado = await respuesta.json();
+            console.error("Error al borrar en la base de datos:", resultado.error);
+            alert(resultado.error || "Error al borrar el usuario.");
         }
     } catch (error) {
         console.error("Fallo de conexión al borrar:", error);
+        alert("No se pudo borrar el usuario. Comprueba la conexión e inténtalo de nuevo.");
     }
 });
 

@@ -73,28 +73,50 @@
     </div>
 </div>
 
-<div id="modal-crear" class="eq-modal" style="display: none;">
+<!-- POP UP UNIFICADO PARA CREAR EQUIPO -->
+<dialog id="modal-crear" class="eq-modal">
     <div class="eq-modal-content">
         <h3>Nuevo Equipamiento</h3>
         <form id="form-crear-eq">
-            <input type="text" id="new-nombre" placeholder="Nombre" required>
-            <input type="text" id="new-marca" placeholder="Marca" required>
-            <input type="text" id="new-modelo" placeholder="Modelo" required>
-            <input type="text" id="new-desc" placeholder="Descripción" required>
-            <select id="new-categoria">
-                <option value="PORTATIL">Portátil</option>
-                <option value="SOBREMESA">Sobremesa</option>
-                <option value="PERIFERICO">Periférico</option>
-                <option value="AUDIOVISUAL">Audiovisual</option>
-                <option value="OTROS">Otros</option>
-            </select>
-            <div class="eq-modal-actions">
-                <button type="button" class="eq-btn-secondary" onclick="cerrarModalCrear()">Cancelar</button>
-                <button type="submit" class="eq-btn-primary">Guardar</button>
+            
+            <div class="eq-form-grupo">
+                <label for="new-nombre">Nombre</label>
+                <input type="text" id="new-nombre" required>
+            </div>
+            
+            <div class="eq-form-grupo">
+                <label for="new-marca">Marca</label>
+                <input type="text" id="new-marca" required>
+            </div>
+
+            <div class="eq-form-grupo">
+                <label for="new-modelo">Modelo</label>
+                <input type="text" id="new-modelo" required>
+            </div>
+
+            <div class="eq-form-grupo">
+                <label for="new-desc">Descripción</label>
+                <input type="text" id="new-desc" required>
+            </div>
+
+            <div class="eq-form-grupo">
+                <label for="new-categoria">Categoría</label>
+                <select id="new-categoria">
+                    <option value="PORTATIL">Portátil</option>
+                    <option value="SOBREMESA">Sobremesa</option>
+                    <option value="PERIFERICO">Periférico</option>
+                    <option value="AUDIOVISUAL">Audiovisual</option>
+                    <option value="OTROS">Otros</option>
+                </select>
+            </div>
+
+            <div class="eq-modal-acciones">
+                <button type="button" class="eq-btn-cancelar" onclick="cerrarModalCrear()">Cancelar</button>
+                <button type="submit" class="eq-btn-guardar">Guardar</button>
             </div>
         </form>
     </div>
-</div>
+</dialog>
 
 <div id="modal-desc" class="eq-modal" style="display: none;">
     <div class="eq-modal-content">
@@ -102,6 +124,25 @@
         <p id="desc-text-content" style="margin-bottom: 20px; line-height: 1.6; color: #374151; font-size: 15px;"></p>
         <div class="eq-modal-actions">
             <button type="button" class="eq-btn-secondary" onclick="cerrarModalDesc()">Cerrar</button>
+        </div>
+    </div>
+</div>
+
+<!-- 👇 NUEVO POPUP PARA ELIMINAR EQUIPO 👇 -->
+<div id="modal-eliminar-eq" class="eq-modal" style="display: none;">
+    <div class="eq-modal-content">
+        <h3>Eliminar Equipamiento</h3>
+        <p style="margin-bottom: 20px; color: #4b5563; font-size: 14px;">
+            ¿Seguro que quieres borrar este equipo? Esta acción no se puede deshacer.
+        </p>
+        
+        <!-- Input oculto para guardar el ID -->
+        <input type="hidden" id="delete-id-eq">
+        
+        <div class="eq-modal-actions">
+            <button type="button" class="eq-btn-secondary" onclick="cerrarModalEliminar()">Cancelar</button>
+            <!-- Botón rojo para borrar -->
+            <button type="button" class="eq-btn-primary" style="background-color: #ef4444;" onclick="confirmarEliminar()">Eliminar</button>
         </div>
     </div>
 </div>
