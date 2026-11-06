@@ -4,7 +4,23 @@
     if (session_status() === PHP_SESSION_NONE) {
         session_start();
     }
-    
+
+    function exigirInicioSesion(): void {
+        if (!isset($_SESSION['usuario_id'])) {
+            http_response_code(401);
+            echo json_encode(["error" => "Es necesario iniciar sesion"]);
+            exit;
+        }
+    }
+
+    function exigirAdministrador(): void {
+        exigirInicioSesion();
+        if (($_SESSION['rol'] ?? null) !== 'ADMIN') {
+            http_response_code(403);
+            echo json_encode(["error" => "Solo los administradores pueden realizar esta accion"]);
+            exit;
+        }
+    }
 
     require_once __DIR__ . '/../controller/NotificacionesController.php';
 
@@ -23,21 +39,29 @@
     switch ($metodo) {
         case 'GET':
             if (isset($_GET['mine'])) {
-                if (!isset($_SESSION['usuario_id'])) {
-                    http_response_code(401);
-                    echo json_encode(["error" => "Es necesario iniciar sesion"]);
-                    break;
-                }
-                
+                exigirInicioSesion();
                 $resultado = $controlador->obtenerPorUsuario((int) $_SESSION['usuario_id']);
                 http_response_code(200);
                 echo json_encode($resultado, JSON_UNESCAPED_UNICODE);
-                
+
+            } elseif (isset($_GET['all'])) {
+                exigirAdministrador();
+                $resultado = $controlador->obtenerTodas();
+                http_response_code(200);
+                echo json_encode($resultado, JSON_UNESCAPED_UNICODE);
+
             } elseif (isset($_GET['id'])) {
+                exigirInicioSesion();
                 $id = intval($_GET['id']);
                 $resultado = $controlador->obtenerPorId($id);
 
                 if ($resultado !== null) {
+                    if (($_SESSION['rol'] ?? null) !== 'ADMIN'
+                        && (int) $resultado['id_usuario'] !== (int) $_SESSION['usuario_id']) {
+                        http_response_code(403);
+                        echo json_encode(["error" => "No tienes permiso para ver esta notificacion"]);
+                        break;
+                    }
                     http_response_code(200);
                     echo json_encode($resultado, JSON_UNESCAPED_UNICODE);
                 } else {
@@ -45,6 +69,7 @@
                     echo json_encode(["error" => "No se encontro la notificacion"]);
                 }
             } else {
+                exigirAdministrador();
                 $resultado = $controlador->obtenerTodas();
                 http_response_code(200);
                 echo json_encode($resultado, JSON_UNESCAPED_UNICODE);
@@ -52,6 +77,7 @@
             break;
 
         case 'POST':
+            exigirAdministrador();
             $contenido = file_get_contents("php://input");
             $datos = json_decode($contenido, true);
             
@@ -67,6 +93,7 @@
             break;
 
         case 'PUT':
+            exigirAdministrador();
             $contenido = file_get_contents("php://input");
             $datos = json_decode($contenido, true);
 
@@ -81,7 +108,65 @@
             }
             break;
 
+        case 'PATCH':
+            exigirAdministrador();
+            $datos = json_decode(file_get_contents("php://input"), true);
+
+            if (!is_array($datos)
+                || !isset($datos['id_notificacion'], $datos['estado'])
+                || filter_var($datos['id_notificacion'], FILTER_VALIDATE_INT) === false
+                || (int) $datos['id_notificacion'] < 1
+                || !is_string($datos['estado'])) {
+                http_response_code(400);
+                echo json_encode(["error" => "Faltan el ID o el estado de la notificacion"]);
+                break;
+            }
+
+            $id = (int) $datos['id_notificacion'];
+            $notificacion = $controlador->obtenerPorId($id);
+            if ($notificacion === null) {
+                http_response_code(404);
+                echo json_encode(["error" => "No se encontro la notificacion"]);
+                break;
+            }
+
+            if ($notificacion['estado'] === 'REALIZADA') {
+                if ($datos['estado'] !== 'REALIZADA') {
+                    http_response_code(409);
+                    echo json_encode(["error" => "Una notificacion completada no puede cambiar de estado"]);
+                    break;
+                }
+                http_response_code(200);
+                echo json_encode(["mensaje" => "La notificacion ya estaba completada"]);
+                break;
+            }
+
+            if ($datos['estado'] === $notificacion['estado']) {
+                http_response_code(200);
+                echo json_encode(["mensaje" => "El estado no ha cambiado"]);
+                break;
+            }
+
+            if ($controlador->actualizarEstado($id, $datos['estado'])) {
+                http_response_code(200);
+                echo json_encode(["mensaje" => "Estado actualizado correctamente"]);
+            } else {
+                $estadoActual = $controlador->obtenerPorId($id);
+                if ($estadoActual === null) {
+                    http_response_code(404);
+                    echo json_encode(["error" => "No se encontro la notificacion"]);
+                } elseif ($estadoActual['estado'] === 'REALIZADA') {
+                    http_response_code(409);
+                    echo json_encode(["error" => "Una notificacion completada no puede cambiar de estado"]);
+                } else {
+                    http_response_code(400);
+                    echo json_encode(["error" => "El estado de la notificacion no es valido"]);
+                }
+            }
+            break;
+
         case 'DELETE':
+            exigirAdministrador();
             if (isset($_GET['id'])) {
                 $id = intval($_GET['id']);
                 $exito = $controlador->eliminar($id);

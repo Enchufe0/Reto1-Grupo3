@@ -123,7 +123,7 @@ async function loadView(pageName, role) {
     } 
     else if (pageName === 'notificaciones') {
         const showNotificationList = new URLSearchParams(window.location.search).get('vista') === 'lista';
-        htmlFile = (role === 'ADMIN' && !showNotificationList) ? 'NotificacionesAdmin' : 'NotificacionesLista';
+        htmlFile = role === 'ADMIN' && !showNotificationList ? 'NotificacionesAdmin' : 'NotificacionesLista';
         if (htmlFile === 'NotificacionesLista') jsFile = 'Notificaciones';
     } 
     else if (pageName === 'historico') {
