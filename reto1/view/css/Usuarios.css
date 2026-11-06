@@ -114,13 +114,6 @@ main {
     letter-spacing: -0.5px; 
 }
 
-/* Estilo del texto pequeño bajo el titulo principal */
-.subtitulo-usu {
-    color: #6b7280; 
-    margin-top: 8px; 
-    font-size: 15px;
-}
-
 /* La fila donde van las tres estadisticas */
 .usu-barra-estadisticas { 
     display: flex; 
@@ -165,7 +158,7 @@ main {
 .usu-filtro-buscador { 
     display: flex; 
     gap: 12px; 
-    margin-bottom: 24px; 
+    margin-bottom: 48px;
     align-items: center; 
     justify-content: space-between; 
 }
@@ -224,25 +217,58 @@ main {
    TARJETAS DE LOS USUARIOS 
    ------------------------- */
 
-/* La cuadricula donde van metidas todas las tarjetitas */
-.usu-contenedor-tarjetas {
+/* Columnas: administradores a la izquierda y usuarios a la derecha */
+.usu-grupos {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* Crea columnas solitas segun el espacio */
-    gap: 20px; /* Hueco entre tarjeta y tarjeta */
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0;
 }
 
-/* Cada tarjetita individual blanca */
+.usu-grupo:first-child {
+    padding-right: 24px;
+    border-right: 2px solid #343a40;
+}
+
+.usu-grupo:last-child {
+    padding-left: 24px;
+}
+
+.usu-grupo-titulo {
+    margin: 0 0 20px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid #343a40;
+    font-size: 20px;
+    font-weight: 500;
+    color: #111827;
+    text-align: center;
+}
+
+/* La cuadricula de cada grupo */
+.usu-contenedor-tarjetas {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+/* COLORES DE TARJETA: cambia el borde (#292929) y los background-color de cada rol. */
 .tarjeta-usu {
-    background-color: white;
-    border: 1px solid #e5e7eb; /* Borde gris suavecito igual que en ubicaciones */
+    border: 1px solid #292929;
     border-radius: 8px;
     padding: 20px;
-    transition: 0.2s; /* Para que el hover sea suave */
+    transition: 0.2s;
+}
+
+.tarjeta-usu.admin {
+    background-color: #eef2ff;
+}
+
+.tarjeta-usu.usuario {
+    background-color: #ecfdf5;
 }
 
 /* Efecto SUPER CHULI al pasar el raton: borde azulito y levita un pelin */
 .tarjeta-usu:hover {
-    border-color: #2563eb;
+    border-color: #111827;
     box-shadow: 0 4px 12px rgba(37,99,235,0.08);
     transform: translateY(-2px);
 }
@@ -298,6 +324,8 @@ main {
 .tarjetaAccion .btnEliminar:hover {
     background-color: #ba1313;
 }
+
+
 
 
 /* -----------------------------

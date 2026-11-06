@@ -1,7 +1,8 @@
 const apiUrl = new URL('../../api/UsuariosAPI.php', document.currentScript.src).href;
 
 // Referencias al DOM
-const contenedorTarjetas = document.getElementById('contenedorUsuarios');
+const contenedorAdmins = document.getElementById('contenedorAdmins');
+const contenedorUsuarios = document.getElementById('contenedorUsuarios');
 const btnAnadir = document.getElementById('btnAnadir');
 const dialogPopup = document.getElementById('popupUsuario');
 const formUsuario = document.getElementById('formularioUsuario');
@@ -23,12 +24,14 @@ async function cargarUsuarios() {
         if (!respuesta.ok) throw new Error(`Error HTTP ${respuesta.status}`);
         const usuarios = await respuesta.json();
         
-        contenedorTarjetas.innerHTML = ''; 
+        contenedorAdmins.innerHTML = '';
+        contenedorUsuarios.innerHTML = '';
         if (estadisticaTotal) estadisticaTotal.textContent = usuarios.length; // Actualiza el contador
 
         usuarios.forEach(usuario => {
             const article = document.createElement('article');
-            article.className = 'tarjeta-usu';
+            const esAdmin = String(usuario.rol).toUpperCase() === 'ADMIN';
+            article.className = `tarjeta-usu ${esAdmin ? 'admin' : 'usuario'}`;
             const detalles = document.createElement('div');
             detalles.className = 'tarjeta-info';
 
@@ -92,7 +95,7 @@ async function cargarUsuarios() {
 
             acciones.append(botonEditar, botonEliminar);
             article.append(detalles, acciones);
-            contenedorTarjetas.appendChild(article);
+            (esAdmin ? contenedorAdmins : contenedorUsuarios).appendChild(article);
         });
     } catch (error) {
         console.error("Error al cargar:", error);
