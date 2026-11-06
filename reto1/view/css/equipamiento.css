@@ -26,7 +26,6 @@
     display: flex; 
     align-items: center; 
     gap: 8px; 
-
 }
 
 .stat-number { 
@@ -129,11 +128,11 @@
     table-layout: auto;
 }
 .eq-table th { 
-    background: #fff79d; 
+    background: #0b1b42; 
     padding: 16px 20px; 
     font-size: 13px; 
     font-weight: 500; 
-    color: #6b7280; 
+    color: #ffffff; 
     border-bottom: 1px solid #e5e7eb; 
     white-space: nowrap; 
 }
@@ -164,6 +163,17 @@
 }
 
 /* =========================================
+      TABLE ROW COLORS alternate
+   ========================================= */
+
+.eq-table tr[id^="row-"]:nth-child(4n+1) {
+    background-color: #ffffff;
+}
+
+.eq-table tr[id^="row-"]:nth-child(4n+3) {
+    background-color: #f0f0f0;
+}
+/* =========================================
       TABLE CONTENT
    ========================================= */
 .eq-item-name { 
@@ -173,16 +183,19 @@
     font-weight: 400; 
 }
 
+/* =========================================
+      TABLE CONTENT ICONS
+   ========================================= */
 .eq-item-icon { 
-    color: #9ca3af; 
+    color: #814017; 
     font-size: 18px; 
     width: 20px; 
     text-align: center; 
 }
 
 .eq-badge { 
-    background: #eff6ff; 
-    color: #2563eb; 
+    background: #ead9cf; 
+    color: #653010;; 
     padding: 4px 10px; 
     border-radius: 6px; 
     font-size: 11px; 
@@ -242,7 +255,7 @@
 
 /* Botón Guardar (Verde) */
 .eq-btn-save { 
-    background-color: #10b981; 
+    background-color: #1a6a0a; 
 }
 .eq-btn-save:hover { 
     background-color: #059669; 
@@ -255,6 +268,8 @@
 .eq-btn-cancel:hover { 
     background-color: #4b5563; 
 }
+
+
 
 /* =========================================
       FOOTER PAGINATION
@@ -439,13 +454,22 @@
     border-right: none;
 }
 
+/* ... (keep your .eq-tabs-container, .eq-tabs, and base .eq-tab as they are) ... */
+
+/* Hover state (optional, makes it light gray when you mouse over) */
 .eq-tab:hover {
     color: #111827;
+    background-color: #f3f4f6; 
 }
 
+/* 👇 ACTIVE (CLICKED) TAB 👇 */
 .eq-tab.active {
-    color: #111827;
+    color: #FFFFFF; /* Text becomes white so it's readable */
     font-weight: 600;
+    
+    /* 🎨 PUT YOUR NEW COLOR HERE */
+    background-color: #0b1b42; /* Example: Dark blue (matches your buttons) */
+    border-radius: 8px;
 }
 
 /* 👇 THE ARROW (CSS TRIANGLE) 👇 */
@@ -457,7 +481,9 @@
     transform: translateX(-50%);
     border-width: 10px 10px 0 10px;
     border-style: solid;
-    border-color: white transparent transparent transparent;
+    
+    /* 🎨 THE ARROW MUST MATCH THE TAB BACKGROUND COLOR */
+    border-color: #0b1b42 transparent transparent transparent; 
     z-index: 10;
 }
 
@@ -626,20 +652,97 @@
     min-width: 50px;
 }
 /* =========================================
-   ALTERNATE ROW COLORS (Zebra Striping)
+   ESTILOS DEL MODAL (Iguales a Ubicaciones)
    ========================================= */
-
-/* Filas pares (2, 4, 6...) */
-.eq-table tbody tr:nth-child(even) {
-    background-color: #f9fafb; /* 👈 Color gris muy clarito */
+.eq-modal {
+    position: fixed;
+    width: 100%; 
+    height: 100%;
+    background: rgba(0,0,0,0.4); 
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    border: none;
+    padding: 0;
+    margin: 0;
 }
 
-/* Filas impares (1, 3, 5...) */
-.eq-table tbody tr:nth-child(odd) {
-    background-color: #ffffff; /* Blanco puro */
+.eq-modal:not([open]) {
+    display: none;
 }
 
-/* El fondo al pasar el ratón por encima (opcional, pero queda muy bien) */
-.eq-table tbody tr:hover {
-    background-color: #eff6ff; /* Azul muy clarito al pasar el ratón */
+.eq-modal[open] {
+    display: flex;
+}
+
+.eq-modal-content {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.eq-modal-content h3 {
+    margin: 0 0 20px 0;
+    font-weight: 600;
+    color: #111827;
+}
+
+.eq-form-grupo {
+    margin-bottom: 15px;
+}
+
+.eq-form-grupo label {
+    display: block;
+    font-size: 13px;
+    color: #6b7280;
+    margin-bottom: 5px;
+}
+
+.eq-form-grupo input, 
+.eq-form-grupo select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    box-sizing: border-box;
+    font-family: inherit;
+    font-size: 14px;
+}
+
+.eq-modal-acciones {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 25px;
+}
+
+.eq-btn-cancelar {
+    background: #f3f4f6;
+    border: 1px solid #e5e7eb;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    color: #111827;
+    transition: 0.2s;
+}
+.eq-btn-cancelar:hover {
+    background: #e5e7eb;
+}
+
+.eq-btn-guardar {
+    background: #0f172a;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: 0.2s;
+}
+.eq-btn-guardar:hover {
+    background: #1e293b;
 }

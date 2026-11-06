@@ -29,39 +29,6 @@ main {
    BARRA DE NAVEGACION SUPERIOR 
    ------------------------------- */
 
-/* La barra de arriba del todo, se queda pegada al techo al bajar con el raton */
-.top-navbar { 
-    background-color: #fff2b3; 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    height: 84px; 
-    padding: 0 40px; 
-    position: sticky; 
-    top: 0; 
-    z-index: 1000; 
-}
-
-/* Mete los enlaces del menu en una fila */
-.nav-tabs { 
-    display: flex; 
-    gap: 8px; 
-    align-items: center; 
-    flex: 1; 
-}
-
-/* El aspecto normal de los botones del menu */
-.nav-tabs a { 
-    text-decoration: none; 
-    color: #4b5563; 
-    font-weight: 500; 
-    font-size: 14px; 
-    padding: 10px 20px; 
-    border-radius: 20px; 
-    transition: 0.2s; 
-    background-color: #efece3; 
-}
-
 /* Hover del raton en los links */
 .nav-tabs a:hover { 
     background-color: #e5e1d5; 
