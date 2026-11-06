@@ -19,7 +19,6 @@
         <!-- Titulo de la seccion -->
         <div class="header-usu">
             <h1 class="titulo-usu">Gestión de Usuarios</h1>
-            <p class="subtitulo-usu">Consulta y organiza los usuarios del sistema</p>
         </div>
 
         <!-- Tarjetas de estadísticas -->
@@ -49,10 +48,16 @@
             </button>
         </div>
 
-        <!-- Contenedor cuadricula para las tarjetas de usuarios -->
-        <div class="usu-contenedor-tarjetas" id="contenedorUsuarios">
-            
-
+        <!-- Usuarios agrupados por rol -->
+        <div class="usu-grupos">
+            <section class="usu-grupo">
+                <h2 class="usu-grupo-titulo">Administradores</h2>
+                <div class="usu-contenedor-tarjetas" id="contenedorAdmins"></div>
+            </section>
+            <section class="usu-grupo">
+                <h2 class="usu-grupo-titulo">Usuarios</h2>
+                <div class="usu-contenedor-tarjetas" id="contenedorUsuarios"></div>
+            </section>
         </div>
     </main>
 
