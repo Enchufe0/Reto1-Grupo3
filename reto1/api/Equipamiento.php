@@ -37,8 +37,15 @@ try {
     checkLogin();
 
     if ($httpMethod === 'GET') {
-        echo json_encode($equipamientoController->listar());
+        // --- comprobamos si nos piden una ubicacion concreta ADRINA ---
+        if (isset($_GET['id_ubicacion'])) {
+            $idUbicacion = (int)$_GET['id_ubicacion'];
+            echo json_encode($equipamientoController->listarPorUbicacion($idUbicacion));
+        } else {
+            echo json_encode($equipamientoController->listar());
+        }
         exit;
+        // ------------------------------------------------------------------
     }
 
     if ($httpMethod === 'POST') {
