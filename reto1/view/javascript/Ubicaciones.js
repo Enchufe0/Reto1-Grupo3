@@ -186,14 +186,17 @@ async function cargarEquiposUbicacion(idUbicacion) {
         } else {
             // Dibujamos cada equipo encontrado
             equipos.forEach(equipo => {
-                
-                contenedorEquipos.innerHTML += `
-                    <div class="item-equipo">
-                        <span class="nombre-equipo"><strong>${equipo.nombre}</strong></span>
-                        <span class="ubi-estado-equipo">${equipo.estado || ''}</span>
-                    </div>
-                `;
-            });
+            contenedorEquipos.innerHTML += `
+                <div class="item-equipo">
+                    <!-- Convertimos el nombre en un enlace que pasa el ID por la URL -->
+                    <a href="index.html?page=equipamientos&highlight=${equipo.id_equipamiento}" class="nombre-equipo" style="text-decoration: none; color: #0d1b2a;">
+                        <strong>${equipo.nombre}</strong>
+                        <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 12px; margin-left: 5px; color: #6b7280;"></i>
+                    </a>
+                    <span class="ubi-estado-equipo">${equipo.estado || ''}</span>
+                </div>
+            `;
+        });
         }
 
         // Marcamos como cargado para que si el usuario cierra y abre el desplegable no vuelva a cargar

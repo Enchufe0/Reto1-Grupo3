@@ -490,9 +490,9 @@ body.colorblind-mode .perfil-modal-content {
     background-color: #FFFFFF !important;
     border: 2px solid #000000 !important;
 }
-body.colorblind-mode .ubi-btn-cancelar,
-body.colorblind-mode .btn-cancelar {
-    background-color: #872200 !important;
+body.colorblind-mode #popupEliminar .ubi-btn-cancelar,
+body.colorblind-mode #popupEliminar .btn-cancelar {
+    background-color: #051BFF !important;
     color: #FFFFFF !important;
     border: 2px solid #000000 !important;
 }
@@ -778,4 +778,21 @@ body.colorblind-mode .row-highlight,
 body.colorblind-mode .row-highlight td {
     background-color: #FFCB00 !important; /* Amarillo daltonismo */
     border-bottom: 2px solid #000000 !important; /* Borde negro para mantener el estilo */
+}
+
+/*----------------------------
+UBICACIONES: CONTRASTE EN MODO DALTONICO
+------------------------------*/
+
+/* Oscurece la línea que separa el aula de la lista de equipos al desplegarla. */
+body.colorblind-mode .contenido-desplegable {
+    border-top: 2px solid #000000 !important;
+}
+
+/* Aumenta el contraste del nombre del aula y de cada equipo. */
+body.colorblind-mode .nombre-aula,
+body.colorblind-mode .nombre-equipo,
+body.colorblind-mode .ubi-nombre-equipo {
+    color: #000000 !important;
+    font-weight: 700 !important;
 }
