@@ -1,22 +1,26 @@
-// 1. Get the form elements immediately
+// 1. Get the form elements
 const loginForm = document.getElementById('loginForm');
-const rememberSwitch = document.getElementById('rememberSwitch');
+const errorDiv = document.getElementById('login-error');
 
-// 2. Toggle "Remember Me"
-if (rememberSwitch) {
-    rememberSwitch.addEventListener('click', function () {
-        this.classList.toggle('on'); 
-    });
-}
-
-// 3. Handle Login Submission
+// 2. Handle Login Submission
 if (loginForm) {
     loginForm.addEventListener('submit', async function(event) {
         event.preventDefault();
         
         const btnLogin = document.getElementById('btnLogin');
-        const inputUsuario = document.getElementById('usuario').value;
+        
+        const inputUsuario = document.getElementById('usuario').value.trim();
         const inputPassword = document.getElementById('password').value;
+
+        // Hide previous errors
+        errorDiv.style.display = 'none';
+
+        // Prevent blank spaces / empty fields
+        if (inputUsuario === '' || inputPassword.trim() === '') {
+            errorDiv.textContent = "El usuario y la contraseña no pueden estar vacíos.";
+            errorDiv.style.display = 'block';
+            return;
+        }
         
         btnLogin.textContent = "Cargando...";
         btnLogin.disabled = true;
@@ -36,15 +40,42 @@ if (loginForm) {
             if (respuesta.ok) {
                 window.location.href = 'index.html?page=equipamientos';
             } else {
-                alert(datos.error || "Usuario o contraseña incorrectos");
+                errorDiv.textContent = "Usuario o contraseña incorrectos. Por favor, inténtalo de nuevo.";
+                errorDiv.style.display = 'block';
                 btnLogin.textContent = "Iniciar sesión";
                 btnLogin.disabled = false;
             }
         } catch (error) {
             console.error("Error:", error);
-            alert("Error de conexión con el servidor.");
+            errorDiv.textContent = "Error de conexión con el servidor. Inténtalo más tarde.";
+            errorDiv.style.display = 'block';
             btnLogin.textContent = "Iniciar sesión";
             btnLogin.disabled = false;
         }
     });
 }
+
+// 3. --- CLEAR INPUT (X) FUNCTIONALITY ---
+function setupClearButton(inputId, btnId) {
+    const input = document.getElementById(inputId);
+    const btn = document.getElementById(btnId);
+    
+    if (!input || !btn) return;
+
+    const toggleBtn = () => {
+        btn.style.display = input.value.length > 0 ? 'block' : 'none';
+    };
+
+    toggleBtn();
+    input.addEventListener('input', toggleBtn);
+
+    btn.addEventListener('click', () => {
+        input.value = '';
+        toggleBtn();
+        input.focus(); 
+    });
+}
+
+// Initialize for both fields
+setupClearButton('usuario', 'clear-usuario');
+setupClearButton('password', 'clear-password');

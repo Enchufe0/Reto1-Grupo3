@@ -1,116 +1,124 @@
 <?php
-    require_once __DIR__ . '/../model/Usuarios.php';
-    require_once __DIR__ . '/../model/RolUsuario.php';
+require_once 'Usuarios.php';
 
-    use rolUsuario\RolUsuario;
+class UsuariosDAO
+{
+    private PDO $conexion;
 
-    class UsuariosDAO {
-        private PDO $conexion;
-
-        public function __construct(PDO $conexion) {
+    // Guarda la conexión para utilizarla en las operaciones de acceso a datos.
+    public function __construct(PDO $conexion){
             $this->conexion = $conexion;
-        }
+    }
 
-        public function crear(Usuarios $usuario): int|false {
-            $sql = 'INSERT INTO usuarios (nombre, apellidos, nombre_usuario, password_hash)
-                    VALUES (:nombre, :apellidos, :nombre_usuario, :password_hash)';
-            $stmt = $this->conexion->prepare($sql);
-            $exito = $stmt->execute([
-                'nombre' => $usuario->getNombre(),
-                'apellidos' => $usuario->getApellidos(),
-                'nombre_usuario' => $usuario->getNombreUsuario(),
-                'password_hash' => $usuario->getPasswordHash()
-            ]);
+    // Comprueba las credenciales comparando la contraseña con el hash almacenado.
+    public function login(string $nombre_usuario, string $password): bool
+    {
+        $sql = "SELECT password_hash FROM usuarios WHERE nombre_usuario = ?";
 
-            return $exito ? (int) $this->conexion->lastInsertId() : false;
-        }
+        // La consulta preparada separa los datos recibidos de la instrucción SQL.
+        $stmt = $this->conexion->prepare($sql);
+        $stmt->execute([$nombre_usuario]);
 
-        public function obtenerTodas(): array {
-            $stmt = $this->conexion->query('SELECT * FROM usuarios');
-            $listaUsuarios = [];
+        $password_hash = $stmt->fetchColumn();
 
-            while ($fila = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                $listaUsuarios[] = $this->crearModelo($fila);
-            }
+        return $password_hash !== false && password_verify($password, $password_hash);
+    }
 
-            return $listaUsuarios;
-        }
+    // Busca un usuario por su ID y devuelve el objeto correspondiente o null si no existe.
+    public function buscarPorId(int $id){
+        $sql = "SELECT * FROM usuarios WHERE id_usuario = ?";
 
-        public function obtenerPorId(int $id): ?Usuarios {
-            $stmt = $this->conexion->prepare(
-                'SELECT * FROM usuarios WHERE id_usuario = :id_usuario'
-            );
-            $stmt->execute(['id_usuario' => $id]);
-            $fila = $stmt->fetch(PDO::FETCH_ASSOC);
+        $stmt = $this->conexion->prepare($sql);
+        $stmt->execute([$id]);
 
-            return $fila === false ? null : $this->crearModelo($fila);
-        }
+        $fila = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        public function actualizar(Usuarios $usuario, bool $actualizarPassword = false): bool {
-            if ($actualizarPassword) {
-                $sql = 'UPDATE usuarios
-                        SET nombre = :nombre, apellidos = :apellidos,
-                            nombre_usuario = :nombre_usuario, password_hash = :password_hash
-                        WHERE id_usuario = :id_usuario';
-            } else {
-                $sql = 'UPDATE usuarios
-                        SET nombre = :nombre, apellidos = :apellidos,
-                            nombre_usuario = :nombre_usuario
-                        WHERE id_usuario = :id_usuario';
-            }
-
-            $parametros = [
-                'nombre' => $usuario->getNombre(),
-                'apellidos' => $usuario->getApellidos(),
-                'nombre_usuario' => $usuario->getNombreUsuario(),
-                'id_usuario' => $usuario->getIdUsuario()
-            ];
-            if ($actualizarPassword) {
-                $parametros['password_hash'] = $usuario->getPasswordHash();
-            }
-
-            $stmt = $this->conexion->prepare($sql);
-            return $stmt->execute($parametros);
-        }
-
-        public function actualizarPassword(Usuarios $usuario, string $nuevaPassword): bool {
-            $stmt = $this->conexion->prepare(
-                'UPDATE usuarios SET password_hash = :password_hash WHERE id_usuario = :id_usuario'
-            );
-
-            return $stmt->execute([
-                'password_hash' => password_hash($nuevaPassword, PASSWORD_DEFAULT),
-                'id_usuario' => $usuario->getIdUsuario()
-            ]);
-        }
-
-        public function borrar(int $id): bool {
-            $stmt = $this->conexion->prepare(
-                'DELETE FROM usuarios WHERE id_usuario = :id_usuario'
-            );
-
-            return $stmt->execute(['id_usuario' => $id]);
-        }
-
-        public function login(string $nombreUsuario, string $password): bool {
-            $stmt = $this->conexion->prepare(
-                'SELECT password_hash FROM usuarios WHERE nombre_usuario = :nombre_usuario LIMIT 1'
-            );
-            $stmt->execute(['nombre_usuario' => $nombreUsuario]);
-            $passwordHash = $stmt->fetchColumn();
-
-            return $passwordHash !== false && password_verify($password, $passwordHash);
-        }
-
-        private function crearModelo(array $fila): Usuarios {
+        if ($fila) {
             return new Usuarios(
-                (int) $fila['id_usuario'],
+                $fila['id_usuario'],
                 $fila['nombre'],
                 $fila['apellidos'],
                 $fila['nombre_usuario'],
                 $fila['password_hash'],
-                RolUsuario::from($fila['rol'])
+                $fila['rol']
             );
         }
+
+        return null;
     }
-?>
+
+    // Recupera todos los usuarios y convierte cada fila en un objeto Usuarios.
+    public function buscarTodos(){
+        $sql = "SELECT * FROM usuarios";
+
+        $stmt = $this->conexion->prepare($sql);
+        $stmt->execute();
+
+        $fila = $stmt->fetchAll(PDO::FETCH_OBJ);
+
+        // Acumula los objetos creados a partir de las filas obtenidas.
+        $usuarios=[];
+
+        foreach($fila as $filaUsuarios){
+            $usuario= new usuarios(
+                $filaUsuarios->id_usuario,
+                $filaUsuarios->nombre,
+                $filaUsuarios->apellido,
+                $filaUsuarios->nombre_usuario,
+                $filaUsuarios->password_hash,
+                $filaUsuarios->rol
+            );
+            $usuarios[] = $usuario;
+        }
+        return $usuarios;
+    }
+
+    // Inserta un usuario nuevo usando sus datos y devuelve si la ejecución tuvo éxito.
+    public function crear(Usuarios $usuario): bool{
+        $sql = "INSERT INTO usuarios (nombre, apellidos, nombre_usuario, password_hash) VALUES (?, ?, ?, ?)";
+
+        $stmt = $this->conexion->prepare($sql);
+        return $stmt->execute([
+            $usuario->getNombre(),
+            $usuario->getApellidos(),
+            $usuario->getNombreUsuario(),
+            $usuario->getPasswordHash()
+        ]);
+    }
+
+    // Actualiza los datos del usuario identificado por su ID.
+    public function actualizar(Usuarios $usuario): bool{
+        $sql = "UPDATE usuarios SET nombre = ?, apellidos = ?, nombre_usuario = ?, password_hash = ? WHERE id_usuario = ?";
+
+        $stmt = $this->conexion->prepare($sql);
+        return $stmt->execute([
+            $usuario->getNombre(),
+            $usuario->getApellidos(),
+            $usuario->getNombreUsuario(),
+            $usuario->getPasswordHash(),
+            $usuario->getIdUsuario()
+        ]);
+    }
+
+    // Genera un hash para la nueva contraseña y lo guarda para el usuario.
+    public function actualizar_password(Usuarios $usuario, string $nuevaPassword): bool
+    {
+        $hashed_password = password_hash($nuevaPassword, PASSWORD_DEFAULT);
+        $sql = "UPDATE usuarios SET password_hash = ? WHERE id_usuario = ?";
+
+        $stmt = $this->conexion->prepare($sql);
+
+        return $stmt->execute([
+            $hashed_password,
+            $usuario->getIdUsuario()
+        ]);
+    }
+
+    // Elimina el usuario que tenga el ID indicado.
+    public function borrar(int $id): bool{
+        $sql = "DELETE FROM usuarios WHERE id_usuario = ?";
+
+        $stmt = $this->conexion->prepare($sql);
+        return $stmt->execute([$id]);
+    }
+}

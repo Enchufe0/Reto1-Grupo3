@@ -1,130 +1,78 @@
 <?php
-    require_once __DIR__ . '/../model/Usuarios.php';
-    require_once __DIR__ . '/../model/RolUsuario.php';
-    require_once __DIR__ . '/../dao/UsuariosDAO.php';
 
-    use rolUsuario\RolUsuario;
+require_once 'Usuarios.php';
+require_once 'UsuariosDAO.php';
 
-    class UsuariosController {
+    class UsuariosController{
+
         private UsuariosDAO $usuariosDAO;
 
-        public function __construct(PDO $conexion) {
+        // Crea el controlador y prepara el acceso a datos con la conexión recibida.
+        public function __construct(PDO $conexion){
             $this->usuariosDAO = new UsuariosDAO($conexion);
         }
 
-        public function obtenerTodas(): array {
-            $lista = $this->usuariosDAO->obtenerTodas();
-            $resultado = [];
+        // Obtiene todos los usuarios a través del DAO.
+        public function listar(){
+            $listaUsuarios = $this->usuariosDAO->buscarTodos();
 
-            foreach ($lista as $usuario) {
-                $resultado[] = $this->usuarioComoArray($usuario);
-            }
-
-            return $resultado;
+            return 'PorDefinir';
         }
 
-        public function obtenerPorId(int $id): ?array {
-            $usuario = $this->usuariosDAO->obtenerPorId($id);
+        // Recoge los datos del formulario, construye el usuario y solicita su creación.
+        public function guardarNuevo(){
+            $nombre_cliente = $_POST['nombre'];
+            $apellido_cliente = $_POST['apellido'];
+            $nombre_username_cliente = $_POST['nombre_usuarios'];
+            $password_hash_cliente = $_POST['password_hash'];
+            $rol_cliente = $_POST['rol'];
 
-            return $usuario === null ? null : $this->usuarioComoArray($usuario);
+            // El ID inicial es 0 porque el usuario aún no se ha guardado.
+            $usuarioNuevo = new Usuarios(0, $nombre_cliente, $apellido_cliente, $nombre_username_cliente, $password_hash_cliente,$rol_cliente);
+
+            $exito = $this->usuariosDAO->crear($usuarioNuevo);
+
+            if($exito){
+                header("PorDefinir");
+            }else{
+                echo "ERROR al guardar en la base de datos";
+            }
         }
 
-        public function crear(array $datos): int|false {
-            if (!$this->tieneCamposTexto($datos, ['nombre', 'apellidos', 'nombre_usuario'])
-                || !isset($datos['password'])
-                || !is_string($datos['password'])
-                || trim($datos['password']) === '') {
-                return false;
-            }
+        // Recoge los datos del formulario y solicita al DAO la actualización del usuario.
+        public function actualizar(){
+            $id_usuario = (int) $_POST['id'];
+            $nombre_cliente = $_POST['nombre'];
+            $apellido_cliente = $_POST['apellido'];
+            $nombre_username_cliente = $_POST['nombre_usuarios'];
+            $password_hash_cliente = $_POST['password_hash'];
+            $rol_cliente = $_POST['rol'];
 
-            $usuario = new Usuarios(
-                0,
-                trim($datos['nombre']),
-                trim($datos['apellidos']),
-                trim($datos['nombre_usuario']),
-                password_hash($datos['password'], PASSWORD_DEFAULT),
-                RolUsuario::USER
+            $usuarioActualizado = new Usuarios(
+                $id_usuario,
+                $nombre_cliente,
+                $apellido_cliente,
+                $nombre_username_cliente,
+                $password_hash_cliente,
+                $rol_cliente
             );
 
-            return $this->usuariosDAO->crear($usuario);
+            $exito = $this->usuariosDAO->actualizar($usuarioActualizado);
+
+            if($exito){
+                header("PorDefinir");
+            }else{
+                echo "ERROR al actualizar en la base de datos";
+            }
         }
 
-        public function actualizar(int $id, array $datos): ?bool {
-            if (!$this->tieneCamposTexto($datos, ['nombre', 'apellidos', 'nombre_usuario'])) {
-                return false;
-            }
+        // Obtiene el ID de la solicitud y solicita al DAO que elimine ese usuario.
+        public function eliminar(){
+            $id_borrar = (int) $_GET['id'];
 
-            if (array_key_exists('password', $datos)
-                && (!is_string($datos['password'])
-                    || ($datos['password'] !== '' && trim($datos['password']) === ''))) {
-                return false;
-            }
+            $this->usuariosDAO->borrar($id_borrar);
 
-            $usuarioExistente = $this->usuariosDAO->obtenerPorId($id);
-            if ($usuarioExistente === null) {
-                return null;
-            }
-
-            $actualizarPassword = isset($datos['password']) && $datos['password'] !== '';
-            $usuario = new Usuarios(
-                $id,
-                trim($datos['nombre']),
-                trim($datos['apellidos']),
-                trim($datos['nombre_usuario']),
-                $actualizarPassword
-                    ? password_hash($datos['password'], PASSWORD_DEFAULT)
-                    : $usuarioExistente->getPasswordHash(),
-                $usuarioExistente->getCategoria()
-            );
-
-            return $this->usuariosDAO->actualizar($usuario, $actualizarPassword);
-        }
-
-        public function actualizarPassword(int $id, array $datos): ?bool {
-            if (!$this->tieneCamposTexto($datos, ['password'])) {
-                return false;
-            }
-
-            $usuario = $this->usuariosDAO->obtenerPorId($id);
-            if ($usuario === null) {
-                return null;
-            }
-
-            return $this->usuariosDAO->actualizarPassword($usuario, $datos['password']);
-        }
-
-        public function eliminar(int $id): ?bool {
-            if ($this->usuariosDAO->obtenerPorId($id) === null) {
-                return null;
-            }
-
-            return $this->usuariosDAO->borrar($id);
-        }
-
-        public function login(string $nombreUsuario, string $password): bool {
-            return $this->usuariosDAO->login($nombreUsuario, $password);
-        }
-
-        private function tieneCamposTexto(array $datos, array $campos): bool {
-            foreach ($campos as $campo) {
-                if (!isset($datos[$campo])
-                    || !is_string($datos[$campo])
-                    || trim($datos[$campo]) === '') {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        private function usuarioComoArray(Usuarios $usuario): array {
-            return [
-                'id_usuario' => $usuario->getIdUsuario(),
-                'nombre' => $usuario->getNombre(),
-                'apellidos' => $usuario->getApellidos(),
-                'nombre_usuario' => $usuario->getNombreUsuario(),
-                'rol' => $usuario->getCategoria()->value
-            ];
+            header("PorDefinir");
         }
     }
 ?>

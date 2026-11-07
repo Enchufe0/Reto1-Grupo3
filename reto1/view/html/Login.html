@@ -14,23 +14,28 @@
             <h1>Bienvenido</h1>
             <div class="subtitle">Inicia sesión en tu cuenta</div>
 
+            <!-- USER INPUT -->
             <div class="input-box">
                 <i class="fa-solid fa-user"></i>
-                <input type="text" id="usuario" placeholder="Usuario" autocomplete="off" required>
+                <input type="text" id="usuario" placeholder="Usuario" autocomplete="username" required>
+                <button type="button" class="clear-input" id="clear-usuario">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
             </div>
 
+            <!-- PASSWORD INPUT -->
             <div class="input-box">
                 <i class="fa-solid fa-lock"></i>
-                <input type="password" id="password" placeholder="Contraseña" autocomplete="off" required>
+                <input type="password" id="password" placeholder="Contraseña" autocomplete="current-password" required>
+                <button type="button" class="clear-input" id="clear-password">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
             </div>
 
-            <div class="forgot">
-                <div class="remember">
-                    <div class="switch" id="rememberSwitch"></div>
-                    Recordarme
-                </div>
-            </div>
+            <!-- ERROR MESSAGE -->
+            <div id="login-error" class="login-error"></div>
 
+            <!-- SUBMIT BUTTON -->
             <button type="submit" id="btnLogin">Iniciar sesión</button>
         </form>
 

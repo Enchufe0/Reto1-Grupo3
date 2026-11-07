@@ -192,10 +192,6 @@ main {
     border-bottom: 1px solid #b7b5b5; 
 }
 
-.desplegable-planta:nth-child(even) { /*es un selector de CSS que elige los elementos que ocupan posiciones pares entre sus hermanos*/
-    background-color: #f0f0f0;
-}
-
 /* A la ultima le quitamos la raya para que el borde final quede limpio */
 .desplegable-planta:last-child { /*lo usamos para decirle al css que busque el ULTIMO y aplique lo que queramos*/
     border-bottom: none; 

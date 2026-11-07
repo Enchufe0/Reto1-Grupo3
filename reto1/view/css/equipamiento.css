@@ -29,7 +29,7 @@
 }
 
 .stat-number { 
-    color: #111827; 
+    color: #6b7280;; 
     font-size: 20px; 
     font-weight: 500; 
 }
@@ -161,18 +161,17 @@
 .eq-table tr:last-child td { 
     border-bottom: none; 
 }
-
 /* =========================================
-      TABLE ROW COLORS alternate
+   FIX ALTERNATE ROWS: EQUIPAMIENTOS (Odd/Even)
    ========================================= */
+/* Main Color */
+#eq-table-body tr[id^="row-"]:nth-child(odd) { background-color: #ffffff !important; }
+#eq-table-body tr[id^="row-"]:nth-child(even) { background-color: #f9fafb !important; }
 
-.eq-table tr[id^="row-"]:nth-child(4n+1) {
-    background-color: #ffffff;
-}
+/* Daltonismo */
+body.colorblind-mode #eq-table-body tr[id^="row-"]:nth-child(odd) { background-color: #FFFFFF !important; }
+body.colorblind-mode #eq-table-body tr[id^="row-"]:nth-child(even) { background-color: #F3F4F6 !important; }
 
-.eq-table tr[id^="row-"]:nth-child(4n+3) {
-    background-color: #f0f0f0;
-}
 /* =========================================
       TABLE CONTENT
    ========================================= */
@@ -745,4 +744,69 @@
 }
 .eq-btn-guardar:hover {
     background: #1e293b;
+}
+
+
+/* Paste this at the bottom of equipamiento.css */
+
+.search-clear-btn {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: #e5e7eb; /* Light gray circle */
+    display: none; 
+    align-items: center;
+    justify-content: center;
+    border: none;
+    color: #6b7280; 
+    font-size: 12px;
+    cursor: pointer;
+    z-index: 10;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.search-clear-btn.visible {
+    display: flex; 
+}
+
+.search-clear-btn:hover {
+    background-color: #d1d5db;
+    color: #000000;
+}
+
+/* =========================================
+   EQUIPAMIENTOS PAGE - LAYOUT FIXES
+   ========================================= */
+
+/* 1. Filter Bar Container */
+.eq-filters-bar { 
+    display: flex !important; flex-direction: row !important; flex-wrap: nowrap !important; 
+    gap: 12px !important; align-items: center !important; margin-bottom: 24px !important; width: 100% !important; 
+}
+
+/* 2. Search Box */
+.eq-filters-bar .eq-search-box { 
+    flex: 1 1 auto !important; min-width: 200px !important; display: flex !important; 
+    align-items: center !important; background: white !important; border: 1px solid #e5e7eb !important; 
+    border-radius: 8px !important; padding: 0 16px !important; 
+}
+
+/* 3. Location Select */
+.eq-filters-bar .eq-select { 
+    flex: 0 0 auto !important; width: auto !important; min-width: 180px !important; 
+    padding: 12px 36px 12px 16px !important; border: 1px solid #e5e7eb !important; 
+    border-radius: 8px !important; background-color: #ffffff !important; color: #111827 !important; 
+    height: 48px !important; cursor: pointer; 
+}
+
+/* 4. Create Button */
+.eq-filters-bar .eq-btn-primary { 
+    flex: 0 0 auto !important; display: flex !important; align-items: center !important; justify-content: center !important; 
+    gap: 8px !important; background: #0b1b42 !important; color: white !important; border: none !important; 
+    padding: 12px 20px !important; border-radius: 8px !important; height: 48px !important; 
+    font-size: 14px !important; font-weight: 500 !important; cursor: pointer; white-space: nowrap !important; 
 }

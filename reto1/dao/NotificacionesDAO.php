@@ -103,8 +103,7 @@
                     SET titulo = :titulo, descripcion = :descripcion, 
                         fecha_creacion = :fecha_creacion, estado = :estado,
                         id_usuario = :id_usuario
-                    WHERE id_notificacion = :id
-                      AND (estado <> :estado_completado OR :estado = :estado_completado_nuevo)";
+                    WHERE id_notificacion = :id";
 
             $stmt = $this->conexion->prepare($sql);
 
@@ -112,25 +111,10 @@
             $stmt->bindValue(':descripcion', $notificacion->getDescripcion());
             $stmt->bindValue(':fecha_creacion', $notificacion->getFechaCreacion());
             $stmt->bindValue(':estado', $notificacion->getEstado()->value);
-            $stmt->bindValue(':estado_completado', EstadoNotificaciones::REALIZADA->value);
-            $stmt->bindValue(':estado_completado_nuevo', EstadoNotificaciones::REALIZADA->value);
             $stmt->bindValue(':id_usuario', $notificacion->getIdUsuario());
             $stmt->bindValue(':id', $notificacion->getIdNotificacion());
 
-            return $stmt->execute() && $stmt->rowCount() > 0;
-        }
-
-        public function actualizarEstado(int $id, EstadoNotificaciones $estado): bool {
-            $sql = "UPDATE notificaciones
-                    SET estado = :estado
-                    WHERE id_notificacion = :id AND estado <> :estado_completado";
-
-            $stmt = $this->conexion->prepare($sql);
-            $stmt->bindValue(':estado', $estado->value);
-            $stmt->bindValue(':id', $id, PDO::PARAM_INT);
-            $stmt->bindValue(':estado_completado', EstadoNotificaciones::REALIZADA->value);
-
-            return $stmt->execute() && $stmt->rowCount() > 0;
+            return $stmt->execute();
         }
 
         // DELETE

@@ -1,10 +1,7 @@
 /* =========================================
    1. GLOBAL VARIABLES & SETUP
    ========================================= */
-// Base URL for dynamic CSS loading
 const appCssBaseUrl = new URL('../css/', document.currentScript.src);
-
-// Notification state variables
 let notificationUserId = null;
 let notifications = [];
 
@@ -12,12 +9,10 @@ let notifications = [];
    2. INITIALIZATION & SESSION CHECK
    ========================================= */
 document.addEventListener("DOMContentLoaded", async () => {
-    // index.html?page=equipamientos
     const urlParams = new URLSearchParams(window.location.search);
     let page = urlParams.get('page') || 'login';
 
     // --- COLORBLIND MODE INITIALIZATION ---
-    // Check if user had colorblind mode enabled previously
     const isColorblind = localStorage.getItem('modoDaltonismo') === 'true';
     if (isColorblind) {
         document.body.classList.add('colorblind-mode');
@@ -26,24 +21,20 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     try {
-        // Check session with the API
         const res = await fetch('api/Login.php', { method: 'GET' });
         const sessionData = await res.json();
 
         if (sessionData.autenticado === false) {
-            // NOT LOGGED IN
             if (page !== 'login') {
                 window.location.href = 'index.html?page=login';
                 return;
             }
             loadView('login');
-            
         } else {
-            // LOGGED IN
             const user = sessionData.usuario;
             window.ROL = user.rol; 
             window.USUARIO_ID = user.id_usuario;
-            window.USUARIO_DATA = user; // 👈 Guardamos los datos para el Perfil
+            window.USUARIO_DATA = user;
 
             if (page === 'login') {
                 window.location.href = 'index.html?page=equipamientos';
@@ -77,13 +68,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             initializeNotificationDropdown(user.id_usuario);
 
-            // Highlight the active tab
             document.querySelectorAll('.nav-link').forEach(link => {
                 if (link.dataset.page === page) link.classList.add('active');
                 else link.classList.remove('active');
             });
 
-            // Load the specific view
             loadView(page, user.rol);
         }
     } catch (error) {
@@ -93,7 +82,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 /* =========================================
-   3. AQUI ESTA LOS METODOS PARA CARGAR VISTAS DINAMICAMENTE
+   3. DYNAMIC VIEW LOADER
    ========================================= */
 async function loadView(pageName, role) {
     const mainContent = document.getElementById('app-content');
@@ -103,35 +92,22 @@ async function loadView(pageName, role) {
     let cssFile = '';
     let jsFile = '';
 
-    // --- MAPA DE LOS ARCHIVOS ---
     if (pageName === 'login') { 
-        htmlFile = 'Login'; // HTML -MIZARNE
-        jsFile = 'Login';   // JS -MIZARNE
-    } 
-    else if (pageName === 'equipamientos') {
-        htmlFile = 'Equipamientos'; // HTML -MIZARNE
-        jsFile = 'Equipamiento';    // JS -MIZARNE
-    } 
-    else if (pageName === 'usuarios') {
-        htmlFile = 'Usuarios'; // HTML - ADRIAN
-        jsFile = 'Usuarios';   // JS - ADRIAN
-    } 
-    else if (pageName === 'ubicaciones') {
-        htmlFile = 'Ubicaciones'; // HTML - ADRIAN
-        cssFile = 'Ubicaciones';
-        jsFile = 'Ubicaciones';   // JS - ADRIAN
-    } 
-    else if (pageName === 'notificaciones') {
+        htmlFile = 'Login'; jsFile = 'Login';
+    } else if (pageName === 'equipamientos') {
+        htmlFile = 'Equipamientos'; jsFile = 'Equipamiento';
+    } else if (pageName === 'usuarios') {
+        htmlFile = 'Usuarios'; jsFile = 'Usuarios';
+    } else if (pageName === 'ubicaciones') {
+        htmlFile = 'Ubicaciones'; cssFile = 'Ubicaciones'; jsFile = 'Ubicaciones';
+    } else if (pageName === 'notificaciones') {
         const showNotificationList = new URLSearchParams(window.location.search).get('vista') === 'lista';
-        htmlFile = role === 'ADMIN' && !showNotificationList ? 'NotificacionesAdmin' : 'NotificacionesLista';
+        htmlFile = (role === 'ADMIN' && !showNotificationList) ? 'NotificacionesAdmin' : 'NotificacionesLista';
         if (htmlFile === 'NotificacionesLista') jsFile = 'Notificaciones';
-    } 
-    else if (pageName === 'historico') {
-        htmlFile = 'Historico'; // HTML -MIZARNE
-        jsFile = 'Historico';   // JS -MIZARNE
+    } else if (pageName === 'historico') {
+        htmlFile = 'Historico'; jsFile = 'Historico';
     }
 
-    // --- CARGAR HTML ---
     try {
         const res = await fetch(`view/html/${htmlFile}.html`);
         if (!res.ok) throw new Error(`No se encontró ${htmlFile}.html`);
@@ -148,14 +124,9 @@ async function loadView(pageName, role) {
     }
 }
 
-/* =========================================
-   4. DYNAMIC ASSET LOADERS (CSS & JS)
-   ========================================= */
 function loadPageCSS(cssFileName) {
-    // Remove old specific CSS
     const oldCSS = document.getElementById('dynamic-css');
     if (oldCSS) oldCSS.remove();
-
     if (cssFileName) {
         const link = document.createElement('link');
         link.id = 'dynamic-css';
@@ -166,10 +137,8 @@ function loadPageCSS(cssFileName) {
 }
 
 function loadPageJS(jsFileName) {
-    // Remove old specific JS
     const oldScript = document.getElementById('dynamic-script');
     if (oldScript) oldScript.remove();
-
     if (jsFileName) {
         const script = document.createElement('script');
         script.id = 'dynamic-script';
@@ -180,14 +149,26 @@ function loadPageJS(jsFileName) {
 }
 
 /* =========================================
-   5. NAVBAR UTILITIES & USER SETTINGS
+   4. NAVBAR UTILITIES & USER SETTINGS
    ========================================= */
 function toggleDropdown(event) {
     event.stopPropagation();
     document.getElementById('adminMenu').classList.toggle('show');
 }
 
-// --- PERFIL ---
+async function logout() {
+    try {
+        const response = await fetch('api/Login.php', { method: 'DELETE' });
+        if (response.ok) {
+            window.location.href = 'index.html?page=login';
+        } else {
+            window.location.href = 'index.html?page=login';
+        }
+    } catch (error) {
+        window.location.href = 'index.html?page=login';
+    }
+}
+
 async function abrirPerfil(event) {
     if (event) event.stopPropagation();
     const menu = document.getElementById('adminMenu');
@@ -202,14 +183,7 @@ async function abrirPerfil(event) {
 
     try {
         const res = await fetch('api/Perfil.php');
-        
-        // Si el servidor da error, leemos el texto para ver qué pasó
-        if (!res.ok) {
-            const text = await res.text();
-            console.error("Error del servidor:", text);
-            throw new Error("El servidor falló.");
-        }
-
+        if (!res.ok) throw new Error("El servidor falló.");
         const user = await res.json();
 
         document.getElementById('perfil-nombre').textContent = user.nombre || 'N/A';
@@ -217,8 +191,7 @@ async function abrirPerfil(event) {
         document.getElementById('perfil-usuario').textContent = user.nombre_usuario || 'N/A';
         document.getElementById('perfil-rol').textContent = user.rol || 'N/A';
         
-        const iniciales = (user.nombre || 'U').substring(0, 2).toUpperCase();
-        document.getElementById('perfil-avatar').textContent = iniciales;
+        document.getElementById('perfil-avatar').textContent = (user.nombre || 'U').substring(0, 2).toUpperCase();
 
     } catch (error) {
         console.error("Error en fetch:", error);
@@ -226,42 +199,40 @@ async function abrirPerfil(event) {
         cerrarPerfil();
     }
 }
+
 function cerrarPerfil() {
     const modal = document.getElementById('perfilModal');
-    if (modal && typeof modal.close === 'function') {
-        modal.close();
-    }
+    if (modal && typeof modal.close === 'function') modal.close();
 }
-// --- MODO DALTONISMO (Encender / Apagar) ---
+
 function toggleColorblind(event) {
     if (event) event.stopPropagation();
-    
     const body = document.body;
     const switchEl = document.getElementById('colorblindSwitch');
     
-    // 1. Alternar la clase en el body (añadir o quitar)
     body.classList.toggle('colorblind-mode');
-    
-    // 2. Mover el interruptor visualmente
     switchEl.classList.toggle('active');
     
-    // 3. Guardar la preferencia en el navegador
-    const isColorblind = body.classList.contains('colorblind-mode');
-    localStorage.setItem('modoDaltonismo', isColorblind);
+    localStorage.setItem('modoDaltonismo', body.classList.contains('colorblind-mode'));
 }
 
-// --- COMPROBAR ESTADO AL CARGAR LA PÁGINA ---
+// Close modal when clicking outside
 document.addEventListener("DOMContentLoaded", () => {
-    // Si el usuario lo había activado antes, se enciende
-    const isColorblind = localStorage.getItem('modoDaltonismo') === 'true';
-    if (isColorblind) {
-        document.body.classList.add('colorblind-mode');
-        const switchEl = document.getElementById('colorblindSwitch');
-        if (switchEl) switchEl.classList.add('active');
+    const modal = document.getElementById('perfilModal');
+    if (modal) {
+        modal.addEventListener("click", (e) => {
+            const rect = modal.getBoundingClientRect();
+            const isInDialog = (
+                e.clientX >= rect.left && e.clientX <= rect.right &&
+                e.clientY >= rect.top && e.clientY <= rect.bottom
+            );
+            if (!isInDialog) modal.close();
+        });
     }
 });
+
 /* =========================================
-   6. NOTIFICATIONS SYSTEM
+   5. NOTIFICATIONS SYSTEM
    ========================================= */
 function notificationStorageKey() {
     return `ordenza-notificaciones-leidas-${notificationUserId}`;
@@ -270,7 +241,6 @@ function notificationStorageKey() {
 function getReadNotificationIds() {
     const savedIds = localStorage.getItem(notificationStorageKey());
     if (savedIds === null) return new Set();
-
     const parsedIds = JSON.parse(savedIds);
     if (!Array.isArray(parsedIds)) throw new Error('El estado de lectura guardado no es válido.');
     return new Set(parsedIds.map(String));
@@ -332,9 +302,7 @@ async function fetchNotifications() {
 
 function initializeNotificationDropdown(userId) {
     notificationUserId = userId;
-    fetchNotifications().catch(error => {
-        console.error('Error al cargar las notificaciones:', error);
-    });
+    fetchNotifications().catch(error => console.error('Error al cargar las notificaciones:', error));
 }
 
 async function toggleNotifications(event) {
@@ -352,6 +320,7 @@ async function toggleNotifications(event) {
     toggle.setAttribute('aria-expanded', 'true');
     const list = document.getElementById('notificationList');
     list.replaceChildren();
+    
     const loadingMessage = document.createElement('p');
     loadingMessage.className = 'notification-menu__message';
     loadingMessage.textContent = 'Cargando notificaciones...';
@@ -377,51 +346,3 @@ async function toggleNotifications(event) {
         list.appendChild(message);
     }
 }
-// Cerrar el modal de perfil si se hace clic fuera de la caja blanca
-document.addEventListener("DOMContentLoaded", () => {
-    const modal = document.getElementById('perfilModal');
-    if (modal) {
-        modal.addEventListener("click", (e) => {
-            const rect = modal.getBoundingClientRect();
-            const isInDialog = (
-                e.clientX >= rect.left &&
-                e.clientX <= rect.right &&
-                e.clientY >= rect.top &&
-                e.clientY <= rect.bottom
-            );
-            if (!isInDialog) {
-                modal.close();
-            }
-        });
-    }
-});
-
-/* =========================================
-   MODO DALTONISMO
-   ========================================= */
-function toggleColorblind(event) {
-    if (event) event.stopPropagation(); // Evita que el menú se cierre de golpe
-    
-    const body = document.body;
-    const switchEl = document.getElementById('colorblindSwitch');
-    
-    // 1. Alternar la clase en el body (añade o quita los colores)
-    body.classList.toggle('colorblind-mode');
-    
-    // 2. Mover el interruptor visualmente
-    switchEl.classList.toggle('active');
-    
-    // 3. Guardar la preferencia en el navegador
-    const isColorblind = body.classList.contains('colorblind-mode');
-    localStorage.setItem('modoDaltonismo', isColorblind);
-}
-
-// Al cargar la página, comprobar si el usuario ya lo tenía activado
-document.addEventListener("DOMContentLoaded", () => {
-    const isColorblind = localStorage.getItem('modoDaltonismo') === 'true';
-    if (isColorblind) {
-        document.body.classList.add('colorblind-mode');
-        const switchEl = document.getElementById('colorblindSwitch');
-        if (switchEl) switchEl.classList.add('active');
-    }
-});

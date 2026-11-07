@@ -377,3 +377,31 @@ if (formCrear) {
         }
     });
 }
+// ==========================================
+// SEARCH BAR CLEAR (X) LOGIC
+// ==========================================
+const searchInput = document.getElementById('search-input');
+const clearSearchBtn = document.getElementById('clear-search-eq');
+
+if (searchInput && clearSearchBtn) {
+    // 1. Show/hide the X as the user types
+    searchInput.addEventListener('input', () => {
+        if (searchInput.value.length > 0) {
+            clearSearchBtn.classList.add('visible');
+        } else {
+            clearSearchBtn.classList.remove('visible');
+        }
+    });
+
+    // 2. Clear the input and refresh the table when X is clicked
+    clearSearchBtn.addEventListener('click', () => {
+        searchInput.value = ''; // Clear text
+        clearSearchBtn.classList.remove('visible'); // Hide X
+        
+        // Trigger the 'input' event so your existing renderizarTabla() runs automatically
+        searchInput.dispatchEvent(new Event('input')); 
+        
+        // Put the cursor back in the search box
+        searchInput.focus(); 
+    });
+}

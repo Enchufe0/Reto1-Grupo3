@@ -158,3 +158,18 @@ async function verHistorialExpandido(id) {
         contentDiv.innerHTML = `<p style="text-align:center; color: red;">Error: ${err.message}</p>`;
     }
 }
+// Search Clear Logic for Historico
+const searchHis = document.getElementById('search-input');
+const clearHis = document.getElementById('clear-search-his');
+
+if (searchHis && clearHis) {
+    searchHis.addEventListener('input', () => {
+        clearHis.classList.toggle('visible', searchHis.value.length > 0);
+    });
+    clearHis.addEventListener('click', () => {
+        searchHis.value = '';
+        clearHis.classList.remove('visible');
+        searchHis.dispatchEvent(new Event('input')); // Triggers table refresh
+        searchHis.focus();
+    });
+}
