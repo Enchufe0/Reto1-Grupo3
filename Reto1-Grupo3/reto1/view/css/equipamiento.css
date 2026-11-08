@@ -162,7 +162,7 @@
     border-bottom: none; 
 }
 /* =========================================
-   FIX ALTERNATE ROWS: EQUIPAMIENTOS (Odd/Even)
+   ALTERNATE ROWS
    ========================================= */
 /* Main Color */
 #eq-table-body tr[id^="row-"]:nth-child(odd) { background-color: #ffffff !important; }
@@ -233,7 +233,7 @@ body.colorblind-mode #eq-table-body tr[id^="row-"]:nth-child(even) { background-
     cursor: pointer; 
     transition: 0.2s; 
     border: none;
-    color: white; /* Hace los iconos blancos */
+    color: white; 
 }
 
 /* Botón Editar (Naranja) */
@@ -271,7 +271,7 @@ body.colorblind-mode #eq-table-body tr[id^="row-"]:nth-child(even) { background-
 
 
 /* =========================================
-      FOOTER PAGINATION
+      FOOTER 
    ========================================= */
 .eq-footer { 
     display: flex; 
@@ -452,36 +452,28 @@ body.colorblind-mode #eq-table-body tr[id^="row-"]:nth-child(even) { background-
 .eq-tab:last-child {
     border-right: none;
 }
-
-/* ... (keep your .eq-tabs-container, .eq-tabs, and base .eq-tab as they are) ... */
-
-/* Hover state (optional, makes it light gray when you mouse over) */
 .eq-tab:hover {
     color: #111827;
     background-color: #f3f4f6; 
 }
 
-/* 👇 ACTIVE (CLICKED) TAB 👇 */
+/* ACTIVE (CLICKED) TAB */
 .eq-tab.active {
-    color: #FFFFFF; /* Text becomes white so it's readable */
+    color: #FFFFFF; 
     font-weight: 600;
-    
-    /* 🎨 PUT YOUR NEW COLOR HERE */
-    background-color: #0b1b42; /* Example: Dark blue (matches your buttons) */
+    background-color: #0b1b42; 
     border-radius: 8px;
 }
 
-/* 👇 THE ARROW (CSS TRIANGLE) 👇 */
+/* ARROW */
 .eq-tab.active::after {
     content: '';
     position: absolute;
-    bottom: -10px; /* Points downwards */
+    bottom: -10px; 
     left: 50%;
     transform: translateX(-50%);
     border-width: 10px 10px 0 10px;
     border-style: solid;
-    
-    /* 🎨 THE ARROW MUST MATCH THE TAB BACKGROUND COLOR */
     border-color: #0b1b42 transparent transparent transparent; 
     z-index: 10;
 }
@@ -647,7 +639,7 @@ body.colorblind-mode #eq-table-body tr[id^="row-"]:nth-child(even) { background-
     flex: 1;
     height: 2px;
     background: #d1d5db;
-    margin-top: 16px; /* Centra la línea con los iconos */
+    margin-top: 16px; 
     min-width: 50px;
 }
 /* =========================================
@@ -746,9 +738,6 @@ body.colorblind-mode #eq-table-body tr[id^="row-"]:nth-child(even) { background-
     background: #1e293b;
 }
 
-
-/* Paste this at the bottom of equipamiento.css */
-
 .search-clear-btn {
     position: absolute;
     right: 12px;
@@ -757,7 +746,7 @@ body.colorblind-mode #eq-table-body tr[id^="row-"]:nth-child(even) { background-
     width: 24px;
     height: 24px;
     border-radius: 50%;
-    background-color: #e5e7eb; /* Light gray circle */
+    background-color: #e5e7eb; 
     display: none; 
     align-items: center;
     justify-content: center;
@@ -779,7 +768,7 @@ body.colorblind-mode #eq-table-body tr[id^="row-"]:nth-child(even) { background-
 }
 
 /* =========================================
-   EQUIPAMIENTOS PAGE - LAYOUT FIXES
+   EQUIPAMIENTOS 
    ========================================= */
 
 /* 1. Filter Bar Container */
@@ -805,8 +794,19 @@ body.colorblind-mode #eq-table-body tr[id^="row-"]:nth-child(even) { background-
 
 /* 4. Create Button */
 .eq-filters-bar .eq-btn-primary { 
-    flex: 0 0 auto !important; display: flex !important; align-items: center !important; justify-content: center !important; 
-    gap: 8px !important; background: #0b1b42 !important; color: white !important; border: none !important; 
-    padding: 12px 20px !important; border-radius: 8px !important; height: 48px !important; 
-    font-size: 14px !important; font-weight: 500 !important; cursor: pointer; white-space: nowrap !important; 
+    flex: 0 0 auto !important; 
+    display: flex;
+    align-items: center !important; 
+    justify-content: center !important; 
+    gap: 8px !important; 
+    background: #0b1b42 !important; 
+    color: white !important; 
+    border: none !important; 
+    padding: 12px 20px !important; 
+    border-radius: 8px !important; 
+    height: 48px !important; 
+    font-size: 14px !important; 
+    font-weight: 500 !important; 
+    cursor: pointer; 
+    white-space: nowrap !important; 
 }
