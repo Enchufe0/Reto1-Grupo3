@@ -13,7 +13,6 @@ class EquipamientoDAO {
         return $this->dbConnection->query($query)->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // --- AÑADIDO PARA FILTRAR POR UBICACION ADRIAN ---
     public function listarPorUbicacion(int $idUbicacion): array {
         $query = "SELECT e.*, u.nombre AS ubicacion FROM equipamientos e 
                   JOIN ubicaciones u ON e.id_ubicacion_actual = u.id_ubicacion 
@@ -23,7 +22,7 @@ class EquipamientoDAO {
         $stmt->execute([':id_ubicacion' => $idUbicacion]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    // ------------------------------------------
+
 
     public function buscarPorId(int $id): ?array {
         $stmt = $this->dbConnection->prepare("SELECT * FROM equipamientos WHERE id_equipamiento = :id");
