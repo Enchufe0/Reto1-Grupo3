@@ -19,7 +19,7 @@
     </div>
 </div>
 
-<!-- 👇 FIXED FILTER BAR 👇 -->
+<!-- FILTER BAR-->
 <div class="eq-filters-bar">
     
     <!-- 1. Search Box (X is now INSIDE the search box) -->
@@ -43,9 +43,8 @@
     </button>
     
 </div>
-<!-- 👆 END OF FILTER BAR 👆 -->
 
-<!-- 👇 NUEVO DISEÑO DE TABS CON FLECHA 👇 -->
+<!-- TABS CON FLECHA -->
 <div class="eq-tabs-container">
     <div class="eq-tabs">
         <button class="eq-tab active" data-category="">Todos</button>
@@ -139,7 +138,7 @@
     </div>
 </div>
 
-<!-- 👇 NUEVO POPUP PARA ELIMINAR EQUIPO 👇 -->
+<!-- POPUP PARA ELIMINAR EQUIPO -->
 <div id="modal-eliminar-eq" class="eq-modal" style="display: none;">
     <div class="eq-modal-content">
         <h3>Eliminar Equipamiento</h3>
@@ -155,3 +154,26 @@
         </div>
     </div>
 </div>
+
+<!-- POPUP PARA ASIGNAR UBICACIÓN (SOLO CONSERJE) -->
+<dialog id="modal-asignar-ubicacion" class="eq-modal">
+    <div class="eq-modal-content">
+        <h3>Asignar Ubicación</h3>
+        <form id="form-asignar-ubicacion">
+            
+            <input type="hidden" id="asignar-id-eq">
+            
+            <div class="eq-form-grupo">
+                <label for="asignar-ubicacion-select">Nueva Ubicación</label>
+                <select id="asignar-ubicacion-select" required>
+                    <option value="">Cargando ubicaciones...</option>
+                </select>
+            </div>
+
+            <div class="eq-modal-acciones">
+                <button type="button" class="eq-btn-cancelar" onclick="cerrarModalAsignar()">Cancelar</button>
+                <button type="submit" class="eq-btn-guardar">Asignar</button>
+            </div>
+        </form>
+    </div>
+</dialog>
