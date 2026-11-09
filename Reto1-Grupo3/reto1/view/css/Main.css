@@ -1020,40 +1020,39 @@ body.colorblind-mode .search-clear-btn:hover {
 
 /* 1. BASE Y FONDO */
 body.dark-mode { 
-    background-color: #1c1c1c !important; /* Fondo principal */
+    background-color: #4c4c4c !important; /* Fondo principal */
     color: #FFFFFF !important; 
 }
 
 /* 2. NAVBAR Y FOOTER */
 body.dark-mode .top-navbar {
-    background-color: #011409 !important; 
+    background-color: #403f3f !important; 
 }
 body.dark-mode footer {
-    background-color: #01200f !important;
+    background-color: #4c4c4c !important;
     color: #9ec5ab !important;
-    border-top: 1px solid #9ec5ab !important;
 }
 body.dark-mode .login-logo-text { color: #FFFFFF !important; }
 
 /* 3. NAVEGACIÓN (TABS) */
 body.dark-mode .nav-tabs a {
-    background-color: #3a403b !important;
+    background-color: #2e2e2e!important;
     color: #d4e4d9 !important;
-    border: 1px solid #01200f !important;
+    
 }
 body.dark-mode .nav-tabs a:hover {
     background-color: #01200f !important;
     color: #FFFFFF !important;
 }
 body.dark-mode .nav-tabs a.active {
-    background-color: #023015 !important; 
+    background-color: #080808 !important; 
     color: #FFFFFF !important;
-    border: 1px solid #a7cab3 !important;
+    border: 1px solid #007029 !important;
 }
 
 /* 4. MENÚ DE USUARIO Y AVATAR */
 body.dark-mode .admin-dropdown { 
-    background-color: #3a403b !important; 
+    background-color: #2e2e2e !important; 
     color: #FFFFFF !important; 
 }
 body.dark-mode .admin-dropdown:hover {
@@ -1092,9 +1091,9 @@ body.dark-mode .btn-aceptar,
 body.dark-mode .notificaciones-lista__accion,
 body.dark-mode .eq-btn-guardar,
 body.dark-mode .perfil-btn-cerrar { 
-    background-color: #2f2f2f !important; 
+    background-color: #1b241f !important; 
     color: #FFFFFF !important; 
-    border: 1px solid #707070 !important; 
+    border: 1px solid #005720 !important; 
     transition: 0.2s;
 }
 body.dark-mode .eq-btn-primary:hover,
@@ -1113,7 +1112,7 @@ body.dark-mode .eq-btn-history,
 body.dark-mode .eq-btn-save { 
     background-color: #2f2f2f !important; 
     color: #ffffff !important; 
-    border: none !important;
+    border: 1px solid #4c4c4c !important;
     transition: 0.2s;
 }
 body.dark-mode .ubi-boton-editar:hover, 
@@ -1123,7 +1122,7 @@ body.dark-mode .eq-btn-history:hover {
     color: #011502 !important;
 }
 
-/* Eliminar (Fondo oscuro, hover rojo) */
+/* Eliminar */
 body.dark-mode .ubi-boton-eliminar, 
 body.dark-mode .btnEliminar,
 body.dark-mode .eq-btn-delete,
@@ -1134,7 +1133,7 @@ body.dark-mode .eq-btn-cancelar,
 body.dark-mode .ubi-btn-cancelar,
 body.dark-mode .btn-cancelar,
 body.dark-mode .eq-btn-secondary {
-    background-color: #01200f !important; 
+    background-color: #1b241f !important; 
     color: #FFFFFF !important;
     border: none !important;
 }
@@ -1151,7 +1150,7 @@ body.dark-mode textarea,
 body.dark-mode .eq-search-box, 
 body.dark-mode .ubi-buscador, 
 body.dark-mode .usu-buscador { 
-    background-color: #011502 !important; 
+    background-color: #021c04 !important; 
     color: #FFFFFF !important; 
     border: 1px solid #01200f !important; 
 }
@@ -1162,11 +1161,11 @@ body.dark-mode .usu-buscador input {
     border: none !important;
 }
 body.dark-mode input::placeholder {
-    color: #9ec5ab !important;
+    color: #e2f4e8 !important;
 }
 body.dark-mode .search-clear-btn {
-    background-color: #01200f !important;
-    color: #9ec5ab !important;
+    background-color: #01401e !important;
+    color: #ffffff !important;
 }
 body.dark-mode .search-clear-btn:hover {
     background-color: #9ec5ab !important;
@@ -1194,7 +1193,7 @@ body.dark-mode .eq-stat {
 /* Cabecera de las tablas */
 body.dark-mode .eq-table th, 
 body.dark-mode .notificaciones-lista__tabla th { 
-    background-color: #01200f !important;
+    background-color: #242726 !important;
     color: #FFFFFF !important; 
     border: none !important;
 }
@@ -1217,12 +1216,12 @@ body.dark-mode #historico-table-body tr[id^="row-"]:nth-child(4n+1) {
 }
 body.dark-mode #eq-table-body tr:nth-child(even),
 body.dark-mode #historico-table-body tr[id^="row-"]:nth-child(4n+3) {
-    background-color: #01200f !important; 
+    background-color: #252e29 !important; 
 }
 
 /* ICONOS (Verde Menta) */
 body.dark-mode .eq-item-icon {
-    color: #9ec5ab !important;
+    color: #aadab6 !important;
 }
 body.dark-mode .eq-location, 
 body.dark-mode .eq-location i,
@@ -1253,20 +1252,20 @@ body.dark-mode .desc-truncate:hover {
 
 /* Barra de Tabs de Categorías (Equipamientos) */
 body.dark-mode .eq-tabs-container {
-    background-color: #011502 !important;
+    background-color: #022203 !important;
     border: none !important;
 }
 body.dark-mode .eq-tab { 
     background-color: transparent !important; 
     color: #9CA3AF !important; 
-    border-right: 1px solid #01200f !important; 
+    border-right: 1px solid #133020 !important; 
 }
 body.dark-mode .eq-tab:last-child {
     border-right: none !important;
 }
 body.dark-mode .eq-tab.active { 
-    background-color: #01200f !important; 
-    color: #9ec5ab !important; 
+    background-color: #383d3a !important; 
+    color: #d5f6e0 !important; 
 }
 body.dark-mode .eq-tab.active::after { 
     border-color: #01200f transparent transparent transparent !important; 
@@ -1284,9 +1283,9 @@ body.dark-mode .popup-contenido,
 body.dark-mode .popup-eliminar-contenido,
 body.dark-mode .tarjeta-usu,
 body.dark-mode .desplegable-planta { 
-    background-color: #01200f !important; 
+    background-color: #393d3b !important; 
     color: #FFFFFF !important;
-    border: 1px solid #9ec5ab !important; 
+    border: 1px solid #3e4a42 !important; 
     box-shadow: 0 10px 30px rgba(0,0,0,0.8) !important;
 }
 
