@@ -1,64 +1,72 @@
 let todosLosEquipos = [];
 let currentCategoryFilter = ""; 
+let listaUbicaciones = [];
 
-if (window.ROL === 'ADMIN') {
+// ==========================================
+// 1. CARGA INICIAL Y BOTÓN CREAR
+// ==========================================
+async function iniciarEquipamientos() {
+    const rolUsuario = window.ROL ? window.ROL.toUpperCase() : 'USER';
     const btnCreate = document.getElementById('btn-crear-equipamiento');
-    if (btnCreate) btnCreate.style.display = 'flex';
-}
+    if (btnCreate) btnCreate.style.display = (rolUsuario === 'ADMIN') ? 'flex' : 'none';
 
-function normalizarTexto(texto) {
-    if (!texto) return '';
-    return texto.toString().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-}
+    // Cargar ubicaciones
+    try {
+        const resUbi = await fetch('api/UbicacionesAPI.php'); 
+        if (resUbi.ok) listaUbicaciones = await resUbi.json();
+    } catch (e) { console.error("Error ubicaciones:", e); }
 
-function obtenerIconoHTML(categoria) {
-    if (categoria === 'PORTATIL' || categoria === 'SOBREMESA') return '<i class="fa-solid fa-laptop"></i>';
-    if (categoria === 'PERIFERICO') return '<i class="fa-solid fa-computer-mouse"></i>';
-    if (categoria === 'AUDIOVISUAL') return '<i class="fa-solid fa-video"></i>';
-    return '<i class="fa-solid fa-box"></i>';
-}
+    // Cargar equipos (VERSIÓN DE DIAGNÓSTICO)
+    try {
+        const res = await fetch('api/Equipamiento.php');
+        
+        // Leemos la respuesta como texto plano primero para ver si PHP está escupiendo HTML
+        const textoRespuesta = await res.text();
+        
+        // Intentamos convertirlo a JSON
+        let data;
+        try {
+            data = JSON.parse(textoRespuesta);
+        } catch (e) {
+            alert("La API no devolvió JSON. Revisa la consola. El servidor dijo: " + textoRespuesta.substring(0, 100));
+            return;
+        }
 
-fetch('api/Equipamiento.php')
-    .then(res => res.json())
-    .then(data => {
-        if (!document.getElementById('eq-table-body')) return; 
+        // Si el JSON tiene un error, lo mostramos
+        if (data.error) {
+            alert("Error de la API: " + data.error);
+            return;
+        }
+
+        // Si no es una lista, lo mostramos
+        if (!Array.isArray(data)) {
+            alert("La API devolvió algo, pero no es una lista de equipos.");
+            console.log("Lo que devolvió:", data);
+            return;
+        }
+
+        // Si llegamos aquí, todo está perfecto
         todosLosEquipos = data;
         actualizarEstadisticas();
         renderizarTabla(); 
-    })
-    .catch(err => console.error(err));
 
-function actualizarEstadisticas() {
-    document.getElementById('stat-total').textContent = todosLosEquipos.length;
-    const categoriasUnicas = new Set(todosLosEquipos.map(e => e.categoria));
-    document.getElementById('stat-categories').textContent = categoriasUnicas.size;
-    const ubicacionesUnicas = new Set(todosLosEquipos.map(e => e.ubicacion));
-    document.getElementById('stat-locations').textContent = ubicacionesUnicas.size;
-
-    const locSelect = document.getElementById('filter-location');
-    if(locSelect) {
-        locSelect.innerHTML = '<option value="">Ubicación: Todas</option>';
-        ubicacionesUnicas.forEach(loc => {
-            if(loc) locSelect.innerHTML += `<option value="${loc}">${loc}</option>`;
-        });
+    } catch (err) {
+        alert("Error de red al intentar cargar equipos.");
+        console.error(err);
     }
 }
 
-document.querySelectorAll('.eq-tab').forEach(tab => {
-    tab.addEventListener('click', (e) => {
-        document.querySelectorAll('.eq-tab').forEach(t => t.classList.remove('active'));
-        e.target.classList.add('active');
-        currentCategoryFilter = e.target.getAttribute('data-category');
-        renderizarTabla();
-    });
-});
-
+// ==========================================
+// 2. RENDERIZAR TABLA Y BOTONES
+// ==========================================
 function renderizarTabla() {
     const tbody = document.getElementById('eq-table-body');
     if (!tbody) return;
 
-    const search = normalizarTexto(document.getElementById('search-input').value);
-    const filterLoc = document.getElementById('filter-location').value;
+    const searchInput = document.getElementById('search-input');
+    const search = searchInput ? normalizarTexto(searchInput.value) : '';
+    const filterLocElement = document.getElementById('filter-location');
+    const filterLoc = filterLocElement ? filterLocElement.value : '';
 
     const filtrados = todosLosEquipos.filter(e => {
         const matchSearch = normalizarTexto(e.nombre).includes(search) || 
@@ -72,7 +80,8 @@ function renderizarTabla() {
         return matchSearch && matchCat && matchLoc;
     });
 
-    document.getElementById('eq-showing-text').textContent = `Mostrando ${filtrados.length} de ${todosLosEquipos.length} equipamientos`;
+    const showingText = document.getElementById('eq-showing-text');
+    if (showingText) showingText.textContent = `Mostrando ${filtrados.length} de ${todosLosEquipos.length} equipamientos`;
 
     if (filtrados.length === 0) {
         tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding: 20px;">No se encontraron resultados.</td></tr>';
@@ -80,11 +89,18 @@ function renderizarTabla() {
     }
 
     let html = '';
+    const rolUsuario = window.ROL ? window.ROL.toUpperCase() : 'USER';
+
     filtrados.forEach(e => {
         let btns = `<div class="eq-actions-wrapper" id="actions-${e.id_equipamiento}">`;
-        if (window.ROL === 'ADMIN') {
+        
+        if (rolUsuario === 'ADMIN') {
             btns += `<button class="eq-action-btn eq-btn-edit" onclick="toggleEdit(${e.id_equipamiento})"><i class="fa-solid fa-pen"></i></button>`;
             btns += `<button class="eq-action-btn eq-btn-delete" onclick="borrarEquipo(${e.id_equipamiento})"><i class="fa-regular fa-trash-can"></i></button>`;
+        } else {
+            // Botón Asignar (Conserje)
+            const safeUbi = (e.ubicacion || 'Almacén').replace(/'/g, "\\'");
+            btns += `<button class="eq-action-btn" style="background-color: #2563eb; color: white; width: auto; padding: 0 12px; font-size: 13px;" onclick="abrirModalAsignar(${e.id_equipamiento}, '${safeUbi}')"><i class="fa-solid fa-location-dot"></i> Asignar</button>`;
         }
         btns += '</div>';
 
@@ -101,10 +117,8 @@ function renderizarTabla() {
                 </td>
                 <td><input type="text" id="edit-marca-${e.id_equipamiento}" class="inline-edit" value="${e.marca}" disabled></td>
                 <td><input type="text" id="edit-modelo-${e.id_equipamiento}" class="inline-edit" value="${e.modelo}" disabled></td>
-                
                 <td>
                     <span class="eq-badge" id="cat-span-${e.id_equipamiento}">${e.categoria}</span>
-                    
                     <select id="edit-cat-${e.id_equipamiento}" class="inline-edit eq-badge category-select" disabled style="display: none;">
                         <option value="PORTATIL" ${e.categoria === 'PORTATIL' ? 'selected' : ''}>Portátil</option>
                         <option value="SOBREMESA" ${e.categoria === 'SOBREMESA' ? 'selected' : ''}>Sobremesa</option>
@@ -113,7 +127,6 @@ function renderizarTabla() {
                         <option value="OTROS" ${e.categoria === 'OTROS' ? 'selected' : ''}>Otros</option>
                     </select>
                 </td>
-
                 <td>
                     <a href="index.html?page=historico&id=${e.id_equipamiento}" class="eq-location-link">
                         <i class="fa-solid fa-location-dot"></i> ${e.ubicacion || 'Almacén'}
@@ -133,8 +146,92 @@ function renderizarTabla() {
     tbody.innerHTML = html;
 }
 
-document.getElementById('search-input').addEventListener('input', renderizarTabla);
-document.getElementById('filter-location').addEventListener('change', renderizarTabla);
+// ==========================================
+// 3. LÓGICA DEL MODAL ASIGNAR
+// ==========================================
+window.abrirModalAsignar = function(idEquipo, ubicacionActual) {
+    document.getElementById('asignar-id-eq').value = idEquipo;
+    
+    const select = document.getElementById('asignar-ubicacion-select');
+    select.innerHTML = '<option value="">Selecciona una ubicación...</option>';
+    
+    if (listaUbicaciones && listaUbicaciones.length > 0) {
+        listaUbicaciones.forEach(ubi => {
+            const option = document.createElement('option');
+            option.value = ubi.id_ubicacion; 
+            option.textContent = ubi.nombre;
+            if (ubi.nombre === ubicacionActual) option.selected = true;
+            select.appendChild(option);
+        });
+    } else {
+        select.innerHTML = '<option value="">Error: No hay aulas cargadas</option>';
+    }
+
+    document.getElementById('modal-asignar-ubicacion').showModal();
+}
+
+window.cerrarModalAsignar = function() {
+    document.getElementById('modal-asignar-ubicacion').close();
+}
+
+// Escuchar el submit del modal
+document.addEventListener('submit', async (e) => {
+    if (e.target && e.target.id === 'form-asignar-ubicacion') {
+        e.preventDefault();
+        
+        const idEquipo = document.getElementById('asignar-id-eq').value;
+        const nuevaUbicacionId = document.getElementById('asignar-ubicacion-select').value;
+        
+        try {
+            const res = await fetch(`api/Equipamiento.php?id=${idEquipo}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id_ubicacion_actual: nuevaUbicacionId })
+            });
+
+            if (res.ok) {
+                cerrarModalAsignar();
+                location.reload(); 
+            } else {
+                const err = await res.json();
+                alert("Error al guardar: " + (err.error || "Desconocido"));
+            }
+        } catch (error) {
+            alert("Error de conexión.");
+        }
+    }
+});
+
+// ==========================================
+// 4. FUNCIONES AUXILIARES
+// ==========================================
+function normalizarTexto(texto) {
+    if (!texto) return '';
+    return texto.toString().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
+function obtenerIconoHTML(categoria) {
+    if (categoria === 'PORTATIL' || categoria === 'SOBREMESA') return '<i class="fa-solid fa-laptop"></i>';
+    if (categoria === 'PERIFERICO') return '<i class="fa-solid fa-computer-mouse"></i>';
+    if (categoria === 'AUDIOVISUAL') return '<i class="fa-solid fa-video"></i>';
+    return '<i class="fa-solid fa-box"></i>';
+}
+
+function actualizarEstadisticas() {
+    document.getElementById('stat-total').textContent = todosLosEquipos.length;
+    const categoriasUnicas = new Set(todosLosEquipos.map(e => e.categoria));
+    document.getElementById('stat-categories').textContent = categoriasUnicas.size;
+    const ubicacionesUnicas = new Set(todosLosEquipos.map(e => e.ubicacion));
+    document.getElementById('stat-locations').textContent = ubicacionesUnicas.size;
+
+    const locSelect = document.getElementById('filter-location');
+    if(locSelect) {
+        locSelect.innerHTML = '<option value="">Ubicación: Todas</option>';
+        ubicacionesUnicas.forEach(loc => {
+            if(loc) locSelect.innerHTML += `<option value="${loc}">${loc}</option>`;
+        });
+    }
+}
 
 function verDescripcion(texto) {
     document.getElementById('desc-text-content').textContent = texto;
@@ -145,9 +242,7 @@ function cerrarModalDesc() {
     document.getElementById('modal-desc').style.display = 'none';
 }
 
-// ==========================================
-// LÓGICA DE EDICIÓN INLINE
-// ==========================================
+// Lógica de edición y eliminación (ADMIN)
 function toggleEdit(id) {
     const row = document.getElementById(`row-${id}`);
     const nombreInput = document.getElementById(`edit-nombre-${id}`);
@@ -162,22 +257,18 @@ function toggleEdit(id) {
     nombreInput.disabled = false;
     marcaInput.disabled = false;
     modeloInput.disabled = false;
-    
     catSpan.style.display = 'none';
     catSelect.style.display = 'inline-block';
     catSelect.disabled = false;
-    
     descDiv.style.display = 'none';
     descInput.style.display = 'block';
     descInput.disabled = false;
-    
     row.classList.add('row-editing'); 
     
     actionsWrapper.innerHTML = `
         <button class="eq-action-btn eq-btn-save" onclick="guardarEdicion(${id})"><i class="fa-solid fa-check"></i></button>
         <button class="eq-action-btn eq-btn-cancel" onclick="cancelarEdicion(${id})"><i class="fa-solid fa-xmark"></i></button>
     `;
-    
     nombreInput.focus();
 }
 
@@ -193,21 +284,14 @@ async function guardarEdicion(id) {
     const actionsWrapper = document.getElementById(`actions-${id}`);
     const iconSpan = document.getElementById(`icon-${id}`);
 
-    if (nombreInput.value.trim() === '') {
-        alert("El nombre no puede estar vacío");
-        return;
-    }
+    if (nombreInput.value.trim() === '') return alert("El nombre no puede estar vacío");
 
     actionsWrapper.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
-
     const equipoOriginal = todosLosEquipos.find(e => e.id_equipamiento == id);
 
     const body = {
-        nombre: nombreInput.value,
-        marca: marcaInput.value,
-        modelo: modeloInput.value,
-        categoria: catSelect.value || 'OTROS',
-        descripcion: descInput.value
+        nombre: nombreInput.value, marca: marcaInput.value, modelo: modeloInput.value,
+        categoria: catSelect.value || 'OTROS', descripcion: descInput.value
     };
 
     try {
@@ -225,32 +309,19 @@ async function guardarEdicion(id) {
         equipoOriginal.categoria = body.categoria;
         equipoOriginal.descripcion = body.descripcion;
 
-        nombreInput.disabled = true;
-        marcaInput.disabled = true;
-        modeloInput.disabled = true;
-        
-        catSelect.style.display = 'none';
-        catSelect.disabled = true;
-        catSpan.style.display = 'inline-block';
-        catSpan.textContent = body.categoria; 
-        
-        descInput.disabled = true;
-        descInput.style.display = 'none';
-        descDiv.style.display = 'block';
-        descDiv.textContent = body.descripcion || 'Sin descripción';
+        nombreInput.disabled = true; marcaInput.disabled = true; modeloInput.disabled = true;
+        catSelect.style.display = 'none'; catSelect.disabled = true; catSpan.style.display = 'inline-block'; catSpan.textContent = body.categoria; 
+        descInput.disabled = true; descInput.style.display = 'none'; descDiv.style.display = 'block'; descDiv.textContent = body.descripcion || 'Sin descripción';
         
         const newSafeDesc = (body.descripcion || 'Sin descripción').replace(/'/g, "\\'");
         descDiv.setAttribute('onclick', `verDescripcion('${newSafeDesc}')`);
-
         iconSpan.innerHTML = obtenerIconoHTML(body.categoria);
-
         row.classList.remove('row-editing'); 
         
         actionsWrapper.innerHTML = `
             <button class="eq-action-btn eq-btn-edit" onclick="toggleEdit(${id})"><i class="fa-solid fa-pen"></i></button>
             <button class="eq-action-btn eq-btn-delete" onclick="borrarEquipo(${id})"><i class="fa-regular fa-trash-can"></i></button>
         `;
-
     } catch (error) {
         alert("ERROR: " + error.message);
         cancelarEdicion(id);
@@ -269,25 +340,12 @@ function cancelarEdicion(id) {
     const actionsWrapper = document.getElementById(`actions-${id}`);
 
     const equipoOriginal = todosLosEquipos.find(e => e.id_equipamiento == id);
-    
-    nombreInput.value = equipoOriginal.nombre;
-    marcaInput.value = equipoOriginal.marca;
-    modeloInput.value = equipoOriginal.modelo;
-    catSelect.value = equipoOriginal.categoria;
-    descInput.value = equipoOriginal.descripcion || '';
+    nombreInput.value = equipoOriginal.nombre; marcaInput.value = equipoOriginal.marca; modeloInput.value = equipoOriginal.modelo;
+    catSelect.value = equipoOriginal.categoria; descInput.value = equipoOriginal.descripcion || '';
 
-    nombreInput.disabled = true;
-    marcaInput.disabled = true;
-    modeloInput.disabled = true;
-    
-    catSelect.style.display = 'none';
-    catSelect.disabled = true;
-    catSpan.style.display = 'inline-block';
-    
-    descInput.disabled = true;
-    descInput.style.display = 'none';
-    descDiv.style.display = 'block';
-
+    nombreInput.disabled = true; marcaInput.disabled = true; modeloInput.disabled = true;
+    catSelect.style.display = 'none'; catSelect.disabled = true; catSpan.style.display = 'inline-block';
+    descInput.disabled = true; descInput.style.display = 'none'; descDiv.style.display = 'block';
     row.classList.remove('row-editing');
 
     actionsWrapper.innerHTML = `
@@ -296,9 +354,6 @@ function cancelarEdicion(id) {
     `;
 }
 
-// ==========================================
-// LÓGICA PARA ELIMINAR (CON POPUP)
-// ==========================================
 function borrarEquipo(id) {
     document.getElementById('delete-id-eq').value = id;
     document.getElementById('modal-eliminar-eq').style.display = 'flex';
@@ -310,98 +365,63 @@ function cerrarModalEliminar() {
 
 function confirmarEliminar() {
     const id = document.getElementById('delete-id-eq').value;
-    
     fetch(`api/Equipamiento.php?id=${id}`, { method: 'DELETE' })
         .then(res => {
-            if (res.ok) {
-                cerrarModalEliminar();
-                location.reload(); 
-            } else {
-                alert("Error al intentar eliminar el equipo.");
-            }
+            if (res.ok) { cerrarModalEliminar(); location.reload(); } 
+            else alert("Error al intentar eliminar el equipo.");
         })
-        .catch(err => {
-            console.error("Error de conexión:", err);
-            alert("Error de conexión con el servidor.");
-        });
+        .catch(err => alert("Error de conexión."));
 }
 
-// ==========================================
-// LÓGICA PARA CREAR
-// ==========================================
-function abrirModalCrear() { 
-    document.getElementById('modal-crear').showModal(); // 👈 Abre el dialog nativo
-}
+function abrirModalCrear() { document.getElementById('modal-crear').showModal(); }
+function cerrarModalCrear() { document.getElementById('modal-crear').close(); }
 
-function cerrarModalCrear() { 
-    document.getElementById('modal-crear').close();     // 👈 Cierra el dialog nativo
-}
-
-// El submit se queda igual
 const formCrear = document.getElementById('form-crear-eq');
 if (formCrear) {
     formCrear.addEventListener('submit', async (e) => {
         e.preventDefault();
-        
         const body = {
-            nombre: document.getElementById('new-nombre').value,
-            marca: document.getElementById('new-marca').value,
-            modelo: document.getElementById('new-modelo').value,
-            descripcion: document.getElementById('new-desc').value,
+            nombre: document.getElementById('new-nombre').value, marca: document.getElementById('new-marca').value,
+            modelo: document.getElementById('new-modelo').value, descripcion: document.getElementById('new-desc').value,
             categoria: document.getElementById('new-categoria').value
         };
-
         try {
-            const res = await fetch('api/Equipamiento.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(body)
-            });
-
-            if (!res.ok) {
-                const text = await res.text();
-                try {
-                    const json = JSON.parse(text);
-                    alert("❌ ERROR DEL SERVIDOR: " + json.error);
-                } catch(e) {
-                    alert("❌ ERROR GRAVE (PHP Crash): " + text.substring(0, 150));
-                }
-                return;
-            }
-
-            cerrarModalCrear();
-            location.reload();
-
-        } catch (error) {
-            alert("❌ ERROR DE CONEXIÓN: " + error.message);
-        }
+            const res = await fetch('api/Equipamiento.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+            if (!res.ok) return alert("Error del servidor al crear.");
+            cerrarModalCrear(); location.reload();
+        } catch (error) { alert("Error de conexión."); }
     });
 }
-// ==========================================
-// SEARCH BAR CLEAR (X) LOGIC
-// ==========================================
-const searchInput = document.getElementById('search-input');
-const clearSearchBtn = document.getElementById('clear-search-eq');
 
-if (searchInput && clearSearchBtn) {
-    // 1. Show/hide the X as the user types
-    searchInput.addEventListener('input', () => {
-        if (searchInput.value.length > 0) {
-            clearSearchBtn.classList.add('visible');
-        } else {
+// Eventos de búsqueda y carga
+
+    iniciarEquipamientos();
+
+    const searchInput = document.getElementById('search-input');
+    if (searchInput) searchInput.addEventListener('input', renderizarTabla);
+
+    const filterLoc = document.getElementById('filter-location');
+    if (filterLoc) filterLoc.addEventListener('change', renderizarTabla);
+
+    document.querySelectorAll('.eq-tab').forEach(tab => {
+        tab.addEventListener('click', (e) => {
+            document.querySelectorAll('.eq-tab').forEach(t => t.classList.remove('active'));
+            e.target.classList.add('active');
+            currentCategoryFilter = e.target.getAttribute('data-category');
+            renderizarTabla();
+        });
+    });
+
+    const clearSearchBtn = document.getElementById('clear-search-eq');
+    if (searchInput && clearSearchBtn) {
+        searchInput.addEventListener('input', () => {
+            if (searchInput.value.length > 0) clearSearchBtn.classList.add('visible');
+            else clearSearchBtn.classList.remove('visible');
+        });
+        clearSearchBtn.addEventListener('click', () => {
+            searchInput.value = '';
             clearSearchBtn.classList.remove('visible');
-        }
-    });
-
-    // 2. Clear the input and refresh the table when X is clicked
-    clearSearchBtn.addEventListener('click', () => {
-        searchInput.value = ''; // Clear text
-        clearSearchBtn.classList.remove('visible'); // Hide X
-        
-        // Trigger the 'input' event so your existing renderizarTabla() runs automatically
-        searchInput.dispatchEvent(new Event('input')); 
-        
-        // Put the cursor back in the search box
-        searchInput.focus(); 
-    });
-}
+            searchInput.dispatchEvent(new Event('input')); 
+            searchInput.focus(); 
+        });
+    }

@@ -37,7 +37,6 @@ try {
     checkLogin();
 
     if ($httpMethod === 'GET') {
-        // --- comprobamos si nos piden una ubicacion concreta ADRINA ---
         if (isset($_GET['id_ubicacion'])) {
             $idUbicacion = (int)$_GET['id_ubicacion'];
             echo json_encode($equipamientoController->listarPorUbicacion($idUbicacion));
@@ -45,18 +44,17 @@ try {
             echo json_encode($equipamientoController->listar());
         }
         exit;
-        // ------------------------------------------------------------------
     }
 
     if ($httpMethod === 'POST') {
-        checkAdmin(); // 👈 Only Admin can create
+        checkAdmin(); 
         $equipamientoController->crear($requestPayload);
         echo json_encode(['ok' => true, 'mensaje' => 'Equipo creado']);
         exit;
     }
 
-    if ($httpMethod === 'PUT') {
-        checkAdmin();
+        if ($httpMethod === 'PUT') {
+        checkLogin();
         $equipamientoController->actualizar($urlId, $requestPayload);
         echo json_encode(['ok' => true, 'mensaje' => 'Equipo actualizado']);
         exit;
