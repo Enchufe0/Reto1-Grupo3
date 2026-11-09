@@ -15,11 +15,9 @@ class EquipamientoController {
         return array_map([$this, 'normalizarEquipo'], $this->dao->listar());
     }
 
-    // --- AÑADIDO PARA FILTRAR POR UBICACION ADRIAN ---
     public function listarPorUbicacion(int $idUbicacion): array {
         return array_map([$this, 'normalizarEquipo'], $this->dao->listarPorUbicacion($idUbicacion));
     }
-    // ------------------------------------------
 
     public function crear($datos): bool {
         if (!is_array($datos)) {
@@ -51,7 +49,7 @@ class EquipamientoController {
         return true;
     }
 
-    public function actualizar($id, $datos): bool {
+      public function actualizar($id, $datos): bool {
         $id = (int)$id;
         if ($id <= 0) throw new Exception('ID inválido', 400);
         
@@ -62,13 +60,16 @@ class EquipamientoController {
         $categoriaEnum = CategoriaEquipamiento::tryFrom($categoriaTexto);
         if ($categoriaEnum === null) $categoriaEnum = CategoriaEquipamiento::OTROS;
 
+        $idUbicacion = isset($datos['id_ubicacion_actual']) ? (int)$datos['id_ubicacion_actual'] : null;
+
         $actualizado = $this->dao->actualizar(
             $id,
             trim($datos['nombre'] ?? $existente['nombre']),
             trim($datos['descripcion'] ?? $existente['descripcion']),
             trim($datos['marca'] ?? $existente['marca']),
             trim($datos['modelo'] ?? $existente['modelo']),
-            $categoriaEnum->value
+            $categoriaEnum->value,
+            $idUbicacion 
         );
 
         if (!$actualizado) throw new Exception('No se pudo actualizar', 500);

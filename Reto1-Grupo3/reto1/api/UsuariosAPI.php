@@ -190,15 +190,24 @@ try {
             }
             $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
+            // Falta la validacion de rol      -Miz
+            // Validar que el rol sea correcto
+            $rol = $datos['rol'] ?? 'USER';
+            if (!in_array($rol, ['ADMIN', 'USER'])) {
+                $rol = 'USER'; 
+            }
+
+
             $consulta = $conexion->prepare(
                 'INSERT INTO usuarios (nombre, apellidos, nombre_usuario, password_hash)
-                 VALUES (:nombre, :apellidos, :nombre_usuario, :password_hash)'
+                 VALUES (:nombre, :apellidos, :nombre_usuario, :password_hash, :rol)'
             );
             $consulta->execute([
                 'nombre' => trim($datos['nombre']),
                 'apellidos' => trim($datos['apellidos']),
                 'nombre_usuario' => trim($datos['nombre_usuario']),
-                'password_hash' => $passwordHash
+                'password_hash' => $passwordHash,
+                'rol' => $rol // he añadido el rol al array de parámetros -Miz
             ]);
 
             responderUsuarios([
@@ -237,30 +246,38 @@ try {
 
             $actualizarPassword = isset($datos['password']) && $datos['password'] !== '';
             if ($actualizarPassword) {
+
+             // Aqui lo mismo para validar rol
+            $rol = $datos['rol'] ?? 'USER';
+            if (!in_array($rol, ['ADMIN', 'USER'])) {
+                $rol = 'USER';
+            }
                 $consulta = $conexion->prepare(
                     'UPDATE usuarios
                      SET nombre = :nombre, apellidos = :apellidos, nombre_usuario = :nombre_usuario,
-                         password_hash = :password_hash
+                         password_hash = :password_hash, rol = :rol
                      WHERE id_usuario = :id_usuario'
                 );
-                $parametros = [
+                $parametros = [ 
                     'nombre' => trim($datos['nombre']),
                     'apellidos' => trim($datos['apellidos']),
                     'nombre_usuario' => trim($datos['nombre_usuario']),
                     'password_hash' => password_hash($datos['password'], PASSWORD_DEFAULT),
-                    'id_usuario' => $id
+                    'id_usuario' => $id,
+                    'rol' => $rol // lo mismo aqui
                 ];
             } else {
                 $consulta = $conexion->prepare(
                     'UPDATE usuarios
-                     SET nombre = :nombre, apellidos = :apellidos, nombre_usuario = :nombre_usuario
+                     SET nombre = :nombre, apellidos = :apellidos, nombre_usuario = :nombre_usuario, rol = :rol
                      WHERE id_usuario = :id_usuario'
                 );
                 $parametros = [
                     'nombre' => trim($datos['nombre']),
                     'apellidos' => trim($datos['apellidos']),
                     'nombre_usuario' => trim($datos['nombre_usuario']),
-                    'id_usuario' => $id
+                    'id_usuario' => $id,
+                    'rol' => $rol // y aqui
                 ];
             }
             $consulta->execute($parametros);

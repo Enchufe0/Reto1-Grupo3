@@ -12,12 +12,20 @@ document.addEventListener("DOMContentLoaded", async () => {
     const urlParams = new URLSearchParams(window.location.search);
     let page = urlParams.get('page') || 'login';
 
-    // --- COLORBLIND MODE INITIALIZATION ---
+        // --- COLORBLIND Dark Mode ---
     const isColorblind = localStorage.getItem('modoDaltonismo') === 'true';
+    const isDarkMode = localStorage.getItem('modoOscuro') === 'true';
+
     if (isColorblind) {
         document.body.classList.add('colorblind-mode');
         const switchEl = document.getElementById('colorblindSwitch');
         if (switchEl) switchEl.classList.add('active');
+    }
+
+    if (isDarkMode) {
+        document.body.classList.add('dark-mode');
+        const darkSwitchEl = document.getElementById('darkSwitch');
+        if (darkSwitchEl) darkSwitchEl.classList.add('active');
     }
 
     try {
@@ -41,13 +49,11 @@ document.addEventListener("DOMContentLoaded", async () => {
                 return;
             }
 
-            // Security Check (Block USER from admin pages)
+            // Security Check 
             if ((page === 'usuarios' || page === 'ubicaciones') && user.rol !== 'ADMIN') {
                 window.location.href = 'index.html?page=equipamientos';
                 return;
             }
-
-            // Setup Navbar UI
             document.getElementById('main-navbar').style.display = 'flex';
             document.getElementById('main-footer').style.display = 'block';
             document.getElementById('nav-username').textContent = user.nombre;
@@ -149,7 +155,7 @@ function loadPageJS(jsFileName) {
 }
 
 /* =========================================
-   4. NAVBAR UTILITIES & USER SETTINGS
+   4. NAVBAR UTILITIES and USER SETTINGS
    ========================================= */
 function toggleDropdown(event) {
     event.stopPropagation();
@@ -207,15 +213,43 @@ function cerrarPerfil() {
 
 function toggleColorblind(event) {
     if (event) event.stopPropagation();
+
     const body = document.body;
     const switchEl = document.getElementById('colorblindSwitch');
+    const darkSwitch = document.getElementById('darkSwitch');
     
-    body.classList.toggle('colorblind-mode');
-    switchEl.classList.toggle('active');
+    const isActive = body.classList.toggle('colorblind-mode');
+    if (switchEl) switchEl.classList.toggle('active', isActive);
     
-    localStorage.setItem('modoDaltonismo', body.classList.contains('colorblind-mode'));
+    // Si enciende Daltonismo, apagamos el Modo Oscuro
+    if (isActive) {
+        body.classList.remove('dark-mode');
+        if (darkSwitch) darkSwitch.classList.remove('active');
+        localStorage.setItem('modoOscuro', 'false');
+    }
+    
+    localStorage.setItem('modoDaltonismo', isActive);
 }
 
+function toggleDarkMode(event) {
+    if (event) event.stopPropagation();
+
+    const body = document.body;
+    const darkSwitch = document.getElementById('darkSwitch');
+    const cbSwitch = document.getElementById('colorblindSwitch');
+    
+    const isActive = body.classList.toggle('dark-mode');
+    if (darkSwitch) darkSwitch.classList.toggle('active', isActive);
+    
+    // Si enciende Modo Oscuro, apagamos Daltonismo
+    if (isActive) {
+        body.classList.remove('colorblind-mode');
+        if (cbSwitch) cbSwitch.classList.remove('active');
+        localStorage.setItem('modoDaltonismo', 'false');
+    }
+    
+    localStorage.setItem('modoOscuro', isActive);
+}
 // Close modal when clicking outside
 document.addEventListener("DOMContentLoaded", () => {
     const modal = document.getElementById('perfilModal');
@@ -346,3 +380,32 @@ async function toggleNotifications(event) {
         list.appendChild(message);
     }
 }
+/* =========================================
+   CERRAR MENUS AL HACER CLIC FUERA para todos
+   ========================================= */
+
+window.addEventListener('click', function(event) {
+    
+    // MENÚ DE USUARIO (Perfil, Daltonismo, Salir)
+    const adminMenu = document.getElementById('adminMenu');
+    const adminBtn = document.querySelector('.admin-dropdown'); 
+
+    if (adminMenu && adminMenu.classList.contains('show')) {
+        // Si el clic NO ha sido dentro del menú Y TAMPOCO en el botón
+        if (!adminMenu.contains(event.target) && !adminBtn.contains(event.target)) {
+            adminMenu.classList.remove('show');
+        }
+    }
+
+    // MENÚ DE NOTIFICACIONES 
+    const notifMenu = document.getElementById('notificationMenu');
+    const notifBtn = document.getElementById('notificationToggle'); 
+
+    if (notifMenu && notifMenu.classList.contains('show')) {
+        // Si el clic NO ha sido dentro del menú Y TAMPOCO en la campana
+        if (!notifMenu.contains(event.target) && !notifBtn.contains(event.target)) {
+            notifMenu.classList.remove('show');
+            notifBtn.setAttribute('aria-expanded', 'false');
+        }
+    }
+});
