@@ -187,6 +187,30 @@ function toggleDropdown(event) {
     document.getElementById('adminMenu').classList.toggle('show');
 }
 
+document.addEventListener('click', event => {
+    const clickedElement = event.target instanceof Element ? event.target : null;
+    if (!clickedElement) return;
+
+    document.querySelectorAll('.dropdown-menu.show').forEach(menu => {
+        const container = menu.closest('.dropdown-container');
+        if (container && !container.contains(clickedElement)) {
+            menu.classList.remove('show');
+            if (menu.id === 'notificationMenu') {
+                document.getElementById('notificationToggle')?.setAttribute('aria-expanded', 'false');
+            }
+        }
+    });
+
+    if (clickedElement instanceof HTMLDialogElement && clickedElement.open) {
+        clickedElement.close();
+        return;
+    }
+
+    if (clickedElement.classList.contains('eq-modal')) {
+        clickedElement.style.display = 'none';
+    }
+}, true);
+
 // --- PERFIL ---
 async function abrirPerfil(event) {
     if (event) event.stopPropagation();
@@ -377,25 +401,6 @@ async function toggleNotifications(event) {
         list.appendChild(message);
     }
 }
-// Cerrar el modal de perfil si se hace clic fuera de la caja blanca
-document.addEventListener("DOMContentLoaded", () => {
-    const modal = document.getElementById('perfilModal');
-    if (modal) {
-        modal.addEventListener("click", (e) => {
-            const rect = modal.getBoundingClientRect();
-            const isInDialog = (
-                e.clientX >= rect.left &&
-                e.clientX <= rect.right &&
-                e.clientY >= rect.top &&
-                e.clientY <= rect.bottom
-            );
-            if (!isInDialog) {
-                modal.close();
-            }
-        });
-    }
-});
-
 /* =========================================
    MODO DALTONISMO
    ========================================= */

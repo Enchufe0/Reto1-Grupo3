@@ -765,6 +765,22 @@ body.colorblind-mode .tarjetaInfo strong {
     color: #000000 !important;
 }
 
+body.colorblind-mode .notification-menu__message {
+    color: #111827 !important;
+}
+
+body.colorblind-mode .notification-toggle[aria-expanded="true"],
+body.colorblind-mode .notification-toggle.is-current {
+    background-color: #051BFF !important;
+}
+
+body.colorblind-mode .notification-toggle[aria-expanded="true"] .bell,
+body.colorblind-mode .notification-toggle.is-current .bell {
+    color: #FFFFFF !important;
+    -webkit-text-stroke: 0;
+    font-weight: 400 !important;
+}
+
 /* 2. Campana de notificaciones gruesa y NEGRA */
 body.colorblind-mode .notification-toggle .bell,
 body.colorblind-mode .notification-toggle i {
@@ -778,4 +794,8 @@ body.colorblind-mode .row-highlight,
 body.colorblind-mode .row-highlight td {
     background-color: #FFCB00 !important; /* Amarillo daltonismo */
     border-bottom: 2px solid #000000 !important; /* Borde negro para mantener el estilo */
+}
+
+body.colorblind-mode .notificaciones-lista__controles h1 {
+    color: #000000 !important;
 }
